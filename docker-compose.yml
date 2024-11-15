@@ -1,12 +1,9 @@
-version: '3'
-
 services:
   db:
     image: postgres:13
     environment:
-      - POSTGRES_DB=sijarta
-      - POSTGRES_USER=ishowbasdat
-      - POSTGRES_PASSWORD=mypassword
+      POSTGRES_USER: sijarta
+      POSTGRES_PASSWORD: postgres
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ./db-init:/docker-entrypoint-initdb.d
