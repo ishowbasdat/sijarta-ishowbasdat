@@ -4,51 +4,39 @@
             <div class="modal-header border-b border-gray-400 px-6 py-4">
                 <h5 class="modal-title text-xl font-bold text-gray-800" id="discountModalLabel">Diskon & Promo</h5>
             </div>
-            <div class="modal-body px-6 py-4">
+            <div class="modal-body px-6 py-4 overflow-auto" style="max-height: 70vh;">
                 <h6 class="text-lg font-semibold mb-3 text-gray-800">Voucher Tersedia</h6>
-                <div class="container-fluid">
-                    {% for voucher in vouchers %}
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <div class="card bg-white text-gray-800 rounded-lg shadow-md">
-                                    <div class="card-body d-flex justify-content-between align-items-center">
-                                        <div class="d-flex flex-column">
-                                            <h5 class="card-title text-lg font-medium">Kode: {{ voucher.code }}</h5>
-                                            <div class="d-flex">
-                                                <p class="card-text text-gray-600 mr-3">Potongan: {{ voucher.potongan }}</p>
-                                                <p class="card-text text-gray-600 mr-3">Min Transaksi: {{ voucher.min_transaction }}</p>
-                                                <p class="card-text text-gray-600 mr-3">Berlaku Selama: {{ voucher.valid_days }} hari</p>
-                                                <p class="card-text text-gray-600 mr-3">Kuota: {{ voucher.usage_quota }} kali</p>
-                                                <p class="card-text text-gray-600">Harga: {{ voucher.price }}</p>
-                                            </div>
-                                        </div>
-                                        <div class="ms-3">
-                                            <button type="button" class="btn btn-primary" onclick="buyVoucher('{{ voucher.code }}')">
-                                                Beli
-                                            </button>
-                                        </div>
-                                    </div>
+                {% for voucher in voucher_data %}
+                    <div class="card bg-white text-gray-800 rounded-lg shadow-md mb-4">
+                        <div class="card-body d-flex justify-content-between align-items-center">
+                            <div class="d-flex flex-column">
+                                <h5 class="card-title text-lg font-medium">Kode: {{ voucher.0 }}</h5>
+                                <div class="d-flex">
+                                    <p class="card-text text-gray-600 mr-3">Potongan: {{ voucher.1|floatformat:2 }} </p>
+                                    <p class="card-text text-gray-600 mr-3">Min. Transaksi: Rp{{ voucher.2|floatformat:2 }}</p>
+                                    <p class="card-text text-gray-600 mr-3">Jumlah Hari Berlaku: {{ voucher.4 }} hari</p>
+                                    <p class="card-text text-gray-600 mr-3">Kuota Penggunaan: {{ voucher.5 }} kali</p>
+                                    <p class="card-text text-gray-600">Harga: Rp{{ voucher.6|floatformat:2 }}</p>
                                 </div>
                             </div>
+                            <div class="ms-3">
+                                <button type="button" class="btn btn-primary" onclick="buyVoucher('{{ voucher.0 }}')">
+                                    Beli
+                                </button>
+                            </div>
                         </div>
-                    {% endfor %}
-                </div>
+                    </div>
+                {% endfor %}
 
                 <h6 class="text-lg font-semibold mt-5 mb-3 text-gray-800">Promo Tersedia</h6>
-                <div class="container-fluid">
-                    {% for promo in promos %}
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <div class="card bg-white text-gray-800 rounded-lg shadow-md">
-                                    <div class="card-body">
-                                        <h5 class="card-title text-lg font-medium">Kode: {{ promo.code }}</h5>
-                                        <p class="card-text text-gray-600">Tanggal Akhir Berlaku: {{ promo.valid_until }}</p>
-                                    </div>
-                                </div>
-                            </div>
+                {% for promo in promo_data %}
+                    <div class="card bg-white text-gray-800 rounded-lg shadow-md mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title text-lg font-medium">Kode: {{ promo.0 }}</h5>
+                            <p class="card-text text-gray-600">Tanggal Akhir Berlaku: {{ promo.1 }}</p>
                         </div>
-                    {% endfor %}
-                </div>
+                    </div>
+                {% endfor %}
             </div>
         </div>
     </div>

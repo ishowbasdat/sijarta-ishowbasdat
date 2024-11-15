@@ -5,4 +5,5 @@ app_name = 'biru'
 
 urlpatterns = [
     path('', views.show_main, name='main'),
+    #path('', views.discount, name='discount')
 ]
