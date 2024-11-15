@@ -4,6 +4,10 @@ import uuid
 
 # Create your views here.
 def landing(request):
+    # For Checking Navbar Purpose
+    # request.session['nama'] = 'Steven'
+    # request.session['id'] = '1'
+    # request.session['role'] = 'PELANGGAN'
     return render(request, 'landing.html')
 
 def login(request):
@@ -13,7 +17,7 @@ def login(request):
         
         with connection.cursor() as cursor:
             cursor.execute("""
-                           SELECT U.id, U.pwd,
+                           SELECT U.id, U.nama, U.pwd,
                            CASE
                                 WHEN P.level IS NOT NULL THEN 'PELANGGAN'
                                 WHEN PEL.id IS NOT NULL THEN 'PEKERJA'
@@ -25,9 +29,10 @@ def login(request):
                            """, [no_hp])
             user = cursor.fetchone()
             
-            if user and pwd == user[1]:
+            if user and pwd == user[2]:
                 request.session['id'] = str(user[0])
-                request.session['role'] = user[2]
+                request.session['nama'] = user[1]
+                request.session['role'] = user[3]
                 return redirect('profile')
             
     return render(request, 'login.html')
@@ -108,4 +113,5 @@ def profile(request):
 
 def logout(request):
     request.session.flush()
-    return redirect('login')
+    # print(f"Id: {request.session.get('id')}")
+    return redirect('kuning:login')
