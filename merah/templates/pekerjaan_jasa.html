@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mx-auto mt-8">
+    <h2 class="text-2xl font-semibold">Pekerjaan Jasa</h2>
+
+    <!-- Filter Kategori Jasa -->
+    <div class="mt-6">
+        <label for="kategori-jasa" class="block text-lg font-semibold">Kategori Jasa</label>
+        <select id="kategori-jasa" class="mt-2 p-2 border rounded w-full" onchange="updateSubkategori()">
+            <option value="">Pilih Kategori</option>
+            <option value="home-cleaning">Home Cleaning</option>
+            <option value="plumbing">Plumbing</option>
+            <option value="electrician">Electrician</option>
+        </select>
+    </div>
+
+    <!-- Filter Subkategori Jasa -->
+    <div class="mt-6">
+        <label for="subkategori-jasa" class="block text-lg font-semibold">Subkategori Jasa</label>
+        <select id="subkategori-jasa" class="mt-2 p-2 border rounded w-full">
+            <option value="">Pilih Subkategori</option>
+            <!-- Subkategori akan diupdate dengan JS -->
+        </select>
+    </div>
+
+    <!-- Tombol Pencarian -->
+    <div class="mt-6">
+        <button onclick="applyFilter()" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+            Cari
+        </button>
+    </div>
+
+    <!-- Daftar Pesanan Jasa -->
+    <div class="mt-8">
+        <h3 class="text-xl">Daftar Pesanan Jasa</h3>
+        <table class="min-w-full mt-4 border border-gray-300">
+            <thead>
+                <tr>
+                    <th class="py-2 px-4 border">Pesanan</th>
+                    <th class="py-2 px-4 border">Kategori</th>
+                    <th class="py-2 px-4 border">Subkategori</th>
+                    <th class="py-2 px-4 border">Tanggal Pemesanan</th>
+                    <th class="py-2 px-4 border">Tanggal Pekerjaan</th>
+                    <th class="py-2 px-4 border">Total Biaya</th>
+                    <th class="py-2 px-4 border">Tindakan</th>
+                </tr>
+            </thead>
+            <tbody id="pesanan-jasa">
+                <!-- Pesanan Jasa akan ditampilkan di sini -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    const allPesanan = [
+        { id: 1, nama: "Pembersihan Rumah", kategori: "home-cleaning", subkategori: "Cleaning Rumah", tanggal_pemesanan: "2024-10-01", tanggal_pekerjaan: "2024-10-05", total_biaya: 200000 },
+        { id: 2, nama: "Pembersihan Kantor", kategori: "home-cleaning", subkategori: "Pembersihan Kantor", tanggal_pemesanan: "2024-10-02", tanggal_pekerjaan: "2024-10-06", total_biaya: 250000 },
+        { id: 3, nama: "Perbaikan Pipa", kategori: "plumbing", subkategori: "Perbaikan Pipa", tanggal_pemesanan: "2024-10-03", tanggal_pekerjaan: "2024-10-07", total_biaya: 300000 },
+        { id: 4, nama: "Instalasi Pipa", kategori: "plumbing", subkategori: "Instalasi Pipa", tanggal_pemesanan: "2024-10-04", tanggal_pekerjaan: "2024-10-08", total_biaya: 350000 },
+        { id: 5, nama: "Perbaikan Listrik", kategori: "electrician", subkategori: "Perbaikan Listrik", tanggal_pemesanan: "2024-10-05", tanggal_pekerjaan: "2024-10-09", total_biaya: 400000 },
+        { id: 6, nama: "Instalasi Listrik", kategori: "electrician", subkategori: "Instalasi Listrik", tanggal_pemesanan: "2024-10-06", tanggal_pekerjaan: "2024-10-10", total_biaya: 450000 },
+        { id: 7, nama: "Pembersihan Rumah", kategori: "home-cleaning", subkategori: "Cleaning Rumah", tanggal_pemesanan: "2024-10-07", tanggal_pekerjaan: "2024-10-11", total_biaya: 220000 },
+        { id: 8, nama: "Perbaikan Pipa di Dapur", kategori: "plumbing", subkategori: "Perbaikan Pipa", tanggal_pemesanan: "2024-10-08", tanggal_pekerjaan: "2024-10-12", total_biaya: 270000 },
+        { id: 9, nama: "Instalasi Lampu", kategori: "electrician", subkategori: "Instalasi Listrik", tanggal_pemesanan: "2024-10-09", tanggal_pekerjaan: "2024-10-13", total_biaya: 500000 },
+        { id: 10, nama: "Pembersihan Kantor Baru", kategori: "home-cleaning", subkategori: "Pembersihan Kantor", tanggal_pemesanan: "2024-10-10", tanggal_pekerjaan: "2024-10-14", total_biaya: 230000 }
+    ];
+
+    const subkategoriData = {
+        "home-cleaning": ["Cleaning Rumah", "Pembersihan Kantor"],
+        "plumbing": ["Perbaikan Pipa", "Instalasi Pipa"],
+        "electrician": ["Perbaikan Listrik", "Instalasi Listrik"]
+    };
+
+    function updateSubkategori() {
+        const kategori = document.getElementById("kategori-jasa").value;
+        const subkategoriSelect = document.getElementById("subkategori-jasa");
+
+        // Clear existing options
+        subkategoriSelect.innerHTML = "";
+
+        if (kategori) {
+            // Add subkategori berdasarkan kategori
+            subkategoriData[kategori].forEach(subkategori => {
+                const option = document.createElement("option");
+                option.value = subkategori;
+                option.textContent = subkategori;
+                subkategoriSelect.appendChild(option);
+            });
+        } else {
+            // If no category is selected, clear the subkategori options
+            const option = document.createElement("option");
+            option.value = "";
+            option.textContent = "Pilih Subkategori";
+            subkategoriSelect.appendChild(option);
+        }
+    }
+
+    function applyFilter() {
+        const kategori = document.getElementById("kategori-jasa").value;
+        const subkategori = document.getElementById("subkategori-jasa").value;
+        
+        // Filter pesanan berdasarkan kategori dan subkategori
+        const filteredPesanan = allPesanan.filter(pesanan => 
+            (kategori === "" || pesanan.kategori === kategori) && 
+            (subkategori === "" || pesanan.subkategori === subkategori)
+        );
+
+        // Display filtered results
+        displayPesanan(filteredPesanan);
+    }
+
+    function displayPesanan(pesananList) {
+        const pesananContainer = document.getElementById("pesanan-jasa");
+        pesananContainer.innerHTML = ""; // Clear existing rows
+
+        pesananList.forEach(pesanan => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td class="py-2 px-4 border">${pesanan.nama}</td>
+                <td class="py-2 px-4 border">${pesanan.kategori}</td>
+                <td class="py-2 px-4 border">${pesanan.subkategori}</td>
+                <td class="py-2 px-4 border">${pesanan.tanggal_pemesanan}</td>
+                <td class="py-2 px-4 border">${pesanan.tanggal_pekerjaan}</td>
+                <td class="py-2 px-4 border">${pesanan.total_biaya}</td>
+                <td class="py-2 px-4 border">
+                    <a href="#" class="text-blue-500">Kerjakan Pesanan</a>
+                </td>
+            `;
+            pesananContainer.appendChild(row);
+        });
+    }
+
+    // Initialize page with all pesanan
+    displayPesanan(allPesanan);
+
+</script>
+
+{% endblock %}

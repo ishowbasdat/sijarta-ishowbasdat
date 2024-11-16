@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mx-auto mt-8">
+    <h2 class="text-2xl font-semibold">Status Pekerjaan Jasa</h2>
+
+    <!-- Filter Status Pekerjaan -->
+    <div class="mt-6">
+        <label for="status-pekerjaan" class="block text-lg font-semibold">Status Pekerjaan</label>
+        <select id="status-pekerjaan" class="mt-2 p-2 border rounded w-full">
+            <option value="">Pilih Status</option>
+            <option value="Menunggu Pekerja Berangkat">Menunggu Pekerja Berangkat</option>
+            <option value="Pekerja Tiba Di Lokasi">Pekerja Tiba Di Lokasi</option>
+            <option value="Pelayanan Jasa Sedang Dilakukan">Pelayanan Jasa Sedang Dilakukan</option>
+            <option value="Pesanan Selesai">Pesanan Selesai</option>
+        </select>
+    </div>
+
+    <!-- Tombol Pencarian -->
+    <div class="mt-6">
+        <button onclick="applySearchFilter()" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+            Cari
+        </button>
+    </div>
+
+    <!-- Daftar Status Pekerjaan -->
+    <div class="mt-8">
+        <h3 class="text-xl">Daftar Pekerjaan</h3>
+        <table class="min-w-full mt-4 border border-gray-300">
+            <thead>
+                <tr>
+                    <th class="py-2 px-4 border">Pesanan</th>
+                    <th class="py-2 px-4 border">Status</th>
+                    <th class="py-2 px-4 border">Tindakan</th>
+                </tr>
+            </thead>
+            <tbody id="status-pekerjaan-list">
+                <!-- Pekerjaan status akan ditampilkan di sini -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    const pekerjaanStatus = [
+        { id: 1, nama: "Pembersihan Rumah", status: "Menunggu Pekerja Berangkat" },
+        { id: 2, nama: "Perbaikan Pipa", status: "Pekerja Tiba Di Lokasi" },
+        { id: 3, nama: "Perbaikan Listrik", status: "Pelayanan Jasa Sedang Dilakukan" },
+        { id: 4, nama: "Pembersihan Kantor", status: "Pesanan Selesai" },
+        { id: 5, nama: "Instalasi Lampu", status: "Menunggu Pekerja Berangkat" }
+    ];
+
+    // Function to apply the filter when the search button is clicked
+    function applySearchFilter() {
+        const status = document.getElementById("status-pekerjaan").value;
+        const pekerjaanContainer = document.getElementById("status-pekerjaan-list");
+        pekerjaanContainer.innerHTML = ""; // Clear existing rows
+
+        const filteredPekerjaan = pekerjaanStatus.filter(pekerjaan => 
+            status === "" || pekerjaan.status === status
+        );
+
+        // Display the filtered pekerjaan
+        filteredPekerjaan.forEach(pekerjaan => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td class="py-2 px-4 border">${pekerjaan.nama}</td>
+                <td class="py-2 px-4 border">${pekerjaan.status}</td>
+                <td class="py-2 px-4 border">
+                    ${pekerjaan.status !== "Pesanan Selesai" ? 
+                    `<a href="#" class="text-blue-500">Ubah Status</a>` : ''}
+                </td>
+            `;
+            pekerjaanContainer.appendChild(row);
+        });
+    }
+
+    // Initialize page with all pekerjaan (no filter)
+    applySearchFilter();
+</script>
+
+{% endblock %}

@@ -13,3 +13,9 @@ def mypay_transaction(request):
     }
     
     return render(request, 'mypay_transaction.html', context)
+
+def pekerjaan_jasa(request):
+    return render(request, 'pekerjaan_jasa.html')
+
+def status_pekerjaan_jasa(request):
+    return render(request, 'status_pekerjaan_jasa.html')
