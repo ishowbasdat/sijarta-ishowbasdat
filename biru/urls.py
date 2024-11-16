@@ -4,6 +4,7 @@ from . import views
 app_name = 'biru'
 
 urlpatterns = [
-    path('', views.show_main, name='main'),
-    #path('', views.discount, name='discount')
+    path('discount/', views.discount, name='discount'),
+    path('api/discounts/', views.get_discounts, name='get_discounts'),
+    path('api/buy-voucher/', views.buy_voucher, name='buy_voucher'),
 ]

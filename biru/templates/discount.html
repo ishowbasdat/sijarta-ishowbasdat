@@ -1,45 +1,211 @@
-<div class="modal fade" id="discountModal" tabindex="-1" role="dialog" aria-labelledby="discountModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content bg-white rounded-lg shadow-xl">
-            <div class="modal-header border-b border-gray-400 px-6 py-4">
-                <h5 class="modal-title text-xl font-bold text-gray-800" id="discountModalLabel">Diskon & Promo</h5>
-            </div>
-            <div class="modal-body px-6 py-4 overflow-auto" style="max-height: 70vh;">
-                <h6 class="text-lg font-semibold mb-3 text-gray-800">Voucher Tersedia</h6>
-                {% for voucher in voucher_data %}
-                    <div class="card bg-white text-gray-800 rounded-lg shadow-md mb-4">
-                        <div class="card-body d-flex justify-content-between align-items-center">
-                            <div class="d-flex flex-column">
-                                <h5 class="card-title text-lg font-medium">Kode: {{ voucher.0 }}</h5>
-                                <div class="d-flex">
-                                    <p class="card-text text-gray-600 mr-3">Potongan: {{ voucher.1|floatformat:2 }} </p>
-                                    <p class="card-text text-gray-600 mr-3">Min. Transaksi: Rp{{ voucher.2|floatformat:2 }}</p>
-                                    <p class="card-text text-gray-600 mr-3">Jumlah Hari Berlaku: {{ voucher.4 }} hari</p>
-                                    <p class="card-text text-gray-600 mr-3">Kuota Penggunaan: {{ voucher.5 }} kali</p>
-                                    <p class="card-text text-gray-600">Harga: Rp{{ voucher.6|floatformat:2 }}</p>
-                                </div>
-                            </div>
-                            <div class="ms-3">
-                                <button type="button" class="btn btn-primary" onclick="buyVoucher('{{ voucher.0 }}')">
-                                    Beli
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
+{% extends 'base.html' %}
+{% load static %}
 
-                <h6 class="text-lg font-semibold mt-5 mb-3 text-gray-800">Promo Tersedia</h6>
-                {% for promo in promo_data %}
-                    <div class="card bg-white text-gray-800 rounded-lg shadow-md mb-4">
-                        <div class="card-body">
-                            <h5 class="card-title text-lg font-medium">Kode: {{ promo.0 }}</h5>
-                            <p class="card-text text-gray-600">Tanggal Akhir Berlaku: {{ promo.1 }}</p>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
+{% block meta %}
+<title>Diskon - Bekas Berkelas</title>
+<style>
+    .bg-primary-blue {
+        background-color: #4475F2;
+    }
+    .text-primary-blue {
+        color: #4475F2;
+    }
+</style>
+{% endblock meta %}
+
+{% block content %}
+{% include 'navbar.html' %}
+
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold mb-6">DISKON</h1>
+
+    <div class="mb-8">
+        <h2 class="text-xl font-semibold mb-4">Voucher</h2>
+        <div id="voucherContainer" class="space-y-4">
+            <div class="bg-gray-100 p-4 rounded-lg text-center">Loading vouchers...</div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-xl font-semibold mb-4">Promo</h2>
+        <div id="promoContainer" class="space-y-4">
+            <div class="bg-gray-100 p-4 rounded-lg text-center">Loading promos...</div>
         </div>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function formatCurrency(number) {
+        return new Intl.NumberFormat('id-ID', { 
+            style: 'currency', 
+            currency: 'IDR',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0 
+        }).format(number);
+    }
+
+    function formatDate(dateString) {
+        const options = { day: 'numeric', month: 'short', year: 'numeric' };
+        return new Date(dateString).toLocaleDateString('id-ID', options);
+    }
+
+    function createVoucherCard(voucher) {
+        return `
+            <div class="bg-white rounded-lg shadow p-4">
+                <div class="flex items-center">
+                    <div class="flex-grow">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <p class="text-sm text-gray-600">Kode</p>
+                                <p class="font-medium">${voucher[0]}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Potongan</p>
+                                <p class="font-medium">${formatCurrency(voucher[1])}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Min Transaksi Pemesanan</p>
+                                <p class="font-medium">${formatCurrency(voucher[2])}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Jumlah Hari Berlaku</p>
+                                <p class="font-medium">${voucher[3]} hari</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Kuota Penggunaan</p>
+                                <p class="font-medium">${voucher[4]}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Harga</p>
+                                <p class="font-medium">${formatCurrency(voucher[5])}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="buyVoucher('${voucher[0]}')" class="bg-primary-blue text-white px-4 py-2 rounded-lg ml-4 hover:bg-blue-600 transition-colors">
+                        Beli
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    function createPromoCard(promo) {
+        return `
+            <div class="bg-white rounded-lg shadow p-4">
+                <div class="flex items-center">
+                    <div class="flex-grow">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-sm text-gray-600">Kode</p>
+                                <p class="font-medium">${promo[0]}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Tanggal Akhir Berlaku</p>
+                                <p class="font-medium">${formatDate(promo[1])}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    async function fetchDiscounts() {
+        try {
+            const response = await fetch('/biru/api/discounts/');
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            console.log('Received data:', data);
+            
+            if (!data.voucher_data || !data.promo_data) {
+                console.error('Invalid data structure received:', data);
+                return;
+            }
+
+            const voucherContainer = document.getElementById('voucherContainer');
+            if (voucherContainer) {
+                if (data.voucher_data.length === 0) {
+                    voucherContainer.innerHTML = '<div class="text-center p-4">Tidak ada voucher tersedia</div>';
+                } else {
+                    voucherContainer.innerHTML = data.voucher_data
+                        .map(voucher => createVoucherCard(voucher))
+                        .join('');
+                }
+            }
+            
+            const promoContainer = document.getElementById('promoContainer');
+            if (promoContainer) {
+                if (data.promo_data.length === 0) {
+                    promoContainer.innerHTML = '<div class="text-center p-4">Tidak ada promo tersedia</div>';
+                } else {
+                    promoContainer.innerHTML = data.promo_data
+                        .map(promo => createPromoCard(promo))
+                        .join('');
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching discounts:', error);
+            const errorMessage = `
+                <div>
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                        <p>Gagal memuat data. Silakan coba lagi nanti.</p>
+                        <p class="text-sm">${error.message}</p>
+                    </div>
+                </div>
+            `;
+            
+            ['voucherContainer', 'promoContainer'].forEach(containerId => {
+                const container = document.getElementById(containerId);
+                if (container) {
+                    container.innerHTML = errorMessage;
+                }
+            });
+        }
+    }
+
+    async function buyVoucher(kode) {
+        try {
+            const response = await fetch('/biru/api/buy-voucher/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({ kode: kode })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            alert(result.message || 'Voucher berhasil dibeli!');
+            fetchDiscounts();
+        } catch (error) {
+            console.error('Error buying voucher:', error);
+            alert('Gagal membeli voucher. Silakan coba lagi nanti.');
+        }
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    document.addEventListener('DOMContentLoaded', fetchDiscounts);
+</script>
+{% endblock content %}
