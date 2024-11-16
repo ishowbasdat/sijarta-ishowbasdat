@@ -1,0 +1,44 @@
+<!-- mypay.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mx-auto mt-8">
+    <h2 class="text-2xl font-semibold">MyPay</h2>
+
+    <!-- MyPay Balance -->
+    <div class="bg-gray-100 p-4 mt-4">
+        <h3 class="text-xl">Saldo MyPay Anda</h3>
+        <p class="text-lg">Rp 1,500,000</p> <!-- Hardcoded balance -->
+        <a href="{% url 'merah:mypay_transaction' %}" class="mt-4 inline-block px-4 py-2 bg-blue-500 text-white rounded">
+            Lakukan Transaksi
+        </a>
+    </div>
+
+    <!-- MyPay Transaction History -->
+    <div class="mt-8">
+        <h3 class="text-xl">Riwayat Transaksi</h3>
+        <table class="min-w-full mt-4 border border-gray-300">
+            <thead>
+                <tr>
+                    <th class="py-2 px-4 border">Nominal</th>
+                    <th class="py-2 px-4 border">Tanggal</th>
+                    <th class="py-2 px-4 border">Kategori</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="py-2 px-4 border">+Rp 500,000</td>
+                    <td class="py-2 px-4 border">2024-11-01</td>
+                    <td class="py-2 px-4 border">TopUp</td>
+                </tr>
+                <tr>
+                    <td class="py-2 px-4 border">+Rp 200,000</td>
+                    <td class="py-2 px-4 border">2024-11-03</td>
+                    <td class="py-2 px-4 border">Transfer</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
