@@ -1,13 +1,10 @@
 from django.shortcuts import render, redirect
 from django.db import connection
 import uuid
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 def landing(request):
-    # For Checking Navbar Purpose
-    # request.session['nama'] = 'Steven'
-    # request.session['id'] = '1'
-    # request.session['role'] = 'PELANGGAN'
     return render(request, 'landing.html')
 
 def login(request):
@@ -17,23 +14,28 @@ def login(request):
         
         with connection.cursor() as cursor:
             cursor.execute("""
-                           SELECT U.id, U.nama, U.pwd,
-                           CASE
-                                WHEN P.level IS NOT NULL THEN 'PELANGGAN'
-                                WHEN PEL.id IS NOT NULL THEN 'PEKERJA'
+                            SELECT U.*,
+                            CASE
+                                WHEN EXISTS (SELECT 1 FROM SIJARTA.PELANGGAN WHERE id = U.id) THEN 'PELANGGAN'
+                                WHEN EXISTS (SELECT 1 FROM SIJARTA.PEKERJA WHERE id = U.id) THEN 'PEKERJA'
                             END AS role
                             FROM SIJARTA."USER" AS U
-                            LEFT JOIN SIJARTA.PELANGGAN AS PEL ON U.id = P.id
-                            LEFT JOIN SIJARTA.PEKERJA AS PEK ON U.id = PEK.id
                             WHERE U.no_hp = %s
                            """, [no_hp])
-            user = cursor.fetchone()
             
-            if user and pwd == user[2]:
-                request.session['id'] = str(user[0])
-                request.session['nama'] = user[1]
-                request.session['role'] = user[3]
-                return redirect('profile')
+            row = cursor.fetchone()
+            if row:
+                user = dict(zip([column[0] for column in cursor.description], row))
+            else:
+                user = None
+            
+            if user and pwd == user.get('pwd'):
+                request.session.user = user
+                print(user)
+                # TODO: Tunggu chris, redirect ke homepage
+            
+            # TODO: Kalau ga ketemu, tunjukin error msg
+            
             
     return render(request, 'login.html')
 
@@ -80,8 +82,8 @@ def profile(request):
     if 'id' not in request.session:
         return redirect('login')
     
-    id = request.session.get('id')
-    role = request.session.get('role')
+    id = request.session.user.get('id')
+    role = request.session.user.get('role')
     
     if request.method == 'POST':
         nama = request.POST.get('nama')
@@ -113,5 +115,4 @@ def profile(request):
 
 def logout(request):
     request.session.flush()
-    # print(f"Id: {request.session.get('id')}")
     return redirect('kuning:login')
