@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<title>cm tombol doang :v</title>
+{% endblock meta %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center">
+    <button 
+        onclick="openModal()" 
+        class="bg-[#4361ee] text-white px-6 py-2 rounded-lg hover:bg-[#3651d4] transition-colors">
+        kasih testi dong banh
+    </button>
+</div>
+
+{% include 'testimoni.html' %}
+{% endblock content %}
