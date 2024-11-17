@@ -5,13 +5,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 def landing(request):
-    # For Checking Navbar Purpose
-    # request.session['nama'] = 'Steven'
-    # request.session['id'] = '1'
-    # request.session['role'] = 'PELANGGAN'
     return render(request, 'landing.html')
 
-@csrf_exempt
 def login(request):
     if request.method == 'POST':
         no_hp = request.POST.get('no_hp')
