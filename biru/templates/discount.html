@@ -337,15 +337,12 @@
 
     async function confirmPurchase() {
         if (!selectedVoucherData) return;
-        
         try {
             if (userData.balance < selectedVoucherData.price) {
                 showFailedModal();
                 return;
             }
-
             const result = await purchaseVoucher(selectedVoucherData.code);
-            
             if (result.message === 'Voucher berhasil dibeli!') {
                 closeConfirmationModal();
                 
@@ -370,7 +367,6 @@
         try {
             const response = await fetch('/biru/api/discounts/');
             const data = await response.json();
-            
             const voucherContainer = document.getElementById('voucherContainer');
             voucherContainer.innerHTML = data.voucher_data
                 .map(([code, discount, minTrans, validity, quota, price]) => `
@@ -412,7 +408,6 @@
                     </div>
                 `)
                 .join('');
-                
             const promoContainer = document.getElementById('promoContainer');
             promoContainer.innerHTML = data.promo_data
                 .map(([code, expiry]) => `
@@ -432,7 +427,6 @@
                     </div>
                 `)
                 .join('');
-                
             initSwiper();
         } catch (error) {
             console.error('Error fetching discounts:', error);

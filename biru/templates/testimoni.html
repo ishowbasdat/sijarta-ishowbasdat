@@ -76,7 +76,7 @@
 </style>
 
 <script>
-    function openModal() {
+    function openTesti() {
         document.getElementById('testimonialModal').classList.remove('hidden');
         document.body.style.overflow = 'hidden';
     }
@@ -107,7 +107,6 @@
         }, 3000);
     }
 
-    // Close modal when clicking outside
     window.addEventListener('click', function(event) {
         const modal = document.getElementById('testimonialModal');
         if (event.target === modal) {
