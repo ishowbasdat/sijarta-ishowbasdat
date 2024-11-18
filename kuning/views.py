@@ -73,6 +73,7 @@ def register(request):
                                INSERT INTO SIJARTA.PELANGGAN (id, level)
                                VALUES (%s, 'Basic')
                                """, [id])
+                
             elif role == 'PEKERJA':
                 nama_bank = request.POST.get('nama_bank')
                 nomor_rekening = request.POST.get('nomor_rekening')
@@ -82,15 +83,15 @@ def register(request):
                                INSERT INTO SIJARTA.PEKERJA (id, nama_bank, nomor_rekening, npwp, link_foto)
                                  VALUES (%s, %s, %s, %s, %s)
                                """, [id, nama_bank, nomor_rekening, npwp, link_foto])
-        return redirect('login')
+        return redirect('kuning:login')
     return render(request, 'register.html')
 
 def profile(request):
-    if 'id' not in request.session:
-        return redirect('login')
+    if 'user' not in request.session:
+        return redirect('kuning:login')
     
-    id = request.session.user.get('id')
-    role = request.session.user.get('role')
+    id = request.session['user'].get('id')
+    role = request.session['user'].get('role')
     
     if request.method == 'POST':
         nama = request.POST.get('nama')
@@ -116,8 +117,8 @@ def profile(request):
                                SET nama_bank = %s, nomor_rekening = %s, npwp = %s, link_foto = %s
                                WHERE id = %s
                                """, [nama_bank, nomor_rekening, npwp, link_foto, id])
-    # TODO: Jangan lupa implement fetch data untuk user
-    # Tambah juga parameter pada render                     
+                
+        return redirect('kuning:profile')              
     return render(request, 'profile.html')
 
 def logout(request):
