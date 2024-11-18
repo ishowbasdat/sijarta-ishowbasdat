@@ -1,13 +1,52 @@
-{% extends 'base.html' %} {% load static %}
+{% extends 'base.html' %} 
+{% load static %} 
+
 {% block meta %}
 <title>SIJARTA</title>
 {% endblock meta %}
 
 {% block content %}
 {% include 'navbar.html' %}
-SIJARTA By ishowsbasdat
-<br>
-<a href="#">Login</a>
-<br>
-<a href="#">Register</a>
+<div class="min-h-screen flex flex-col items-center justify-center w-full bg-blue-100 px-4 py-12">
+    <div class="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg">
+        <div class="text-center plus-jakarta-sans-bold mb-8">
+            <h2 class="text-3xl font-bold text-gray-900">SIJARTA</h2>
+            <p class="mt-2 text-gray-600">By ishowbasdat</p>
+        </div>
+
+        <div class="space-y-4 plus-jakarta-sans-bold">
+            <a href="{% url 'kuning:login' %}" class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-400 hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">
+                Login
+            </a>
+            
+            <a href="{% url 'kuning:register' %}" class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#1eac9e] hover:bg-[#3fbd9f] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out">
+                Register
+            </a>
+        </div>
+
+        <!-- TODO: Janlup implement error message di BE -->
+        {% if messages %}
+        <div class="mt-4 space-y-2 plus-jakarta-sans-bold">
+        {% for message in messages %}
+            {% if message.tags == "success" %}
+                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-r" role="alert">
+                    <p class="font-bold">Success</p>
+                    <p>{{ message }}</p>
+                </div>
+            {% elif message.tags == "error" %}
+                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-r" role="alert">
+                    <p class="font-bold">Error</p>
+                    <p>{{ message }}</p>
+                </div>
+            {% else %}
+                <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded-r" role="alert">
+                    <p class="font-bold">Info</p>
+                    <p>{{ message }}</p>
+                </div>
+            {% endif %}
+        {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>
 {% endblock content %}

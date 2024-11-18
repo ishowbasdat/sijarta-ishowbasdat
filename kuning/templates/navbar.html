@@ -7,15 +7,15 @@
             </div>
             
             <div class="md:flex items-center hidden">
-                {% if not request.session.id %}
+                {% if not request.session.user %}
                 <a href="{% url 'kuning:login' %}" class="text-center text-lg text-[#1f1c61] plus-jakarta-sans-bold px-3 py-2 mr-2">
                     Login
                 </a>
 
-                <a href="{% url 'kuning:register_role' %}" class="text-center text-lg text-[#1f1c61] plus-jakarta-sans-bold px-3 py-2 mr-2">
+                <a href="{% url 'kuning:register' %}" class="text-center text-lg text-[#1f1c61] plus-jakarta-sans-bold px-3 py-2 mr-2">
                     Register
                 </a>
-                {% elif request.session.id %}
+                {% elif request.session.user %}
                 <a href="#" class="text-center text-lg text-[#1f1c61] plus-jakarta-sans-bold px-3 py-2 mr-2">
                     Homepage
                 </a>
@@ -24,7 +24,7 @@
                     MyPay
                 </a>
 
-                {% if request.session.role == 'PELANGGAN' %}
+                {% if request.session.user.role == 'PELANGGAN' %}
                 <a href="#" class="text-center text-lg text-[#1f1c61] plus-jakarta-sans-bold px-3 py-2 mr-2">
                     Kelola Pesanan
                 </a>
@@ -32,7 +32,7 @@
                 <a href="#" class="text-center text-lg text-[#1f1c61] plus-jakarta-sans-bold px-3 py-2 mr-2">
                     Diskon
                 </a>
-                {% elif request.session.role == 'PEKERJA' %}
+                {% elif request.session.user.role == 'PEKERJA' %}
                 <a href="#" class="text-center text-lg text-[#1f1c61] plus-jakarta-sans-bold px-3 py-2 mr-2">
                     Kelola Pekerjaan
                 </a>
@@ -49,11 +49,11 @@
                 <span class="block text-[#1f1c61] text-lg plus-jakarta-sans-bold px-3 py-2">
                     Welcome, 
                     <span class="text-[#5A71BC]">
-                        {{ request.session.nama }} 
+                        {{ request.session.user.nama }} 
                     </span>
-                    {% if request.session.role == 'PELANGGAN' %}
+                    {% if request.session.user.role == 'PELANGGAN' %}
                     (Pelanggan)
-                    {% elif request.session.role == 'PEKERJA' %}
+                    {% elif request.session.user.role == 'PEKERJA' %}
                     (Pekerja)
                     {% endif %}
                 </span>
