@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.contrib import messages
 from django.db import connection
 from datetime import date, datetime
 from decimal import Decimal
@@ -57,7 +58,8 @@ def login(request):
                 print(request.session['user'].get('role'))
                 return redirect('kuning:landing')
             else:
-                print('Error')
+                messages.error(request, 'No HP atau Password salah')
+                return redirect('kuning:login')
                 # TODO: Tunggu chris, redirect ke homepage
                 
             # TODO: Kalau ga ketemu, tunjukin error msg
