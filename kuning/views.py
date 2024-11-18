@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from django.db import connection
+from datetime import date, datetime
+from decimal import Decimal
 import uuid
-from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 def landing(request):
@@ -26,26 +27,31 @@ def login(request):
             row = cursor.fetchone()
             if row:
                 user = dict(zip([column[0] for column in cursor.description], row))
+                
+                for key, value in user.items():
+                    if isinstance(value, (date, datetime)):
+                        user[key] = value.isoformat()
+                    elif isinstance(value, uuid.UUID):
+                        user[key] = str(value)
+                    elif isinstance(value, Decimal):
+                        user[key] = float(value)    
             else:
                 user = None
             
             if user and pwd == user.get('pwd'):
-                request.session.user = user
-                print(user)
+                request.session['user'] = user
+                request.session.save()
+                print(request.session['user'].get('role'))
+                return redirect('kuning:landing')
+            else:
+                print('Error')
                 # TODO: Tunggu chris, redirect ke homepage
-            
+                
             # TODO: Kalau ga ketemu, tunjukin error msg
-            
             
     return render(request, 'login.html')
 
-def register_role(request):
-    if request.method == 'POST':
-        role = request.POST.get('role')
-        return redirect('register', role = role)
-    return render(request, 'register_role.html')
-
-def register(request, role):
+def register(request):
     if request.method == 'POST':
         id = uuid.uuid4()
         nama = request.POST.get('nama')
@@ -54,6 +60,7 @@ def register(request, role):
         pwd = request.POST.get('pwd')
         tgl_lahir = request.POST.get('tgl_lahir')
         alamat = request.POST.get('alamat')
+        role = request.POST.get('role')
         
         with connection.cursor() as cursor:
             cursor.execute("""
@@ -76,7 +83,7 @@ def register(request, role):
                                  VALUES (%s, %s, %s, %s, %s)
                                """, [id, nama_bank, nomor_rekening, npwp, link_foto])
         return redirect('login')
-    return render(request, 'register.html', {'role': role})
+    return render(request, 'register.html')
 
 def profile(request):
     if 'id' not in request.session:

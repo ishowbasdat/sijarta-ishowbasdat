@@ -1,0 +1,213 @@
+{% extends 'base.html' %} 
+{% load static %}
+
+{% block meta %}
+<title>Register | SIJARTA</title>
+{% endblock meta %}
+
+{% block content %}
+{% include 'navbar.html' %}
+<div class="min-h-screen flex flex-col items-center justify-center w-full bg-blue-100 px-4 py-12">
+    <div class="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg plus-jakarta-sans-bold">
+        <div class="text-center plus-jakarta-sans-bold mb-8">
+            <h2 class="text-3xl font-bold text-gray-900">Register to SIJARTA</h2>
+            <p class="mt-2 text-gray-600">Pilih jenis akun Anda!</p>
+        </div>
+
+        <div class="flex space-x-4">
+            <button onclick="openModal('pelangganModal')" 
+                    class="flex-1 py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-400 hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
+                Pelanggan
+            </button>
+            <button onclick="openModal('pekerjaModal')" 
+                    class="flex-1 py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#1eac9e] hover:bg-[#3fbd9f] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out">
+                Pekerja
+            </button>
+        </div>
+
+        <div class="text-center mt-4">
+            <p class="text-sm text-gray-600 plus-jakarta-sans-normal">
+                Sudah punya akun?
+                <a href="{% url 'kuning:login' %}" class="font-medium text-blue-400 hover:text-blue-500">
+                    Login disini
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<div id="pelangganModal" class="fixed inset-0 bg-black bg-opacity-50 hidden overflow-y-auto h-full w-full backdrop-blur-sm">
+    <div class="flex items-center justify-center min-h-screen px-4">
+        <div class="relative bg-white rounded-xl shadow-lg w-full max-w-xl mx-auto p-8">
+            <h3 class="text-xl font-bold text-gray-900 mb-6">Register sebagai Pelanggan</h3>
+            <form method="POST" action="{% url 'kuning:register' %}" class="grid grid-cols-2 gap-x-6 gap-y-4 plus-jakarta-sans-normal">
+                {% csrf_token %}
+                <input type="hidden" name="role" value="PELANGGAN">
+                
+                <div class="space-y-4">
+                    <div>
+                        <label for="nama" class="block text-sm font-medium text-gray-700 mb-1">Nama</label>
+                        <input type="text" name="nama" id="nama" required 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                    </div>
+
+                    <div>
+                        <label for="jenis_kelamin" class="block text-sm font-medium text-gray-700 mb-1">Jenis Kelamin</label>
+                        <select name="jenis_kelamin" id="jenis_kelamin" required 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors appearance-none bg-white">
+                            <option value="L">Laki-laki</option>
+                            <option value="P">Perempuan</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="no_hp" class="block text-sm font-medium text-gray-700 mb-1">No HP</label>
+                        <input type="text" name="no_hp" id="no_hp" required 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label for="pwd" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <input type="password" name="pwd" id="pwd" required 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                    </div>
+
+                    <div>
+                        <label for="tgl_lahir" class="block text-sm font-medium text-gray-700 mb-1">Tanggal Lahir</label>
+                        <input type="date" name="tgl_lahir" id="tgl_lahir" required 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                    </div>
+
+                    <div>
+                        <label for="alamat" class="block text-sm font-medium text-gray-700 mb-1">Alamat</label>
+                        <textarea name="alamat" id="alamat" required 
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"></textarea>
+                    </div>
+                </div>
+
+                <div class="col-span-2 flex justify-end space-x-4 mt-6">
+                    <button type="button" onclick="closeModal('pelangganModal')"
+                            class="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                            class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
+                        Register
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="pekerjaModal" class="fixed inset-0 bg-black bg-opacity-50 hidden overflow-y-auto h-full w-full backdrop-blur-sm">
+    <div class="flex items-center justify-center min-h-screen px-4">
+        <div class="relative bg-white rounded-xl shadow-lg w-full max-w-xl mx-auto p-8">
+            <h3 class="text-xl font-bold text-gray-900 mb-6">Register sebagai Pekerja</h3>
+            <form method="POST" action="{% url 'kuning:register' %}" class="grid grid-cols-2 gap-x-6 gap-y-4 plus-jakarta-sans-normal">
+                {% csrf_token %}
+                <input type="hidden" name="role" value="PEKERJA">
+                
+                <div class="space-y-4">
+                    <div>
+                        <label for="nama" class="block text-sm font-medium text-gray-700 mb-1">Nama</label>
+                        <input type="text" name="nama" id="nama" required 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                    </div>
+
+                    <div>
+                        <label for="jenis_kelamin" class="block text-sm font-medium text-gray-700 mb-1">Jenis Kelamin</label>
+                        <select name="jenis_kelamin" id="jenis_kelamin" required 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors appearance-none bg-white">
+                            <option value="L">Laki-laki</option>
+                            <option value="P">Perempuan</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="no_hp" class="block text-sm font-medium text-gray-700 mb-1">No HP</label>
+                        <input type="text" name="no_hp" id="no_hp" required 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                    </div>
+
+                    <div>
+                        <label for="pwd" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <input type="password" name="pwd" id="pwd" required 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                    </div>
+
+                    <div>
+                        <label for="tgl_lahir" class="block text-sm font-medium text-gray-700 mb-1">Tanggal Lahir</label>
+                        <input type="date" name="tgl_lahir" id="tgl_lahir" required 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label for="nama_bank" class="block text-sm font-medium text-gray-700 mb-1">Nama Bank</label>
+                        <input type="text" name="nama_bank" id="nama_bank" required 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                    </div>
+
+                    <div>
+                        <label for="nomor_rekening" class="block text-sm font-medium text-gray-700 mb-1">Nomor Rekening</label>
+                        <input type="text" name="nomor_rekening" id="nomor_rekening" required 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                    </div>
+
+                    <div>
+                        <label for="npwp" class="block text-sm font-medium text-gray-700 mb-1">NPWP</label>
+                        <input type="text" name="npwp" id="npwp" required 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                    </div>
+
+                    <div>
+                        <label for="link_foto" class="block text-sm font-medium text-gray-700 mb-1">Link Foto</label>
+                        <input type="url" name="link_foto" id="link_foto" required 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                    </div>
+
+                    <div>
+                        <label for="alamat" class="block text-sm font-medium text-gray-700 mb-1">Alamat</label>
+                        <textarea name="alamat" id="alamat" required 
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"></textarea>
+                    </div>
+                </div>
+
+                <div class="col-span-2 flex justify-end space-x-4 mt-6">
+                    <button type="button" onclick="closeModal('pekerjaModal')"
+                            class="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                            class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
+                        Register
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function openModal(modalId) {
+    document.getElementById(modalId).classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+window.onclick = function(event) {
+    if (event.target.classList.contains('fixed')) {
+        event.target.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+}
+</script>
+{% endblock content %}
