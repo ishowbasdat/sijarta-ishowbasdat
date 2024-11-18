@@ -8,7 +8,7 @@
 {% block content %}
 {% include 'navbar.html' %}
 
-<div class="min-h-screen flex flex-col items-center w-full bg-blue-100 px-4 py-12 pt-32">
+<div class="min-h-screen flex flex-col items-center w-full bg-gray-50 px-4 py-12 pt-32 plus-jakarta-sans-normal">
     <div class="max-w-4xl w-full bg-white p-8 rounded-xl shadow-lg">
         <div class="mb-6">
             <h2 class="text-2xl font-bold text-gray-900">Profile</h2>
@@ -23,7 +23,7 @@
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-32 text-sm">Level:</label>
-                    <span class="font-medium text-sm">{{ request.session.user.level }}</span>
+                    <span class="font-medium text-sm">Basic</span>
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-32 text-sm">Jenis Kelamin:</label>
@@ -39,7 +39,7 @@
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-32 text-sm">Tanggal Lahir:</label>
-                    <span class="font-medium text-sm">{{ request.session.user.tgl_lahir }}</span>
+                    <span class="font-medium text-sm">27-02-2005</span>
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-32 text-sm">Alamat:</label>
@@ -47,7 +47,7 @@
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-32 text-sm">Saldo MyPay:</label>
-                    <span class="font-medium text-sm">Rp {{ request.session.user.saldo_mypay }}</span>
+                    <span class="font-medium text-sm">Rp {{ request.session.user.saldo_mypay|floatformat:2 }}</span>
                 </div>
                 <div class="pt-4">
                     <button onclick="submitUpdatePelanggan()" 
@@ -60,8 +60,8 @@
             <div class="space-y-3">
                 <div class="flex items-center">
                     <label class="text-gray-600 w-28 text-sm">Nama:</label>
-                    <input type="text" name="nama" value="{{ request.session.user.nama }}"
-                           class="flex-1 rounded border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                    <input type="text" name="nama" value=""
+                           class="flex-1 rounded border border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-28 text-sm">Jenis Kelamin:</label>
@@ -82,18 +82,18 @@
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-28 text-sm">No HP:</label>
-                    <input type="text" name="no_hp" value="{{ request.session.user.no_hp }}"
-                           class="flex-1 rounded border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                    <input type="text" name="no_hp" value=""
+                           class="flex-1 rounded border border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-28 text-sm">Tanggal Lahir:</label>
-                    <input type="date" name="tgl_lahir" value="{{ request.session.user.tgl_lahir|date:'Y-m-d' }}"
-                           class="flex-1 rounded border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                    <input type="date" name="tgl_lahir" value=""
+                           class="flex-1 rounded border border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-28 text-sm">Alamat:</label>
-                    <input type="text" name="alamat" value="{{ request.session.user.alamat }}"
-                           class="flex-1 rounded border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                    <input type="text" name="alamat" value=""
+                           class="flex-1 rounded border border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
                 </div>
                 <div class="pt-4">
                     <button type="submit"
@@ -137,7 +137,7 @@
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-40 text-sm">Tanggal Lahir:</label>
-                    <span class="font-medium text-sm">{{ request.session.user.tgl_lahir }}</span>
+                    <span class="font-medium text-sm">15-12-1990</span>
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-40 text-sm">Alamat:</label>
@@ -145,7 +145,7 @@
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-40 text-sm">Saldo MyPay:</label>
-                    <span class="font-medium text-sm">Rp {{ request.session.user.saldo_mypay }}</span>
+                    <span class="font-medium text-sm">Rp {{ request.session.user.saldo_mypay|floatformat:2 }}</span>
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-40 text-sm">Nama Bank:</label>
@@ -170,8 +170,8 @@
                 <div class="mb-4">
                     <div class="text-gray-600 text-sm">Kategori Pekerjaan:</div>
                     <div class="ml-4 text-sm">
-                        <div>1. Kategori Jasa 1</div>
-                        <div>2. Kategori Jasa 2</div>
+                        <div>1. Home Cleaning</div>
+                        <div>2. Deep Cleaning</div>
                     </div>
                 </div>
                 <div class="pt-4">
@@ -185,8 +185,8 @@
             <div class="space-y-3">
                 <div class="flex items-center">
                     <label class="text-gray-600 w-28 text-sm">Nama:</label>
-                    <input type="text" name="nama" value="{{ request.session.user.nama }}"
-                           class="flex-1 rounded border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                    <input type="text" name="nama" value=""
+                           class="flex-1 rounded border border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-28 text-sm">Jenis Kelamin:</label>
@@ -207,38 +207,38 @@
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-28 text-sm">No HP:</label>
-                    <input type="text" name="no_hp" value="{{ request.session.user.no_hp }}"
-                           class="flex-1 rounded border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                    <input type="text" name="no_hp" value=""
+                           class="flex-1 rounded border border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-28 text-sm">Tanggal Lahir:</label>
-                    <input type="date" name="tgl_lahir" value="{{ request.session.user.tgl_lahir|date:'Y-m-d' }}"
-                           class="flex-1 rounded border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                    <input type="date" name="tgl_lahir" value=""
+                           class="flex-1 rounded border border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-28 text-sm">Alamat:</label>
-                    <input type="text" name="alamat" value="{{ request.session.user.alamat }}"
-                           class="flex-1 rounded border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                    <input type="text" name="alamat" value=""
+                           class="flex-1 rounded border border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-28 text-sm">Nama Bank:</label>
-                    <input type="text" name="nama_bank" value="{{ request.session.user.nama_bank }}"
-                           class="flex-1 rounded border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                    <input type="text" name="nama_bank" value=""
+                           class="flex-1 rounded border border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-28 text-sm">No Rekening:</label>
-                    <input type="text" name="nomor_rekening" value="{{ request.session.user.nomor_rekening }}"
-                           class="flex-1 rounded border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                    <input type="text" name="nomor_rekening" value=""
+                           class="flex-1 rounded border border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-28 text-sm">NPWP:</label>
-                    <input type="text" name="npwp" value="{{ request.session.user.npwp }}"
-                           class="flex-1 rounded border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                    <input type="text" name="npwp" value=""
+                           class="flex-1 rounded border border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-28 text-sm">URL Foto:</label>
-                    <input type="url" name="link_foto" value="{{ request.session.user.link_foto }}"
-                           class="flex-1 rounded border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                    <input type="url" name="link_foto" value=""
+                           class="flex-1 rounded border border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
                 </div>
                 <div class="pt-4">
                     <button type="submit"
