@@ -49,7 +49,7 @@ def subkategori(request, id):
         'tgl_lahir': '2005-01-01',
         'alamat': 'Jalan Haji Kukusan',
         'saldo_mypay': 200000.00,
-        'role': 'PENGGUNA'
+        'role': 'PEKERJA'
     }
     
     if request.session['user'] is None:
@@ -102,7 +102,7 @@ def validate_discount(request):
                        WHERE d.kode = %s AND
                        d.potongan >= 0 AND
                        d.min_tr_pemesanan <= %s AND
-                       (v.kuota_penggunaan IS NULL OR v.kuota_penggunaan > 0) AND
+                       (v.kuota_PELANGGANan IS NULL OR v.kuota_PELANGGANan > 0) AND
                        (v.jml_hari_berlaku IS NULL OR v.jml_hari_berlaku > 0) AND
                        (p.tgl_akhir_berlaku IS NULL OR p.tgl_akhir_berlaku >= CURRENT_DATE)
                        """, [kode, transaksi])
@@ -115,7 +115,7 @@ def validate_discount(request):
 
 @require_http_methods(["POST"])
 def create_order(request):
-    if request.session['user']['role'] != 'PENGGUNA':
+    if request.session['user']['role'] != 'PELANGGAN':
         return HttpResponseBadRequest()
     # TODO: implement this function with raw query
     json.loads(request.body)
@@ -134,10 +134,10 @@ def pesanan(request):
         'tgl_lahir': '2005-01-01',
         'alamat': 'Jalan Haji Kukusan',
         'saldo_mypay': 200000.00,
-        'role': 'PENGGUNA'
+        'role': 'PELANGGAN'
     }
     
-    if request.session['user']['role'] != 'PENGGUNA':
+    if request.session['user']['role'] != 'PELANGGAN':
         return HttpResponseBadRequest()
 
     with connection.cursor() as cursor:

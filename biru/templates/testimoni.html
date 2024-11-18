@@ -2,7 +2,7 @@
     <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4 relative transform transition-all">
         <h2 class="text-xl font-bold mb-6 font-plus-jakarta text-center">Berikan Testimoni Anda!</h2>
         
-        <form id="testimonialForm" onsubmit="handleSubmit(event)" class="space-y-6">
+        <form id="testimonialForm" onsubmit="handleSubmitTesti(event)" class="space-y-6">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2 text-center">Rating</label>
                 <div class="star-rating mb-2">
@@ -76,6 +76,7 @@
 </style>
 
 <script>
+
     function openTesti() {
         document.getElementById('testimonialModal').classList.remove('hidden');
         document.body.style.overflow = 'hidden';
@@ -86,16 +87,27 @@
         document.body.style.overflow = 'auto';
     }
 
-    function handleSubmit(event) {
+    function handleSubmitTesti(event) {
         event.preventDefault();
         
         const formData = new FormData(event.target);
         const rating = parseInt(formData.get('rating'));
         const komentar = formData.get('komentar');
+        let testimonials = JSON.parse(localStorage.getItem('testimonials') || '[]');
+
+        testimonials.push({
+            rating: rating,
+            comment: komentar,
+            timestamp: new Date().toISOString(),
+            author: 'Christian Raphael Heryanto'
+        });
         
+        localStorage.setItem('testimonials', JSON.stringify(testimonials));
         showSuccessMessage();
         closeModal();
         event.target.reset();
+
+        window.dispatchEvent(new Event('testimonialsUpdated'));
     }
 
     function showSuccessMessage() {
