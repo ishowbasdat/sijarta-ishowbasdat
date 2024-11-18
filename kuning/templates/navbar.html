@@ -52,7 +52,7 @@
                         {{ request.session.user.nama }} 
                     </span>
                     {% if request.session.user.role == 'PELANGGAN' %}
-                    (Pelanggan)
+                    (Pengguna)
                     {% elif request.session.user.role == 'PEKERJA' %}
                     (Pekerja)
                     {% endif %}

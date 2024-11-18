@@ -40,6 +40,19 @@ def login(request):
             
             if user and pwd == user.get('pwd'):
                 request.session['user'] = user
+                if user.get('role') == 'PEKERJA':
+                    cursor.execute("""
+                                   SELECT * FROM SIJARTA.PEKERJA WHERE id = %s
+                                   """, [user.get('id')])
+                    row = cursor.fetchone()
+                    pekerja = dict(zip([column[0] for column in cursor.description], row))
+                    request.session['user']['nama_bank'] = pekerja.get('nama_bank')
+                    request.session['user']['nomor_rekening'] = pekerja.get('nomor_rekening')
+                    request.session['user']['npwp'] = pekerja.get('npwp')
+                    request.session['user']['link_foto'] = pekerja.get('link_foto')
+                    request.session['user']['rating'] = pekerja.get('rating')
+                    request.session['user']['jml_pesanan_selesai'] = pekerja.get('jml_pesanan_selesai')
+                    
                 request.session.save()
                 print(request.session['user'].get('role'))
                 return redirect('kuning:landing')
