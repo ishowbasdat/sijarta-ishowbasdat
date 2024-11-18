@@ -1,0 +1,193 @@
+<div id="orderServiceModal" class="fixed inset-0 z-50 hidden">
+
+    <div class="fixed inset-0 bg-black bg-opacity-50" onclick="closeOrderModal()"></div>
+    
+    <div class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-lg w-full max-w-md mx-4">
+        <div class="flex justify-between items-center p-4 border-b">
+            <h2 class="text-xl font-semibold">Pesan Jasa</h2>
+            <button onclick="closeOrderModal()" class="text-gray-500 hover:text-gray-700 focus:outline-none">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+
+        <form id="orderServiceForm" class="p-4" onsubmit="handleOrderSubmit(event)">
+            {% csrf_token %}
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Tanggal Pemesanan</label>
+                    <input 
+                        type="date" 
+                        id="orderDate" 
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-600"
+                    >
+                </div>
+
+                <div>
+                    <label for="discountCode" class="block text-sm font-medium text-gray-700">Diskon</label>
+                    <div class="mt-1 flex">
+                        <input 
+                            type="text" 
+                            id="discountCode" 
+                            name="discountCode"
+                            class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                            placeholder="Masukkan kode diskon"
+                        >
+                        <button 
+                            type="button"
+                            onclick="checkDiscount()"
+                            class="ml-2 px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        >
+                            Cek
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Total Pembayaran</label>
+                    <input 
+                        type="text" 
+                        id="totalPayment" 
+                        class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm text-gray-600" 
+                        readonly
+                    >
+                </div>
+
+                <div>
+                    <label for="paymentMethod" class="block text-sm font-medium text-gray-700">Metode Pembayaran</label>
+                    <select 
+                        id="paymentMethod" 
+                        name="paymentMethod"
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                    >
+                    </select>
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <button 
+                    type="submit" 
+                    class="w-full px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                    Pesan Jasa
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+
+    let basePrice = 0;
+    let discountAmount = 0;
+
+    function showOrderModal(price) {
+        basePrice = price;
+
+        fetch('{% url 'hijau:get_metode_pembayaran' %}')
+            .then(response => response.json())
+            .then(data => {
+                const paymentMethodSelect = document.getElementById('paymentMethod');
+                paymentMethodSelect.innerHTML = '<option value="">Pilih metode pembayaran</option>';
+                data.forEach(method => {
+                    const option = document.createElement('option');
+                    option.value = method.id;
+                    option.innerText = method.nama;
+                    paymentMethodSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching payment methods:', error));
+    
+        // Set initial total payment
+        document.getElementById('totalPayment').value = formatCurrency(basePrice);
+    
+        // Show modal
+        document.getElementById('orderServiceModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }    
+
+    function closeOrderModal() {
+        document.getElementById('orderServiceModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+        
+        // Reset form
+        document.getElementById('orderServiceForm').reset();
+        discountAmount = 0;
+    }
+
+    function checkDiscount() {
+        const discountCode = document.getElementById('discountCode').value;
+        
+        // Make API call to check discount
+        fetch('{% url 'hijau:validate_discount' %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({ kode: discountCode, transaksi: basePrice})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.valid) {
+                discountAmount = data.potongan;
+                updateTotalPayment();
+                alert('Kode diskon berhasil diterapkan!');
+            } else {
+                alert('Kode diskon tidak valid');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Terjadi kesalahan saat memeriksa kode diskon');
+        });
+    }
+
+    function updateTotalPayment() {
+        const total = basePrice - discountAmount;
+        document.getElementById('totalPayment').value = formatCurrency(total);
+    }
+
+    function formatCurrency(amount) {
+        return new Intl.NumberFormat('id-ID', { 
+            style: 'currency', 
+            currency: 'IDR' 
+        }).format(amount);
+    }
+
+    function handleOrderSubmit(event) {
+        event.preventDefault();
+        
+        const formData = {
+            orderDate: document.getElementById('orderDate').value,
+            discountCode: document.getElementById('discountCode').value,
+            totalPayment: document.getElementById('totalPayment').value,
+            paymentMethod: document.getElementById('paymentMethod').value
+        };
+
+        // Make API call to create order
+        fetch('{% url 'hijau:create_order' %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Redirect to order view page
+                window.location.href = '{% url 'hijau:pesanan' %}';
+            } else {
+                alert(data.message || 'Terjadi kesalahan saat membuat pesanan');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Terjadi kesalahan saat membuat pesanan');
+        });
+    }
+</script>
