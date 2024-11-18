@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block meta %}
+<title>SIJARTA - Pesanan</title>
+{% endblock meta %}
+
+{% block content %}
+{% include 'navbar.html' %}
+<div class="pt-28 min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+        <div class="flex flex-row justify-between items-center">
+            <div class="w-full bg-white rounded-lg shadow-sm p-6 mb-8">
+                <form method="get" action="{% url 'hijau:pesanan' %}" class="space-y-4 md:space-y-0 md:flex md:items-end md:space-x-4">
+                    <div class="flex-1">
+                        <label for="subcategory" class="block text-sm font-medium text-gray-700 mb-1">
+                            Subcategory
+                        </label>
+                        <select 
+                            name="subcategory" 
+                            id="subcategory" 
+                            class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md"
+                        >
+                            <option value="">All Subcategories</option>
+                            {% for subcategory in subcategories %}
+                                <option value="{{ subcategory.nama_subkategori }}" 
+                                    {% if request.GET.subcategory == subcategory.nama_subkategori|stringformat:"s" %}selected{% endif %}
+                                >
+                                    {{ subcategory.nama_subkategori }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+        
+                    <div class="flex-1">
+                        <label for="status" class="block text-sm font-medium text-gray-700 mb-1">
+                            Status
+                        </label>
+                        <select
+                        name="status"
+                        id="status"
+                        class="flex-1 mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md"
+                        >
+                            <option value="">All Status</option>
+                            {% for status in status %}
+                                <option value="{{ status.status }}" 
+                                    {% if request.GET.status == status.status|stringformat:"s" %}selected{% endif %}
+                                >
+                                    {{ status.status }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+        
+                    <!-- Submit Button -->
+                    <div class="md:flex-none">
+                        <button type="submit" class="w-full md:w-auto px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Apply Filters
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- Pesanan -->
+        <div class="top-0 py-4 font-medium text-gray-700 shadow-sm">
+            Pesanan
+        </div>
+        <div class="bg-white rounded overflow-y-auto h-[calc(100vh-24rem)]">
+            {% for datum in data %}
+            <div class="p-4 border-b border-gray-200 flex flex-row justify-between items-center">
+                <div> 
+                    <span class="font-bold text-md text-gray-700">{{datum.nama_subkategori}} - Sesi {{datum.sesi}}</span>
+                    <br/>
+                    <span class="flex items-center"> <p>Rp {{datum.harga}} | {{datum.nama}}</p> </span>
+                    <div class="w-fit rounded-full px-2 p-1 mt-2 text-xs border border-gray-200">{{datum.status}}</div>
+                </div>
+                {% if datum.status == "Menunggu Pembayaran" or datum.status == "Mencari Pekerja Terdekat"%}
+                <button type="submit" class="w-full md:w-auto px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                    Batalkan
+                </button>
+                {% elif datum.status == "Pesanan Selesai"%}
+                <button type="submit" class="w-full md:w-auto px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Buat Testimoni
+                </button>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

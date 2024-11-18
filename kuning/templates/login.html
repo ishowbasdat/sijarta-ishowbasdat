@@ -1,9 +1,75 @@
-{% extends 'base.html' %} {% load static %}
+{% extends 'base.html' %} 
+{% load static %}
+
 {% block meta %}
 <title>Login | SIJARTA</title>
 {% endblock meta %}
 
 {% block content %}
 {% include 'navbar.html' %}
-LOGIN PAGE
+<div class="min-h-screen flex flex-col items-center justify-center w-full bg-blue-100 px-4 py-12">
+    <div class="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg">
+        <div class="text-center plus-jakarta-sans-bold mb-8">
+            <h2 class="text-3xl font-bold text-gray-900">Login to SIJARTA</h2>
+            <p class="mt-2 text-gray-600">Masukkan credential Anda!</p>
+        </div>
+
+        <form class="mt-8 space-y-6" method="POST" action="{% url 'kuning:login' %}">
+            {% csrf_token %}
+            <div class="rounded-md shadow-sm space-y-4">
+                <div>
+                    <label for="no_hp" class="sr-only">No Hp</label>
+                    <input id="no_hp" name="no_hp" type="text" required 
+                           class="appearance-none rounded-md relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" 
+                           placeholder="No Hp">
+                </div>
+                <div>
+                    <label for="pwd" class="sr-only">Password</label>
+                    <input id="pwd" name="pwd" type="password" required 
+                           class="appearance-none rounded-md relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" 
+                           placeholder="Password">
+                </div>
+            </div>
+
+            <div>
+                <button type="submit" 
+                        class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-400 hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
+                    Login
+                </button>
+            </div>
+        </form>
+
+        <div class="text-center mt-4">
+            <p class="text-sm text-gray-600 plus-jakarta-sans-normal">
+                Belum punya akun?
+                <a href="{% url 'kuning:register' %}" class="font-medium text-blue-400 hover:text-blue-500">
+                    Daftar disini
+                </a>
+            </p>
+        </div>
+
+        {% if messages %}
+        <div class="mt-4 space-y-2 plus-jakarta-sans-bold">
+        {% for message in messages %}
+            {% if message.tags == "success" %}
+                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-r" role="alert">
+                    <p class="font-bold">Success</p>
+                    <p>{{ message }}</p>
+                </div>
+            {% elif message.tags == "error" %}
+                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-r" role="alert">
+                    <p class="font-bold">Error</p>
+                    <p>{{ message }}</p>
+                </div>
+            {% else %}
+                <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded-r" role="alert">
+                    <p class="font-bold">Info</p>
+                    <p>{{ message }}</p>
+                </div>
+            {% endif %}
+        {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>
 {% endblock content %}

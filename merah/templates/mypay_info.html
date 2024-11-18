@@ -1,0 +1,58 @@
+<!-- mypay.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+{% include 'navbar.html' %}
+<div class="min-h-screen flex flex-col items-center bg-blue-100 px-4 py-12 mt-9">
+    <div class="max-w-5xl w-full bg-white p-8 rounded-xl shadow-lg">
+        <!-- Title -->
+        <h2 class="text-3xl font-semibold text-gray-900 mb-6">MyPay</h2>
+
+        <div class="bg-gray-50 shadow-md rounded-lg p-6 mb-8">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold text-gray-800">Your MyPay Balance</h3>
+                <span class="text-gray-600 font-mono">0812-3456-7890</span>
+            </div>
+            <div class="flex items-center justify-between">
+                <p class="text-4xl font-extrabold text-gray-900">Rp 1,500,000</p> <a href="{% url 'merah:mypay_transaction' %}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Make a Transaction
+                </a>
+            </div>
+        </div>
+
+        <!-- MyPay Transaction History -->
+        <div class="mb-8">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">Transaction History</h3>
+            <div class="overflow-x-auto relative">
+                <table class="w-full text-sm text-left text-gray-500 dark-mode:text-gray-400">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-100 dark-mode:bg-gray-700 dark-mode:text-gray-400">
+                        <tr>
+                            <th scope="col" class="py-3 px-6">Amount</th>
+                            <th scope="col" class="py-3 px-6">Date</th>
+                            <th scope="col" class="py-3 px-6">Category</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b hover:bg-gray-100">
+                            <td class="py-4 px-6">+Rp 500,000</td>
+                            <td class="py-4 px-6">2024-11-01</td>
+                            <td class="py-4 px-6">TopUp</td>
+                        </tr>
+                        <tr class="border-b hover:bg-gray-100">
+                            <td class="py-4 px-6">+Rp 200,000</td>
+                            <td class="py-4 px-6">2024-11-03</td>
+                            <td class="py-4 px-6">Transfer</td>
+                        </tr>
+                        <tr class="border-b hover:bg-gray-100">
+                            <td class="py-4 px-6">-Rp 100,000</td>
+                            <td class="py-4 px-6">2024-11-05</td>
+                            <td class="py-4 px-6">TopUp</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

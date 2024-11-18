@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% include 'navbar.html' %}
+<div class="min-h-screen flex flex-col items-center bg-blue-100 px-4 py-12 mt-9">
+    <div class="max-w-5xl w-full bg-white p-8 rounded-xl shadow-lg">
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-bold text-gray-900">Job Status</h2>
+            <p class="text-gray-600 mt-2">Monitor and manage your job status easily.</p>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="bg-gray-50 p-6 rounded-lg shadow-sm mb-6">
+            <label for="status-pekerjaan" class="block text-lg font-medium text-gray-700 mb-2">Filter</label>
+            <div class="flex items-center space-x-4">
+                <select id="status-pekerjaan" class="w-full py-3 px-4 border border-gray-300 rounded-md focus:ring-blue-400 focus:border-blue-400 text-gray-900">
+                    <option value="">Pilih Status</option>
+                    <option value="Menunggu Pekerja Berangkat">Menunggu Pekerja Berangkat</option>
+                    <option value="Pekerja Tiba Di Lokasi">Pekerja Tiba Di Lokasi</option>
+                    <option value="Pelayanan Jasa Sedang Dilakukan">Pelayanan Jasa Sedang Dilakukan</option>
+                    <option value="Pesanan Selesai">Pesanan Selesai</option>
+                </select>
+                <select id="kategori" class="w-full py-3 px-4 border border-gray-300 rounded-md focus:ring-blue-400 focus:border-blue-400 text-gray-900">
+                    <option value="">Pilih Kategori</option>
+                    <option value="home-cleaning">Home Cleaning</option>
+                    <option value="plumbing">Plumbing</option>
+                    <option value="electrician">Electrician</option>
+                </select>
+                <button onclick="applySearchFilter()" class="py-3 px-6 bg-blue-400 text-white font-medium rounded-md hover:bg-blue-500 transition duration-200">
+                    Cari
+                </button>
+            </div>
+        </div>
+
+        <div id="status-pekerjaan-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Job cards will be dynamically inserted here -->
+        </div>
+    </div>
+</div>
+
+<script>
+    const allPesanan = [
+        { id: 1, nama: "Pembersihan Rumah", pelanggan: "John Doe", kategori: "home-cleaning", subkategori: "Cleaning Rumah", tanggal_pemesanan: "2024-10-01", tanggal_pekerjaan: "2024-10-05", total_biaya: 200000},
+        { id: 2, nama: "Pembersihan Kantor", pelanggan: "Jane Smith", kategori: "home-cleaning", subkategori: "Pembersihan Kantor", tanggal_pemesanan: "2024-10-02", tanggal_pekerjaan: "2024-10-06", total_biaya: 250000 },
+        { id: 3, nama: "Perbaikan Pipa", pelanggan: "Emily Johnson", kategori: "plumbing", subkategori: "Perbaikan Pipa", tanggal_pemesanan: "2024-10-03", tanggal_pekerjaan: "2024-10-07", total_biaya: 300000 },
+        { id: 4, nama: "Instalasi Pipa", pelanggan: "Michael Brown", kategori: "plumbing", subkategori: "Instalasi Pipa", tanggal_pemesanan: "2024-10-04", tanggal_pekerjaan: "2024-10-08", total_biaya: 350000 },
+        { id: 5, nama: "Perbaikan Listrik", pelanggan: "Chris Wilson", kategori: "electrician", subkategori: "Perbaikan Listrik", tanggal_pemesanan: "2024-10-05", tanggal_pekerjaan: "2024-10-09", total_biaya: 400000 },
+        { id: 6, nama: "Instalasi Listrik", pelanggan: "Jessica Davis", kategori: "electrician", subkategori: "Instalasi Listrik", tanggal_pemesanan: "2024-10-06", tanggal_pekerjaan: "2024-10-10", total_biaya: 450000 },
+        { id: 7, nama: "Pembersihan Rumah", pelanggan: "Sophia Martinez", kategori: "home-cleaning", subkategori: "Cleaning Rumah", tanggal_pemesanan: "2024-10-07", tanggal_pekerjaan: "2024-10-11", total_biaya: 220000 },
+        { id: 8, nama: "Perbaikan Pipa di Dapur", pelanggan: "Daniel Hernandez", kategori: "plumbing", subkategori: "Perbaikan Pipa", tanggal_pemesanan: "2024-10-08", tanggal_pekerjaan: "2024-10-12", total_biaya: 270000 },
+        { id: 9, nama: "Instalasi Lampu", pelanggan: "Elizabeth Garcia", kategori: "electrician", subkategori: "Instalasi Listrik", tanggal_pemesanan: "2024-10-09", tanggal_pekerjaan: "2024-10-13", total_biaya: 500000 },
+        { id: 10, nama: "Pembersihan Kantor Baru", pelanggan: "Matthew Anderson", kategori: "home-cleaning", subkategori: "Pembersihan Kantor", tanggal_pemesanan: "2024-10-10", tanggal_pekerjaan: "2024-10-14", total_biaya: 230000 }
+    ];
+
+    const statusSequence = {
+        "Menunggu Pekerja Berangkat": { nextStatus: "Pekerja Tiba Di Lokasi", buttonText: "Ubah Status" },
+        "Pekerja Tiba Di Lokasi": { nextStatus: "Pelayanan Jasa Sedang Dilakukan", buttonText: "Ubah Status" },
+        "Pelayanan Jasa Sedang Dilakukan": { nextStatus: "Pesanan Selesai", buttonText: "Ubah Status" }
+    };
+
+    // Inisialisasi pekerjaanStatus dari allPesanan
+    let pekerjaanStatus = allPesanan.map(p => ({ ...p, status: "Menunggu Pekerja Berangkat" })); // Default status
+
+    // Tetap gunakan fungsi yang sudah ada:
+    function applySearchFilter() {
+        const status = document.getElementById("status-pekerjaan").value;
+        const kategori = document.getElementById("kategori").value;
+        const pekerjaanContainer = document.getElementById("status-pekerjaan-list");
+        pekerjaanContainer.innerHTML = ""; // Bersihkan elemen
+
+        // Filter data berdasarkan status dan kategori
+        const filteredPekerjaan = pekerjaanStatus.filter(pekerjaan =>
+            (status === "" || pekerjaan.status === status) &&
+            (kategori === "" || pekerjaan.kategori === kategori)
+        );
+
+        filteredPekerjaan.forEach(pekerjaan => {
+            const card = document.createElement("div");
+            card.classList.add(
+                "bg-white",
+                "p-6",
+                "rounded-lg",
+                "shadow-md",
+                "border",
+                "border-gray-200",
+                "hover:shadow-lg",
+                "transition",
+                "duration-200"
+            );
+
+            card.innerHTML = `
+                <div class="flex flex-col items-center space-x-4 space-y-5">
+                    <div class="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                        <span class="text-blue-500 text-2xl font-bold">${pekerjaan.nama.charAt(0)}</span>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900">${pekerjaan.subkategori}</h3>
+                        <p class="text-gray-600 text-sm">Customer: ${pekerjaan.pelanggan}</p>
+                        <p class="text-gray-600 text-sm">Order Date: ${pekerjaan.tanggal_pemesanan}</p>
+                        <p class="text-gray-600 text-sm">Job Date: ${pekerjaan.tanggal_pekerjaan}</p>
+                        <p class="text-gray-600 text-sm">Total: Rp ${pekerjaan.total_biaya.toLocaleString()}</p>
+                    </div>
+                    <div class="mt-4">
+                    <span class="inline-block px-3 py-1 rounded-full text-sm font-medium text-blue-500 bg-blue-100">${pekerjaan.status}</span>
+                    </div>
+                    ${generateActionButton(pekerjaan)}
+                </div>
+            `;
+            pekerjaanContainer.appendChild(card);
+        });
+    }
+
+    function generateActionButton(pekerjaan) {
+        const currentStatus = pekerjaan.status;
+        if (currentStatus in statusSequence) {
+            const { nextStatus, buttonText } = statusSequence[currentStatus];
+            return `
+                <button 
+                    onclick="updateStatus(${pekerjaan.id}, '${nextStatus}')" 
+                    class="py-2 px-4 bg-green-400 text-white rounded-lg hover:bg-green-500 transition duration-200">
+                    ${buttonText}
+                </button>
+            `;
+        }
+        return `<span class="text-gray-500 italic">Selesai</span>`;
+    }
+
+    function updateStatus(id, newStatus) {
+        const pekerjaan = pekerjaanStatus.find(item => item.id === id);
+        if (pekerjaan) {
+            pekerjaan.status = newStatus;
+        }
+        applySearchFilter();
+    }
+
+    // Render awal
+    applySearchFilter();
+</script>
+{% endblock %}
+
