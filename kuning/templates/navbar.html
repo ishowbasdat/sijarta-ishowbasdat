@@ -1,0 +1,68 @@
+{% load static %}
+<nav class="fixed shadow-lg top-0 left-0 z-50 w-screen bg-white">
+    <div class="max-w-8xl ms-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+            <div class="flex items-center">
+                <p class="plus-jakarta-sans-bold text-xl">SIJARTA</p>
+            </div>
+            
+            <div class="md:flex items-center hidden">
+                {% if not request.session.user %}
+                <a href="{% url 'kuning:login' %}" class="text-center text-lg text-[#1f1c61] plus-jakarta-sans-bold px-3 py-2 mr-2">
+                    Login
+                </a>
+
+                <a href="{% url 'kuning:register' %}" class="text-center text-lg text-[#1f1c61] plus-jakarta-sans-bold px-3 py-2 mr-2">
+                    Register
+                </a>
+                {% elif request.session.user %}
+                <a href="#" class="text-center text-lg text-[#1f1c61] plus-jakarta-sans-bold px-3 py-2 mr-2">
+                    Homepage
+                </a>
+
+                <a href="#" class="text-center text-lg text-[#1f1c61] plus-jakarta-sans-bold px-3 py-2 mr-2">
+                    MyPay
+                </a>
+
+                {% if request.session.user.role == 'PELANGGAN' %}
+                <a href="#" class="text-center text-lg text-[#1f1c61] plus-jakarta-sans-bold px-3 py-2 mr-2">
+                    Kelola Pesanan
+                </a>
+
+                <a href="#" class="text-center text-lg text-[#1f1c61] plus-jakarta-sans-bold px-3 py-2 mr-2">
+                    Diskon
+                </a>
+                {% elif request.session.user.role == 'PEKERJA' %}
+                <a href="#" class="text-center text-lg text-[#1f1c61] plus-jakarta-sans-bold px-3 py-2 mr-2">
+                    Kelola Pekerjaan
+                </a>
+                
+                <a href="#" class="text-center text-lg text-[#1f1c61] plus-jakarta-sans-bold px-3 py-2 mr-2">
+                    Kelola Status Pekerjaan
+                </a>
+                {% endif %}
+
+                <a href="#" class="text-center text-lg text-[#1f1c61] plus-jakarta-sans-bold px-3 py-2 mr-2">
+                    Profile
+                </a>
+
+                <span class="block text-[#1f1c61] text-lg plus-jakarta-sans-bold px-3 py-2">
+                    Welcome, 
+                    <span class="text-[#5A71BC]">
+                        {{ request.session.user.nama }} 
+                    </span>
+                    {% if request.session.user.role == 'PELANGGAN' %}
+                    (Pelanggan)
+                    {% elif request.session.user.role == 'PEKERJA' %}
+                    (Pekerja)
+                    {% endif %}
+                </span>
+
+                <a href="{% url 'kuning:logout' %}" class="text-center text-lg text-red-600 hover:text-red-800 plus-jakarta-sans-bold px-3 py-2 mr-2">
+                    Logout
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>
