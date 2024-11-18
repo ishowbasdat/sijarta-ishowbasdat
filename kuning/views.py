@@ -79,6 +79,14 @@ def register(request):
         
         with connection.cursor() as cursor:
             cursor.execute("""
+                SELECT 1 FROM SIJARTA."USER" WHERE no_hp = %s
+            """, [no_hp])
+            
+            if cursor.fetchone():
+                messages.error(request, 'Nomor HP telah terdaftar')
+                return redirect('kuning:login')
+            
+            cursor.execute("""
                            INSERT INTO SIJARTA."USER" (id, nama, jenis_kelamin, no_hp, pwd, tgl_lahir, alamat)
                            VALUES (%s, %s, %s, %s, %s, %s, %s)
                            """, [id, nama, jenis_kelamin, no_hp, pwd, tgl_lahir, alamat])
