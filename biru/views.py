@@ -53,7 +53,7 @@ def buy_voucher(request):
     }, status=200)
 
 def button_testi(request):
-    return render(request, 'button_testi.html')
+    return render(request, 'pesanan.html')
 
 # @require_http_methods(["GET"])
 # def get_discounts(request):

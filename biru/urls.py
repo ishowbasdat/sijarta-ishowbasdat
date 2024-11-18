@@ -7,5 +7,5 @@ urlpatterns = [
     path('discount/', views.discount, name='discount'),
     path('api/discounts/', views.get_discounts, name='get_discounts'),
     path('api/buy-voucher/', views.buy_voucher, name='buy_voucher'),
-    path('tombol/', views.button_testi, name='button_testi')
+    path('submit-testimonial/', views.button_testi, name='submit_testimonial'),
 ]
