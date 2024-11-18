@@ -1,111 +1,97 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mx-auto mt-8">
-    <h2 class="text-2xl font-semibold">Transaksi MyPay</h2>
+{% include 'navbar.html' %}
+<div class="min-h-screen flex flex-col items-center bg-blue-100 px-4 py-12 mt-8">
+    <div class="max-w-5xl w-full bg-white p-8 rounded-xl shadow-lg">
+        <h2 class="text-2xl font-semibold mb-6">MyPay Transaction</h2>
 
-    <form method="POST">
-        {% csrf_token %}
-        
-        <!-- Dropdown untuk Pilihan Kategori Transaksi -->
-        <div class="mb-4">
-            <label for="kategori" class="block text-lg">Kategori Transaksi</label>
-            <select id="kategori" name="kategori" class="w-full p-2 border rounded">
-                <option value="topup">TopUp</option>
-                {% if user_type == 'pengguna' %}
-                <option value="pembayaran_jasa">Pembayaran Jasa</option>
-                {% endif %}
-                <option value="transfer">Transfer</option>
-                <option value="withdrawal">Withdrawal</option>
-            </select>
-        </div>
+        <form method="POST" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            {% csrf_token %}
 
-        <!-- State 1: TopUp MyPay -->
-        <div id="state-topup" class="mb-4 hidden">
-            <label for="nominal_topup" class="block text-lg">Nominal TopUp</label>
-            <input type="number" id="nominal_topup" name="nominal_topup" class="w-full p-2 border rounded" placeholder="Masukkan nominal" />
-        </div>
+            <div class="mb-4">
+                <label for="kategori" class="block text-gray-700 text-lg font-bold mb-2">Transaction Category</label>
+                <select id="kategori" name="kategori" class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="topup">TopUp</option>
+                    {% if request.session.user.role == 'PELANGGAN' %}
+                        <option value="pembayaran_jasa">Payment for Services</option>
+                    {% endif %}
+                    <option value="transfer">Transfer</option>
+                    <option value="withdrawal">Withdrawal</option>
+                </select>
+            </div>
 
-        <!-- State 2: Pembayaran Jasa (Only for Pengguna) -->
-        <div id="state-pembayaran-jasa" class="mb-4 hidden">
-            <label for="jasa" class="block text-lg">Jasa yang Dipesan</label>
-            <select id="jasa" name="jasa" class="w-full p-2 border rounded">
-                <option value="jasa1">Jasa 1</option>
-                <option value="jasa2">Jasa 2</option>
-                <option value="jasa3">Jasa 3</option>
-            </select>
+            <div id="transaction-details" class="mb-4">
+                <!-- Transaction Details will be dynamically loaded here -->
+            </div>
 
-            <label for="harga_jasa" class="block text-lg mt-4">Harga Jasa</label>
-            <input type="text" id="harga_jasa" name="harga_jasa" class="w-full p-2 border rounded" value="Harga Jasa" readonly />
-        </div>
-
-        <!-- State 3: Transfer MyPay -->
-        <div id="state-transfer" class="mb-4 hidden">
-            <label for="no_hp_tujuan" class="block text-lg">NoHP Tujuan</label>
-            <input type="text" id="no_hp_tujuan" name="no_hp_tujuan" class="w-full p-2 border rounded" placeholder="Masukkan NoHP tujuan" />
-            
-            <label for="nominal_transfer" class="block text-lg mt-4">Nominal Transfer</label>
-            <input type="number" id="nominal_transfer" name="nominal_transfer" class="w-full p-2 border rounded" placeholder="Masukkan nominal" />
-        </div>
-
-        <!-- State 4: Withdrawal -->
-        <div id="state-withdrawal" class="mb-4 hidden">
-            <label for="bank" class="block text-lg">Pilih Bank</label>
-            <select id="bank" name="bank" class="w-full p-2 border rounded">
-                <option value="bca">BCA</option>
-                <option value="bni">BNI</option>
-                <option value="mandiri">Mandiri</option>
-            </select>
-
-            <label for="rekening" class="block text-lg mt-4">Nomor Rekening</label>
-            <input type="text" id="rekening" name="rekening" class="w-full p-2 border rounded" placeholder="Masukkan nomor rekening" />
-
-            <label for="nominal_withdrawal" class="block text-lg mt-4">Nominal Withdrawal</label>
-            <input type="number" id="nominal_withdrawal" name="nominal_withdrawal" class="w-full p-2 border rounded" placeholder="Masukkan nominal" />
-        </div>
-
-        <!-- Submit Button -->
-        <button id="submitButton" type="submit" class="mt-4 px-6 py-2 bg-green-500 text-white rounded">Bayar</button>
-    </form>
+            <div class="flex justify-end">
+                <button id="submitButton" type="submit" class="px-6 py-2 bg-green-500 text-white rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-300">Pay</button>
+            </div>
+        </form>
+    </div>
 </div>
 
+
 <script>
-    // JavaScript untuk menangani perubahan tampilan berdasarkan kategori transaksi
     const kategoriSelect = document.getElementById('kategori');
+    const transactionDetails = document.getElementById('transaction-details');
     const submitButton = document.getElementById('submitButton');
-    const stateTopup = document.getElementById('state-topup');
-    const statePembayaranJasa = document.getElementById('state-pembayaran-jasa');
-    const stateTransfer = document.getElementById('state-transfer');
-    const stateWithdrawal = document.getElementById('state-withdrawal');
 
-    kategoriSelect.addEventListener('change', function() {
-        // Hide all states first
-        stateTopup.classList.add('hidden');
-        statePembayaranJasa.classList.add('hidden');
-        stateTransfer.classList.add('hidden');
-        stateWithdrawal.classList.add('hidden');
+    const transactionStates = {
+        topup: `
+            <div class="mb-4">
+                <label for="nominal_topup" class="block text-gray-700 text-lg font-bold mb-2">TopUp Amount</label>
+                <input type="number" id="nominal_topup" name="nominal_topup" class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter amount" />
+            </div>
+        `,
+        pembayaran_jasa: `
+            <div class="mb-4">
+                <label for="jasa" class="block text-gray-700 text-lg font-bold mb-2">Service</label>
+                <select id="jasa" name="jasa" class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="jasa1">Service 1</option>
+                    <option value="jasa2">Service 2</option>
+                    <option value="jasa3">Service 3</option>
+                </select>
 
-        // Update submit button text based on category selection
-        if (this.value === 'topup') {
-            stateTopup.classList.remove('hidden');
-            submitButton.textContent = 'Top Up';
-        } else {
-            submitButton.textContent = 'Bayar';
-        }
+                <label for="harga_jasa" class="block text-gray-700 text-lg font-bold mb-2 mt-4">Price</label>
+                <input type="text" id="harga_jasa" name="harga_jasa" class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" value="Price" readonly />
+            </div>
+        `,
+        transfer: `
+            <div class="mb-4">
+                <label for="no_hp_tujuan" class="block text-gray-700 text-lg font-bold mb-2">Recipient Phone Number</label>
+                <input type="text" id="no_hp_tujuan" name="no_hp_tujuan" class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter phone number" />
 
-        // Show the relevant state based on selected category
-        if (this.value === 'topup') {
-            stateTopup.classList.remove('hidden');
-        } else if (this.value === 'pembayaran_jasa') {
-            statePembayaranJasa.classList.remove('hidden');
-        } else if (this.value === 'transfer') {
-            stateTransfer.classList.remove('hidden');
-        } else if (this.value === 'withdrawal') {
-            stateWithdrawal.classList.remove('hidden');
-        }
+                <label for="nominal_transfer" class="block text-gray-700 text-lg font-bold mb-2 mt-4">Transfer Amount</label>
+                <input type="number" id="nominal_transfer" name="nominal_transfer" class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter amount" />
+            </div>
+        `,
+        withdrawal: `
+            <div class="mb-4">
+                <label for="bank" class="block text-gray-700 text-lg font-bold mb-2">Bank</label>
+                <select id="bank" name="bank" class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="bca">BCA</option>
+                    <option value="bni">BNI</option>
+                    <option value="mandiri">Mandiri</option>
+                </select>
+
+                <label for="rekening" class="block text-gray-700 text-lg font-bold mb-2 mt-4">Account Number</label>
+                <input type="text" id="rekening" name="rekening" class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter account number" />
+
+                <label for="nominal_withdrawal" class="block text-gray-700 text-lg font-bold mb-2 mt-4">Withdrawal Amount</label>
+                <input type="number" id="nominal_withdrawal" name="nominal_withdrawal" class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter amount" />
+            </div>
+        `
+    };
+
+    kategoriSelect.addEventListener('change', () => {
+        const selectedCategory = kategoriSelect.value;
+        transactionDetails.innerHTML = transactionStates[selectedCategory] || '';
+        submitButton.textContent = selectedCategory === 'topup' ? 'Top Up' : 'Pay';
     });
 
-    // Trigger change event to show the default state
+    // Trigger initial display
     kategoriSelect.dispatchEvent(new Event('change'));
 </script>
 
