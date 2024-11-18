@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<title>cm tombol doang :v</title>
+{% endblock meta %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center">
+    <button 
+        onclick="openTesti()" 
+        class="bg-black text-white px-6 py-2 rounded-lg">
+        kasih testi dong banh
+    </button>
+</div>
+
+<!-- TODO: paparkan rating dan komentar -->
+{% include 'testimoni.html' %}
+{% endblock content %}

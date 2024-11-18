@@ -1,0 +1,491 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<title>Diskon - ishowbasdat</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.css" />
+<style>
+    .bg-primary-blue {
+        background-color: #4475F2;
+    }
+    .text-primary-blue {
+        color: #4475F2;
+    }
+
+    .scrollable-container {
+        max-height: 400px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+    }
+
+    .scrollable-container::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .scrollable-container::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+    }
+    
+    .scrollable-container::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 3px;
+    }
+    
+    .scrollable-container::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+
+    .discount-card {
+        transform: translateY(0);
+        transition: all 0.3s ease;
+    }
+    
+    .discount-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .promo-wrapper {
+        position: relative;
+        overflow: hidden;
+        background-color: #DBEAFE;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+    }
+
+    .promo-slider {
+        width: 100%;
+        height: 100%;
+        position: relative;
+    }
+
+    .swiper-container {
+        overflow: hidden;
+        position: relative;
+        height: 220px;
+    }
+
+    .promo-slide {
+        background: white;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        height: 200px;
+    }
+
+    .promo-slide:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .swiper-pagination {
+        position: relative;
+        bottom: -10px;
+        margin-top: 1rem;
+    }
+
+    .swiper-pagination-bullet {
+        width: 8px;
+        height: 8px;
+        background: #CBD5E0;
+        opacity: 1;
+    }
+
+    .swiper-pagination-bullet-active {
+        background: #4475F2;
+    }
+
+    .swiper-button-next,
+    .swiper-button-prev {
+        color: #4475F2;
+        background: white;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .swiper-button-next::after,
+    .swiper-button-prev::after {
+        font-size: 16px;
+    }
+
+    @media (max-width: 768px) {
+        .scrollable-container {
+            max-height: 300px;
+        }
+        
+        .promo-slide {
+            height: 180px;
+        }
+
+        .swiper-button-next,
+        .swiper-button-prev {
+            display: none;
+        }
+        
+        .promo-wrapper {
+            padding: 1rem;
+        }
+
+        .swiper-container {
+            height: 200px;
+        }
+    }
+</style>
+{% endblock meta %}
+
+{% block content %}
+{% include 'navbar.html' %}
+
+<div class="container mx-auto px-4 py-8">
+    <h1 class="pt-20 text-2xl font-bold mb-6 text-center">DISKON</h1>
+
+    <div class="bg-white rounded-lg shadow p-4 mb-8">
+        <h2 class="text-xl font-semibold mb-2">saldo ente</h2>
+        <p class="text-2xl font-bold text-primary-blue" id="userBalance"></p>
+    </div>
+
+    <div class="mb-8">
+        <h2 class="text-xl font-semibold mb-4">Promo</h2>
+        <div class="promo-wrapper">
+            <div class="promo-slider">
+                <div class="swiper-container" id="promoSwiper">
+                    <div class="swiper-wrapper" id="promoContainer">
+                        <div class="swiper-slide">
+                            <div class="promo-slide">
+                                <div class="bg-gray-100 rounded-lg text-center h-full flex items-center justify-center">
+                                    Loading promos...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-button-prev bg-green-100"></div>
+                    <div class="swiper-button-next bg-green-100"></div>
+                </div>
+                <div class="swiper-pagination"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-8">
+        <h2 class="text-xl font-semibold mb-4">Voucher</h2>
+        <div id="voucherContainer" class="scrollable-container space-y-4 rounded-lg bg-[#DBEAFE] p-4">
+            <div class="bg-gray-100 p-4 rounded-lg text-center">Loading vouchers...</div>
+        </div>
+    </div>
+</div>
+
+{% include 'confirmation.html' %}
+{% include 'pb_success.html' %}
+{% include 'pb_fail.html' %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js"></script>
+
+<script>
+    const userData = {
+        balance: 121211212
+    };
+
+    let selectedVoucherData = null;
+
+    function formatCurrency(number) {
+        return new Intl.NumberFormat('id-ID', { 
+            style: 'currency', 
+            currency: 'IDR',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0 
+        }).format(number);
+    }
+
+    function formatDate(dateString) {
+        const options = { day: 'numeric', month: 'short', year: 'numeric' };
+        return new Date(dateString).toLocaleDateString('id-ID', options);
+    }
+
+    function updateBalanceDisplay() {
+        const balanceElement = document.getElementById('userBalance');
+        balanceElement.textContent = formatCurrency(userData.balance);
+    }
+
+    // function createVoucherCard(voucher) {
+    //     return `
+    //         <div class="discount-card bg-white rounded-lg shadow p-4">
+    //             <div class="flex items-center">
+    //                 <div class="flex-grow">
+    //                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    //                         <div>
+    //                             <p class="text-sm text-gray-600">Kode</p>
+    //                             <p class="font-medium">${voucher[0]}</p>
+    //                         </div>
+    //                         <div>
+    //                             <p class="text-sm text-gray-600">Potongan</p>
+    //                             <p class="font-medium">${formatCurrency(voucher[1])}</p>
+    //                         </div>
+    //                         <div>
+    //                             <p class="text-sm text-gray-600">Min Transaksi Pemesanan</p>
+    //                             <p class="font-medium">${formatCurrency(voucher[2])}</p>
+    //                         </div>
+    //                         <div>
+    //                             <p class="text-sm text-gray-600">Jumlah Hari Berlaku</p>
+    //                             <p class="font-medium">${voucher[3]} hari</p>
+    //                         </div>
+    //                         <div>
+    //                             <p class="text-sm text-gray-600">Kuota Penggunaan</p>
+    //                             <p class="font-medium">${voucher[4]}</p>
+    //                         </div>
+    //                         <div>
+    //                             <p class="text-sm text-gray-600">Harga</p>
+    //                             <p class="font-medium">${formatCurrency(voucher[5])}</p>
+    //                         </div>
+    //                     </div>
+    //                 </div>
+    //                 <button onclick="showConfirmationModal('${voucher[0]}', ${voucher[5]}, ${voucher[4]}, ${voucher[3]})" 
+    //                         class="bg-primary-blue text-white px-4 py-2 rounded-lg ml-4 hover:bg-blue-600 transition-colors">
+    //                     Beli
+    //                 </button>
+    //             </div>
+    //         </div>
+    //     `;
+    // }
+
+    // function createPromoCard(promo) {
+    //     return `
+    //         <div class="swiper-slide">
+    //             <div class="promo-slide">
+    //                 <div class="flex flex-col h-full justify-between">
+    //                     <div>
+    //                         <h3 class="text-lg font-bold text-primary-blue mb-2">Promo Spesial!</h3>
+    //                         <p class="text-gray-600 mb-2">Kode: ${promo[0]}</p>
+    //                     </div>
+    //                     <div>
+    //                         <p class="text-sm text-gray-500">Berlaku sampai:</p>
+    //                         <p class="text-md font-semibold text-gray-700">${formatDate(promo[1])}</p>
+    //                     </div>
+    //                 </div>
+    //             </div>
+    //         </div>
+    //     `;
+    // }
+
+    function showConfirmationModal(voucherCode, price, quota, validity) {
+        selectedVoucherData = {
+            code: voucherCode,
+            price: price,
+            quota: quota,
+            validity: validity
+        };
+        document.getElementById('userBalanceDisplay').textContent = formatCurrency(userData.balance);
+        document.getElementById('voucherPriceDisplay').textContent = formatCurrency(price);
+        document.getElementById('confirmationModal').classList.remove('hidden');
+    }
+
+    function closeConfirmationModal() {
+        document.getElementById('confirmationModal').classList.add('hidden');
+    }
+
+    function showSuccessModal(voucherCode, quota, validity) {
+        document.getElementById('successVoucherCode').textContent = voucherCode;
+        const expiryDate = new Date();
+        expiryDate.setDate(expiryDate.getDate() + validity);
+        document.getElementById('successExpiry').textContent = formatDate(expiryDate);
+        document.getElementById('successQuota').textContent = quota;
+        document.getElementById('successModal').classList.remove('hidden');
+    }
+
+
+    function closeSuccessModal() {
+        document.getElementById('successModal').classList.add('hidden');
+    }
+
+
+    function showFailedModal() {
+        document.getElementById('failedModal').classList.remove('hidden');
+    }
+
+    function closeFailedModal() {
+        document.getElementById('failedModal').classList.add('hidden');
+    }
+
+    async function purchaseVoucher(voucherCode) {
+        try {
+            const response = await fetch('/biru/api/buy-voucher/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    //'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    kode: voucherCode
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data.error || 'Terjadi kesalahan');
+            }
+            
+            return data;
+        } catch (error) {
+            console.error('Error purchasing voucher:', error);
+            throw error;
+        }
+    }
+
+    async function confirmPurchase() {
+        if (!selectedVoucherData) return;
+        try {
+            if (userData.balance < selectedVoucherData.price) {
+                showFailedModal();
+                return;
+            }
+            const result = await purchaseVoucher(selectedVoucherData.code);
+            if (result.message === 'Voucher berhasil dibeli!') {
+                closeConfirmationModal();
+                
+                userData.balance -= selectedVoucherData.price;
+                updateBalanceDisplay();
+                
+                showSuccessModal(
+                    selectedVoucherData.code,
+                    selectedVoucherData.quota,
+                    selectedVoucherData.validity
+                );
+            } else {
+                showFailedModal();
+            }
+        } catch (error) {
+            console.error('Error in confirmPurchase:', error);
+            showFailedModal();
+        }
+    }
+
+    async function fetchDiscounts() {
+        try {
+            const response = await fetch('/biru/api/discounts/');
+            const data = await response.json();
+            const voucherContainer = document.getElementById('voucherContainer');
+            voucherContainer.innerHTML = data.voucher_data
+                .map(([code, discount, minTrans, validity, quota, price]) => `
+                    <div class="discount-card bg-white rounded-lg shadow p-4">
+                        <div class="flex items-center">
+                            <div class="flex-grow">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div>
+                                        <p class="text-sm text-gray-600">Kode</p>
+                                        <p class="font-medium">${code}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-600">Potongan</p>
+                                        <p class="font-medium">${formatCurrency(discount)}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-600">Min Transaksi</p>
+                                        <p class="font-medium">${formatCurrency(minTrans)}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-600">Berlaku</p>
+                                        <p class="font-medium">${validity} hari</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-600">Kuota</p>
+                                        <p class="font-medium">${quota}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-600">Harga</p>
+                                        <p class="font-medium">${formatCurrency(price)}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <button onclick="showConfirmationModal('${code}', ${price}, ${quota}, ${validity})" 
+                                    class="bg-primary-blue text-white px-4 py-2 rounded-lg ml-4 hover:bg-green-500 transition-colors">
+                                Beli
+                            </button>
+                        </div>
+                    </div>
+                `)
+                .join('');
+            const promoContainer = document.getElementById('promoContainer');
+            promoContainer.innerHTML = data.promo_data
+                .map(([code, expiry]) => `
+                    <div class="swiper-slide">
+                        <div class="promo-slide">
+                            <div class="flex flex-col h-full justify-between">
+                                <div>
+                                    <h3 class="text-lg font-bold text-primary-blue mb-2">Promo Spesial!</h3>
+                                    <p class="text-gray-600 mb-2">Kode: ${code}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Berlaku sampai:</p>
+                                    <p class="text-md font-semibold text-gray-700">${formatDate(expiry)}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `)
+                .join('');
+            initSwiper();
+        } catch (error) {
+            console.error('Error fetching discounts:', error);
+            document.getElementById('voucherContainer').innerHTML = 
+                '<div class="text-center p-4 text-red-600">Gagal memuat data voucher</div>';
+            document.getElementById('promoContainer').innerHTML = 
+                '<div class="text-center p-4 text-red-600">Gagal memuat data promo</div>';
+        }
+    }
+
+    function initSwiper() {
+        new Swiper('#promoSwiper', {
+            slidesPerView: 1,
+            spaceBetween: 16,
+            loop: true,
+            autoplay: {
+                delay: 3000,
+                disableOnInteraction: false,
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            breakpoints: {
+                640: {
+                    slidesPerView: 2,
+                },
+                1024: {
+                    slidesPerView: 3,
+                }
+            },
+            effect: 'slide',
+            speed: 800,
+            grabCursor: true,
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchDiscounts();
+        updateBalanceDisplay();
+    });
+
+    // function getCookie(name) {
+    //     let cookieValue = null;
+    //     if (document.cookie && document.cookie !== '') {
+    //         const cookies = document.cookie.split(';');
+    //         for (let i = 0; i < cookies.length; i++) {
+    //             const cookie = cookies[i].trim();
+    //             if (cookie.substring(0, name.length + 1) === (name + '=')) {
+    //                 cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+    //                 break;
+    //             }
+    //         }
+    //     }
+    //     return cookieValue;
+    // }
+</script>
+{% endblock content %}

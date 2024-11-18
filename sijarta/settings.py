@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'biru',
     'hijau',
     'kuning',
 ]
@@ -81,7 +82,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'sijarta',
         'USER': 'sijarta',
-        'PASSWORD': 'postgres',
+        'PASSWORD': 'mypassword',
         'HOST': 'localhost',
         'PORT': '5432',
     }

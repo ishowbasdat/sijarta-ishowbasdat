@@ -29,7 +29,7 @@
                     Kelola Pesanan
                 </a>
 
-                <a href="#" class="text-center text-lg text-[#1f1c61] plus-jakarta-sans-bold px-3 py-2 mr-2">
+                <a href="{% url 'biru:discount' %}" class="text-center text-lg text-[#1f1c61] plus-jakarta-sans-bold px-3 py-2 mr-2">
                     Diskon
                 </a>
                 {% elif request.session.user.role == 'PEKERJA' %}
