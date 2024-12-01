@@ -183,8 +183,7 @@ def profile(request):
         
         request.session['user']['nama'] = nama
         request.session.save()
-        return redirect('kuning:profile')  
-    print(user_data)
+        return redirect('kuning:profile') 
     return render(request, 'profile.html', {'user_data': user_data})
 
 def logout(request):
