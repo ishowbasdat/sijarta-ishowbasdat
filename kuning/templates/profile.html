@@ -19,35 +19,35 @@
             <div class="space-y-3 border-r pr-8">
                 <div class="flex items-center">
                     <label class="text-gray-600 w-32 text-sm">Nama:</label>
-                    <span class="font-medium text-sm">{{ request.session.user.nama }}</span>
+                    <span class="font-medium text-sm">{{ user_data.nama }}</span>
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-32 text-sm">Level:</label>
-                    <span class="font-medium text-sm">Basic</span>
+                    <span class="font-medium text-sm">{{ user_data.level }}</span>
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-32 text-sm">Jenis Kelamin:</label>
-                    {% if request.session.user.jenis_kelamin == 'L' %}
+                    {% if user_data.jenis_kelamin == 'L' %}
                     <span class="font-medium text-sm">Laki-laki</span>
-                    {% elif request.session.user.jenis_kelamin == 'P' %}
+                    {% elif user_data.jenis_kelamin == 'P' %}
                     <span class="font-medium text-sm">Perempuan</span>
                     {% endif %}
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-32 text-sm">No HP:</label>
-                    <span class="font-medium text-sm">{{ request.session.user.no_hp }}</span>
+                    <span class="font-medium text-sm">{{ user_data.no_hp }}</span>
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-32 text-sm">Tanggal Lahir:</label>
-                    <span class="font-medium text-sm">27-02-2005</span>
+                    <span class="font-medium text-sm">{{ user_data.tgl_lahir }}</span>
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-32 text-sm">Alamat:</label>
-                    <span class="font-medium text-sm">{{ request.session.user.alamat }}</span>
+                    <span class="font-medium text-sm">{{ user_data.alamat }}</span>
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-32 text-sm">Saldo MyPay:</label>
-                    <span class="font-medium text-sm">Rp {{ request.session.user.saldo_mypay|floatformat:2 }}</span>
+                    <span class="font-medium text-sm">Rp {{ user_data.saldo_mypay|floatformat:2 }}</span>
                 </div>
                 <div class="pt-4">
                     <button onclick="submitUpdatePelanggan()" 
@@ -57,7 +57,8 @@
                 </div>
             </div>
 
-            <div class="space-y-3">
+            <form method="POST" class="space-y-3">
+                {% csrf_token %}
                 <div class="flex items-center">
                     <label class="text-gray-600 w-28 text-sm">Nama:</label>
                     <input type="text" name="nama" value=""
@@ -68,13 +69,13 @@
                     <div class="flex gap-4">
                         <label class="inline-flex items-center">
                             <input type="radio" name="jenis_kelamin" value="L" 
-                                   {% if request.session.user.jenis_kelamin == 'L' %}checked{% endif %}
+                                   {% if user_data.jenis_kelamin == 'L' %}checked{% endif %}
                                    class="text-blue-500">
                             <span class="ml-2 text-sm">L</span>
                         </label>
                         <label class="inline-flex items-center">
                             <input type="radio" name="jenis_kelamin" value="P"
-                                   {% if request.session.user.jenis_kelamin == 'P' %}checked{% endif %}
+                                   {% if user_data.jenis_kelamin == 'P' %}checked{% endif %}
                                    class="text-blue-500">
                             <span class="ml-2 text-sm">P</span>
                         </label>
@@ -101,15 +102,15 @@
                         Submit
                     </button>
                 </div>
-            </div>
+            </form>
         </div>
 
         {% else %}
         <div class="grid grid-cols-2 gap-8">
             <div class="space-y-3 border-r pr-8">
                 <div class="mb-4">
-                    {% if request.session.user.link_foto %}
-                        <img src="{{ request.session.user.link_foto }}" 
+                    {% if user_data.link_foto %}
+                        <img src="{{ user_data.link_foto }}" 
                              alt="Profile Photo" 
                              onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'w-24 h-24 bg-gray-200 flex items-center justify-center rounded-lg\'><span class=\'text-gray-500 text-sm\'>No Photo</span></div>';"
                              class="w-24 h-24 object-cover border rounded-lg shadow-sm">
@@ -121,57 +122,58 @@
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-40 text-sm">Nama:</label>
-                    <span class="font-medium text-sm">{{ request.session.user.nama }}</span>
+                    <span class="font-medium text-sm">{{ user_data.nama }}</span>
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-40 text-sm">Jenis Kelamin:</label>
-                    {% if request.session.user.jenis_kelamin == 'L' %}
+                    {% if user_data.jenis_kelamin == 'L' %}
                     <span class="font-medium text-sm">Laki-laki</span>
-                    {% elif request.session.user.jenis_kelamin == 'P' %}
+                    {% elif user_data.jenis_kelamin == 'P' %}
                     <span class="font-medium text-sm">Perempuan</span>
                     {% endif %}
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-40 text-sm">No HP:</label>
-                    <span class="font-medium text-sm">{{ request.session.user.no_hp }}</span>
+                    <span class="font-medium text-sm">{{ user_data.no_hp }}</span>
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-40 text-sm">Tanggal Lahir:</label>
-                    <span class="font-medium text-sm">15-12-1990</span>
+                    <span class="font-medium text-sm">{{ user_data.tgl_lahir }}</span>
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-40 text-sm">Alamat:</label>
-                    <span class="font-medium text-sm">{{ request.session.user.alamat }}</span>
+                    <span class="font-medium text-sm">{{ user_data.alamat }}</span>
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-40 text-sm">Saldo MyPay:</label>
-                    <span class="font-medium text-sm">Rp {{ request.session.user.saldo_mypay|floatformat:2 }}</span>
+                    <span class="font-medium text-sm">Rp {{ user_data.saldo_mypay|floatformat:2 }}</span>
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-40 text-sm">Nama Bank:</label>
-                    <span class="font-medium text-sm">{{ request.session.user.nama_bank }}</span>
+                    <span class="font-medium text-sm">{{ user_data.nama_bank }}</span>
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-40 text-sm">No Rekening:</label>
-                    <span class="font-medium text-sm">{{ request.session.user.nomor_rekening }}</span>
+                    <span class="font-medium text-sm">{{ user_data.nomor_rekening }}</span>
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-40 text-sm">NPWP:</label>
-                    <span class="font-medium text-sm">{{ request.session.user.npwp }}</span>
+                    <span class="font-medium text-sm">{{ user_data.npwp }}</span>
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-40 text-sm">Rating:</label>
-                    <span class="font-medium text-sm">{{ request.session.user.rating }}</span>
+                    <span class="font-medium text-sm">{{ user_data.rating }}</span>
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-40 text-sm">Jumlah Pesanan Selesai:</label>
-                    <span class="font-medium text-sm">{{ request.session.user.jml_pesanan_selesai }}</span>
+                    <span class="font-medium text-sm">{{ user_data.jml_pesanan_selesai }}</span>
                 </div>
                 <div class="mb-4">
                     <div class="text-gray-600 text-sm">Kategori Pekerjaan:</div>
                     <div class="ml-4 text-sm">
-                        <div>1. Home Cleaning</div>
-                        <div>2. Deep Cleaning</div>
+                        {% for kategori in user_data.kategori_jasa %}
+                            <li>{{ kategori.nama_kategori }}</li>
+                        {% endfor %}
                     </div>
                 </div>
                 <div class="pt-4">
@@ -182,7 +184,8 @@
                 </div>
             </div>
 
-            <div class="space-y-3">
+            <form method="POST" class="space-y-3">
+                {% csrf_token %}
                 <div class="flex items-center">
                     <label class="text-gray-600 w-28 text-sm">Nama:</label>
                     <input type="text" name="nama" value=""
@@ -193,13 +196,13 @@
                     <div class="flex gap-4">
                         <label class="inline-flex items-center">
                             <input type="radio" name="jenis_kelamin" value="L" 
-                                   {% if request.session.user.jenis_kelamin == 'L' %}checked{% endif %}
+                                   {% if user_data.jenis_kelamin == 'L' %}checked{% endif %}
                                    class="text-blue-500">
                             <span class="ml-2 text-sm">L</span>
                         </label>
                         <label class="inline-flex items-center">
                             <input type="radio" name="jenis_kelamin" value="P"
-                                   {% if request.session.user.jenis_kelamin == 'P' %}checked{% endif %}
+                                   {% if user_data.jenis_kelamin == 'P' %}checked{% endif %}
                                    class="text-blue-500">
                             <span class="ml-2 text-sm">P</span>
                         </label>
@@ -246,9 +249,39 @@
                         Submit
                     </button>
                 </div>
-            </div>
+            </form>
         </div>
         {% endif %}
     </div>
 </div>
+
+<script>
+    function submitUpdatePelanggan() {
+        document.querySelector('input[name="nama"]').value = '{{ user_data.nama }}';
+        document.querySelector('input[name="no_hp"]').value = '{{ user_data.no_hp }}';
+        document.querySelector('input[name="alamat"]').value = '{{ user_data.alamat }}';
+        document.querySelector('input[name="tgl_lahir"]').value = '{{ user_data.tgl_lahir|date:"Y-m-d" }}';
+        if ('{{ user_data.jenis_kelamin }}' === 'L') {
+            document.querySelector('input[name="jenis_kelamin"][value="L"]').checked = true;
+        } else if ('{{ user_data.jenis_kelamin }}' === 'P') {
+            document.querySelector('input[name="jenis_kelamin"][value="P"]').checked = true;
+        }
+    }
+    
+    function submitUpdatePekerja() {
+        document.querySelector('input[name="nama"]').value = '{{ user_data.nama }}';
+        document.querySelector('input[name="no_hp"]').value = '{{ user_data.no_hp }}';
+        document.querySelector('input[name="alamat"]').value = '{{ user_data.alamat }}';
+        document.querySelector('input[name="tgl_lahir"]').value = '{{ user_data.tgl_lahir|date:"Y-m-d" }}';
+        document.querySelector('input[name="nama_bank"]').value = '{{ user_data.nama_bank }}';
+        document.querySelector('input[name="nomor_rekening"]').value = '{{ user_data.nomor_rekening }}';
+        document.querySelector('input[name="npwp"]').value = '{{ user_data.npwp }}';
+        document.querySelector('input[name="link_foto"]').value = '{{ user_data.link_foto }}';
+        if ('{{ user_data.jenis_kelamin }}' === 'L') {
+            document.querySelector('input[name="jenis_kelamin"][value="L"]').checked = true;
+        } else if ('{{ user_data.jenis_kelamin }}' === 'P') {
+            document.querySelector('input[name="jenis_kelamin"][value="P"]').checked = true;
+        }
+    }
+</script>
 {% endblock content %}
