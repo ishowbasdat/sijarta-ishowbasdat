@@ -36,26 +36,17 @@ def homepage(request):
     }
     return render(request, 'homepage.html', context)
 
-@require_http_methods(["GET"])
+@require_http_methods(["GET", "POST"])
 def subkategori(request, id):
-    
-    # Dummy session
-    request.session['user'] = {
-        'id': 'ce820534-45af-4871-9d91-4da9e52dc988',
-        'nama': 'Christian Raphael Heryanto',
-        'jenis_kelamin': 'L',
-        'no_hp': '081213151719',
-        'pwd': 'ThisIsMyPasswordDontHackMePls',
-        'tgl_lahir': '2005-01-01',
-        'alamat': 'Jalan Haji Kukusan',
-        'saldo_mypay': 200000.00,
-        'role': 'PEKERJA'
-    }
-    
+    # TODO: Redirect to login page if user is not logged in
     if request.session['user'] is None:
-        return redirect('homepage')
+        return redirect('homepage') 
+    
+    if request.method == 'POST': #TODO: Handle if pekerja joins
+        pass
     
     with connection.cursor() as cursor:
+        # Get all details required regarding the subcategory
         cursor.execute("""
                        SELECT * 
                        FROM SIJARTA.SUBKATEGORI_JASA, SIJARTA.SESI_LAYANAN, SIJARTA.KATEGORI_JASA
@@ -65,6 +56,7 @@ def subkategori(request, id):
                        """, [id])
         subcategory = [dict(zip([ column[0] for column in cursor.description ], row)) for row in cursor.fetchall()]
         
+        # Get all pekerja that can do the job (I'll create another endpoint for this for fetch)
         cursor.execute("""
                        SELECT * 
                        FROM SIJARTA.PEKERJA, SIJARTA.PEKERJA_KATEGORI_JASA, SIJARTA.SUBKATEGORI_JASA, SIJARTA.KATEGORI_JASA, SIJARTA."USER"
@@ -76,10 +68,24 @@ def subkategori(request, id):
                        """, [id])
         pekerja = [dict(zip([ column[0] for column in cursor.description ], row)) for row in cursor.fetchall()]
         
+        
+        cursor.execute("""
+                       SELECT 
+                            CASE 
+                                WHEN COUNT(*) = 0 THEN false 
+                                ELSE true 
+                            END AS has_joined 
+                        FROM pekerja_kategori_jasa 
+                        WHERE pekerja_id = %s 
+                        AND kategori_jasa_id = %s
+                       """, [request.session['user']['id'], subcategory[0]['kategori_jasa_id']])
+        
+        is_joined = cursor.fetchone()[0]
+        
     if subcategory is None:
         return redirect('homepage')
     
-    context = {'subkategori' : subcategory, 'pekerja' : pekerja}
+    context = {'subkategori' : subcategory, 'pekerja' : pekerja, 'is_joined' : is_joined}
     return render(request, 'subkategori.html', context)
 
 @require_http_methods(["GET"])
