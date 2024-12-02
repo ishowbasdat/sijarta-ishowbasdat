@@ -1,11 +1,14 @@
+from datetime import datetime
+from decimal import Decimal, InvalidOperation
 from django.shortcuts import render
-from django.db import connection
+from django.db import connection, DatabaseError
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseForbidden
 from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse, HttpResponseBadRequest
 from kuning.views import landing
 import json
+import uuid
 
 @require_http_methods(["GET", "POST"])
 def homepage(request):
@@ -145,10 +148,46 @@ def validate_discount(request):
 @require_http_methods(["POST"])
 def create_order(request):
     if request.session['user']['role'] != 'PELANGGAN':
-        return HttpResponseBadRequest()
-    # TODO: implement this function with raw query
-    json.loads(request.body)
-    return JsonResponse({'success': True})
+        return HttpResponseBadRequest("Only 'PELANGGAN' role can create an order.")
+   
+    data = json.loads(request.body)
+   
+    try:
+        # Validate required fields
+        required_fields = ['orderDate', 'kategori_jasa_id', 'sesi', 'totalPayment', 'paymentMethod']
+        for field in required_fields:
+            if not data.get(field):
+                return JsonResponse({'success': False, 'error': f'Missing required field: {field}'}, status=400)
+
+        # Convert total payment to decimal
+        total_biaya = Decimal(data.get('totalPayment').replace('Rp ', '').replace('.', '').replace(',', ''))
+
+        # Prepare discount code (convert empty string to None)
+        discount_code = data.get('discountCode') or None
+
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                INSERT INTO SIJARTA.TR_PEMESANAN_JASA
+                (id, tgl_pemesanan, tgl_pekerjaan, waktu_pekerjaan, total_biaya, 
+                id_pelanggan, id_pekerja, id_kategori_jasa, sesi, id_diskon, id_metode_bayar)
+                VALUES (%s, %s, %s, %s, %s, %s, NULL, %s, %s, %s, %s)
+                """, [
+                    uuid.uuid4(),
+                    data.get('orderDate'),  # tgl_pemesanan
+                    data.get('orderDate'),  # tgl_pekerjaan (using order date as work date)
+                    datetime.now(),  # waktu_pekerjaan (current timestamp)
+                    total_biaya,  # total_biaya
+                    request.session['user']['id'],  # id_pelanggan
+                    data.get('kategori_jasa_id'),  # id_kategori_jasa
+                    int(data.get('sesi')),  # sesi (converted to integer)
+                    discount_code,  # id_diskon
+                    data.get('paymentMethod')  # id_metode_bayar
+                ])
+        return JsonResponse({'success': True})
+    except (DatabaseError, InvalidOperation, ValueError) as e:
+        # Log the error for debugging
+        print(f"Error creating order: {e}")
+        return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
 @require_http_methods(["GET"])
 def pesanan(request):

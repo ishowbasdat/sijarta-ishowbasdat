@@ -83,9 +83,14 @@
     let basePrice = 0;
     let discountAmount = 0;
 
-    function showOrderModal(price) {
+    function showOrderModal(kategori_jasa_id, sesi, price) {
         basePrice = price;
-
+    
+        // Store kategori_jasa_id and sesi as data attributes on the form
+        const orderServiceForm = document.getElementById('orderServiceForm');
+        orderServiceForm.dataset.kategoriJasaId = kategori_jasa_id;
+        orderServiceForm.dataset.sesi = sesi;
+    
         fetch('{% url 'hijau:get_metode_pembayaran' %}')
             .then(response => response.json())
             .then(data => {
@@ -107,13 +112,56 @@
         document.getElementById('orderServiceModal').classList.remove('hidden');
         document.body.style.overflow = 'hidden';
     }    
-
+    
+    function handleOrderSubmit(event) {
+        event.preventDefault();
+        
+        const orderServiceForm = document.getElementById('orderServiceForm');
+        const formData = {
+            'kategori_jasa_id': orderServiceForm.dataset.kategoriJasaId,
+            'sesi': orderServiceForm.dataset.sesi,
+            'orderDate': document.getElementById('orderDate').value,
+            'discountCode': document.getElementById('discountCode').value,
+            'totalPayment': document.getElementById('totalPayment').value,
+            'paymentMethod': document.getElementById('paymentMethod').value
+        };
+    
+        // Make API call to create order
+        fetch('{% url 'hijau:create_order'%}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Redirect to order view page
+                window.location.href = '{% url 'hijau:pesanan' %}';
+            } else {
+                alert(data.message || 'Terjadi kesalahan saat membuat pesanan');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Terjadi kesalahan saat membuat pesanan');
+        });
+    }
+    
     function closeOrderModal() {
         document.getElementById('orderServiceModal').classList.add('hidden');
         document.body.style.overflow = 'auto';
         
         // Reset form
-        document.getElementById('orderServiceForm').reset();
+        const orderServiceForm = document.getElementById('orderServiceForm');
+        orderServiceForm.reset();
+        
+        // Clear data attributes
+        delete orderServiceForm.dataset.kategoriJasaId;
+        delete orderServiceForm.dataset.sesi;
+        
         discountAmount = 0;
     }
 
@@ -161,14 +209,14 @@
         event.preventDefault();
         
         const formData = {
-            orderDate: document.getElementById('orderDate').value,
-            discountCode: document.getElementById('discountCode').value,
-            totalPayment: document.getElementById('totalPayment').value,
-            paymentMethod: document.getElementById('paymentMethod').value
+            'orderDate': document.getElementById('orderDate').value,
+            'discountCode': document.getElementById('discountCode').value,
+            'totalPayment': document.getElementById('totalPayment').value,
+            'paymentMethod': document.getElementById('paymentMethod').value
         };
 
         // Make API call to create order
-        fetch('{% url 'hijau:create_order' %}', {
+        fetch('{% url 'hijau:create_order'%}', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
