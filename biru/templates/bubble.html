@@ -1,0 +1,31 @@
+<div class="top-0 py-4 mt-4 font-medium text-gray-700 shadow-sm">
+    Testimoni
+</div>
+<div id="testimonial-container" class="bg-white rounded-lg shadow-sm h-full sm:h-full">
+</div>
+
+<script>
+    function loadTestimonials() {
+        const testimonials = JSON.parse(localStorage.getItem('testimonials') || '[]');
+        const testimonialContainer = document.getElementById('testimonial-container');
+
+        testimonialContainer.innerHTML = '';
+        testimonials.slice(-5).reverse().forEach(testi => {
+            const testiElement = document.createElement('div');
+            testiElement.classList.add('p-4', 'text-gray-800', 'border-b', 'border-gray-200');
+            const starRating = '★'.repeat(testi.rating) + '☆'.repeat(5 - testi.rating);
+            
+            testiElement.innerHTML = `
+                <div class="flex items-center mb-2 text-yellow-500">
+                    ${starRating}
+                </div>
+                <p>${testi.comment}</p>
+            `;
+            
+            testimonialContainer.appendChild(testiElement);
+        });
+    }
+
+    window.addEventListener('load', loadTestimonials);
+    window.addEventListener('testimonialsUpdated', loadTestimonials);
+</script>
