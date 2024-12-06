@@ -46,7 +46,9 @@
         <div div class="bg-white rounded-lg shadow-sm h-full sm:h-full">
             <div class="flex flex-row justify-left items-center overflow-x-auto">
                 {% for pekerja in pekerja %}
-                <div class="p-4 text-gray-800 flex flex-col justify-between items-center border-r border-gray-200">
+                <div class="worker-box p-4 text-gray-800 flex flex-col justify-between items-center border-r border-gray-200" 
+                    data-worker-id="{{ pekerja.id }}"
+                    style="cursor: pointer;">
                     <img src="{{pekerja.link_foto}}" alt="{{pekerja.nama}}" class="w-24 h-24 rounded-full mb-2 object-cover">
                     <div class="flex flex-col items-center">
                         <span class="font-medium">{{pekerja.nama}}</span>

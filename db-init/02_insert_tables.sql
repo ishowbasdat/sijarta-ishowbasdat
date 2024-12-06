@@ -40,10 +40,11 @@ INSERT INTO SIJARTA.PEKERJA VALUES
 -- 5. KATEGORI_TR_MYPAY
 INSERT INTO SIJARTA.KATEGORI_TR_MYPAY VALUES 
 ('44a6e520-f3e7-4761-87e8-1748e1465aae', 'Topup MyPay'),
-('546fa422-0eca-4da0-90d2-2cb106bccea4', 'Membayar transaksi jasa'),
+('546fa422-0eca-4da0-90d2-2cb106bccea4', 'Membayar transaksi jasa atau voucher'),
 ('6390060b-0746-4da9-a6f0-4d3ee63c4d28', 'Transfer MyPay ke pengguna lain'),
 ('b43d8c74-b918-43ec-ab5f-30a1796b9543', 'Menerima honor transaksi jasa'),
 ('7080df35-dd42-44cf-b09f-956414f5d499', 'Withdrawal MyPay ke rekening bank');
+
 
 -- 6. TR_MYPAY
 INSERT INTO SIJARTA.TR_MYPAY VALUES 
@@ -290,20 +291,20 @@ INSERT INTO SIJARTA.TR_PEMESANAN_STATUS VALUES
 
 -- 18. TESTIMONI
 INSERT INTO SIJARTA.TESTIMONI VALUES
-('2217803d-3e5d-48cd-bb9e-c699e2e95a32', '2024-03-05', 'Pakaiannya jadi bersih sekali dan skill menyetrikanya sudah tidak diragukan lagi!', 5),
+('2217803d-3e5d-48cd-bb9e-c699e2e95a32', '2024-03-05', 'Layanan sudah tidak diragukan lagi, rumah jadi bersih!', 5),
 ('3003a0d7-42d2-4044-857f-efd280b81397', '2024-03-07', 'hasilnya sangat bersih tapi sayangnya masih ada noda yang tertinggal.', 4),
 ('f39b91e4-bc61-47ae-a8cf-b9d20361fc9a', '2024-03-10', 'Hasilnya bagus sekali, dapur saya juga jadi bersih. Namun, pelayanannya lambat.', 3),
 ('97faede6-3306-4973-b69e-42762ba6b495', '2024-03-12', 'Layanan yang sangat baik dan ramah, dapur jadi kinclong. saya suka sekali!', 5),
-('1d810223-e910-40b4-8e3c-9ecfd5269d16', '2024-03-15', 'Layanan tidak sesuai harapan. Dapur masih kotor.', 2),
-('93a02b9a-a002-48c2-a9dc-76e9a64890cb', '2024-03-20', 'Rumah jadi bersih seperti rumah baru! Saya sangat merekomendasikan!', 5),
+('1d810223-e910-40b4-8e3c-9ecfd5269d16', '2024-03-15', 'Pijit tidak enak, terlalu pelan', 2),
+('93a02b9a-a002-48c2-a9dc-76e9a64890cb', '2024-03-20', 'AC jadi bersih wow!', 5),
 ('88bbdeea-58d9-4cb4-a3ea-ae42107ad188', '2024-03-25', 'Harga terlalu mahal apabila dibandingkan hasil dari layanannya.', 3),
 ('9e16669a-45d5-4555-bd85-2b9e0016c245', '2024-03-01', 'Pelayanan cepat dan hasil cukup memuaskan!', 4),
-('b99e0a9c-0506-49e8-975e-50b15317d8a6', '2024-03-05', 'Hasil bagus, tetapi masih ada noda di bagian bawah karpet', 3),
+('b99e0a9c-0506-49e8-975e-50b15317d8a6', '2024-03-05', 'Kulkas masih kotor, tetapi cukup oke', 3),
 ('c5213fe8-24cc-4daf-b162-943c85102c48', '2024-03-10', 'Sangat puas dengan hasil pelayanan yang diberikan.', 5),
-('44139880-c1e2-4cfe-aba1-a8c67cdca616', '2024-04-12', 'Hasil oke, sofa dan karpet jadi bersih.', 4),
-('c6f5c866-aa34-4b1e-b456-ac5266af305f', '2024-04-15', 'AC masih kotor, kualitas layanan tidak sesuai harga.', 2),
-('c12afaa5-b4ba-4716-a848-48bc5a19112f', '2024-04-18', 'Hasil layanan yang sangat luar biasa! AC jadi bersih sekali.', 5),
+('44139880-c1e2-4cfe-aba1-a8c67cdca616', '2024-04-12', 'AC sangat bersih, tetapi masih bau', 4),
+('c6f5c866-aa34-4b1e-b456-ac5266af305f', '2024-04-15', 'Karpet masih ada noda membandel', 2),
+('c12afaa5-b4ba-4716-a848-48bc5a19112f', '2024-04-18', 'Skill menyetrikanya sudah tidak diragukan lagi.', 5),
 ('cc91d59d-59fe-4f5a-87b3-cb14d13dfed0', '2024-04-20', 'Hasil pencucian AC cukup oke, tetapi bisa diperbaiki', 3),
-('09b9e4f9-b2e5-4799-b652-939637670ff8', '2024-04-25', 'Layanan pijat yang sangat baik, badan jadi tidak pegel. Sangat direkomendasikan!', 5),
+('09b9e4f9-b2e5-4799-b652-939637670ff8', '2024-04-25', 'Bersih sekali, sangat direkomendasikan!', 5),
 ('2d3642cc-6d9f-448a-9d30-8dbdc2b373b1', '2024-04-01', 'Hasilnya cukup oke, tidak ada yang istimewa.', 3),
 ('2217803d-3e5d-48cd-bb9e-c699e2e95a32', '2024-04-05', 'Pelayanan cepat dan hasilnya baik.', 4);

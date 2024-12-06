@@ -2,31 +2,83 @@
     Testimoni
 </div>
 <div id="testimonial-container" class="bg-white rounded-lg shadow-sm h-full sm:h-full">
+    <div id="testimonial-placeholder" class="p-4 text-gray-600 text-center">
+        Pilih pekerja untuk melihat testimoni
+    </div>
 </div>
 
 <script>
-    function loadTestimonials() {
-        const testimonials = JSON.parse(localStorage.getItem('testimonials') || '[]');
+    function fetchWorkerTestimonials(workerId) {
         const testimonialContainer = document.getElementById('testimonial-container');
 
-        testimonialContainer.innerHTML = '';
-        testimonials.slice(-5).reverse().forEach(testi => {
-            const testiElement = document.createElement('div');
-            testiElement.classList.add('p-4', 'text-gray-800', 'border-b', 'border-gray-200');
-            const starRating = '★'.repeat(testi.rating) + '☆'.repeat(5 - testi.rating);
-            
-            testiElement.innerHTML = `
-                <div class="flex items-center mb-2 text-yellow-500">
-                    ${starRating}
-                </div>
-                <p class="mb-2">Oleh: ${testi.author || 'Christian Raphael Heryanto'}</p>
-                <p>${testi.comment}</p>
-            `;
-            
-            testimonialContainer.appendChild(testiElement);
-        });
+        testimonialContainer.innerHTML = `
+            <div class="p-4 text-gray-600 text-center">
+                Memuat testimoni...
+            </div>
+        `;
+
+        fetch(`/biru/api/get_testimoni/${workerId}/`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Gagal memuat testimoni');
+                }
+                return response.json();
+            })
+            .then(data => {
+                testimonialContainer.innerHTML = '';
+
+                if (data.testimonials && data.testimonials.length > 0) {
+                    data.testimonials.forEach(testi => {
+                        const testiElement = document.createElement('div');
+                        testiElement.classList.add(
+                            'p-4', 
+                            'text-gray-800', 
+                            'border-b', 
+                            'border-gray-200'
+                        );
+                        const starRating = '★'.repeat(testi.rating) + '☆'.repeat(5 - testi.rating);
+                        
+                        testiElement.innerHTML = `
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="text-yellow-500">
+                                    ${starRating}
+                                </div>
+                                <span class="text-sm text-gray-500">${testi.date}</span>
+                            </div>
+                            <p class="mb-2 font-medium">Oleh: ${testi.author}</p>
+                            <p>${testi.comment}</p>
+                        `;
+                        
+                        testimonialContainer.appendChild(testiElement);
+                    });
+                } else {
+                    testimonialContainer.innerHTML = `
+                        <div class="p-4 text-gray-600 text-center">
+                            Belum ada testimoni untuk pekerja ini.
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                testimonialContainer.innerHTML = `
+                    <div class="p-4 text-red-600 text-center">
+                        Gagal memuat testimoni. Silakan coba lagi.
+                    </div>
+                `;
+            });
     }
 
-    window.addEventListener('load', loadTestimonials);
-    window.addEventListener('testimonialsUpdated', loadTestimonials);
+    document.addEventListener('DOMContentLoaded', () => {
+        const workerBoxes = document.querySelectorAll('.worker-box');
+        
+        workerBoxes.forEach(box => {
+            box.addEventListener('click', () => {
+                const workerId = box.getAttribute('data-worker-id');
+                if (workerId) {
+                    fetchWorkerTestimonials(workerId);
+                }
+            });
+        });
+    });
 </script>

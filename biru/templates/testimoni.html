@@ -76,8 +76,10 @@
 </style>
 
 <script>
+    let currentOrderIdForTestimoni = null;
 
-    function openTesti() {
+    function openTesti(orderId) {
+        currentOrderIdForTestimoni = orderId;
         document.getElementById('testimonialModal').classList.remove('hidden');
         document.body.style.overflow = 'hidden';
     }
@@ -85,39 +87,70 @@
     function closeModal() {
         document.getElementById('testimonialModal').classList.add('hidden');
         document.body.style.overflow = 'auto';
+        currentOrderIdForTestimoni = null;
     }
 
     function handleSubmitTesti(event) {
         event.preventDefault();
         
+        if (!currentOrderIdForTestimoni) {
+            alert('Terjadi kesalahan. Silakan coba lagi.');
+            return;
+        }
+        
         const formData = new FormData(event.target);
         const rating = parseInt(formData.get('rating'));
-        const komentar = formData.get('komentar');
-        let testimonials = JSON.parse(localStorage.getItem('testimonials') || '[]');
+        const comment = formData.get('komentar');
 
-        testimonials.push({
-            rating: rating,
-            comment: komentar,
-            timestamp: new Date().toISOString(),
-            author: 'Christian Raphael Heryanto'
+        fetch('/biru/api/submit-testimoni/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                //'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                order_id: currentOrderIdForTestimoni,
+                rating: rating,
+                comment: comment
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+
+            const successMessage = document.getElementById('successMessage');
+            successMessage.textContent = 'Terima kasih atas testimoni Anda!';
+            successMessage.classList.remove('hidden');
+            
+            setTimeout(() => {
+                successMessage.classList.add('hidden');
+            }, 3000);
+
+            closeModal();
+            
+            location.reload();
+        })
+        .catch(error => {
+            alert(error.message);
         });
-        
-        localStorage.setItem('testimonials', JSON.stringify(testimonials));
-        showSuccessMessage();
-        closeModal();
-        event.target.reset();
-
-        window.dispatchEvent(new Event('testimonialsUpdated'));
     }
 
-    function showSuccessMessage() {
-        const successMessage = document.getElementById('successMessage');
-        successMessage.classList.remove('hidden');
-        
-        setTimeout(() => {
-            successMessage.classList.add('hidden');
-        }, 3000);
-    }
+    // function getCookie(name) {
+    //     let cookieValue = null;
+    //     if (document.cookie && document.cookie !== '') {
+    //         const cookies = document.cookie.split(';');
+    //         for (let i = 0; i < cookies.length; i++) {
+    //             const cookie = cookies[i].trim();
+    //             if (cookie.substring(0, name.length + 1) === (name + '=')) {
+    //                 cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+    //                 break;
+    //             }
+    //         }
+    //     }
+    //     return cookieValue;
+    // }
 
     window.addEventListener('click', function(event) {
         const modal = document.getElementById('testimonialModal');
