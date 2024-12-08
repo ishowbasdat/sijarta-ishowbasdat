@@ -43,7 +43,7 @@
         });
     }
 
-    function fetchWorkerTestimonials(workerId) {        
+    function fetchWorkerTestimonials(workerId, subkategoriId) {        
         const testimonialContainer = document.getElementById('testimonial-container');
 
         testimonialContainer.innerHTML = `
@@ -52,7 +52,7 @@
             </div>
         `;
 
-        fetch(`/biru/api/get_testimoni/${workerId}`)
+        fetch(`/biru/api/get_testimoni/${subkategoriId}/${workerId}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Gagal memuat testimoni');
@@ -124,8 +124,9 @@
                 box.classList.add('active');
 
                 const workerId = box.getAttribute('data-worker-id');
+                const subkategoriId = box.getAttribute('data-subkategori-id');
                 if (workerId) {
-                    fetchWorkerTestimonials(workerId);
+                    fetchWorkerTestimonials(workerId, subkategoriId);
                 }
             });
         });

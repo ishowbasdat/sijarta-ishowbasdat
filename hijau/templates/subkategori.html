@@ -68,6 +68,7 @@
             {% endif %}
         </div>
         <p class="text-gray-600 mb-2">{{subkategori.deskripsi}}</p>
+        <p class="text-gray-600 mb-2">{{ subkategori.0.subkategori_id }}</p>
 
         <div class="top-0 py-4 font-medium text-gray-700 shadow-sm">
             Pilihan Sesi Layanan
@@ -97,6 +98,7 @@
                 {% for pekerja in pekerja %}
                 <div class="worker-box p-4 text-gray-800 flex flex-col justify-between items-center border-r border-gray-200" 
                     data-worker-id="{{ pekerja.id }}"
+                    data-subkategori-id="{{ subkategori.0.subkategori_id }}"
                     style="cursor: pointer;">
                     <img src="{{pekerja.link_foto}}" alt="{{pekerja.nama}}" class="w-24 h-24 rounded-full mb-2 object-cover">
                     <div class="flex flex-col items-center">

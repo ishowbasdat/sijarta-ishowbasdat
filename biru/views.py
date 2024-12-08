@@ -9,16 +9,6 @@ import logging
 import uuid
 from datetime import datetime, timedelta
 
-from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
-from django.views.decorators.http import require_http_methods
-from django.views.decorators.csrf import csrf_protect
-from django.db import transaction
-from django.core.exceptions import ValidationError
-import json
-import logging
-import uuid
-
 logger = logging.getLogger(__name__)
 
 def discount(request):
@@ -163,59 +153,56 @@ def buy_voucher(request):
 
 @csrf_exempt
 @require_http_methods(["GET"])
-def get_testimoni(request, worker_id):
-    with connection.cursor() as cursor:
-        cursor.execute("""
-            SELECT DISTINCT tpj.id_kategori_jasa
-            FROM SIJARTA.TR_PEMESANAN_JASA tpj
-            WHERE tpj.id_pekerja = %s
-            LIMIT 1
-        """, [worker_id])
-        
-        subkategori_id = cursor.fetchone()[0]
-
+def get_testimoni(request, subkategori_id, worker_id):
+    try:
         current_user_id = request.session['user'].get('id', None)
 
-        cursor.execute("""
-            SELECT 
-                t.rating, 
-                t.teks AS comment, 
-                u.nama AS customer_name,
-                t.tgl AS testimonial_date,
-                sj.nama_subkategori AS service_subcategory,
-                tpj.id AS order_id,
-                CASE WHEN tpj.id_pelanggan = %s THEN TRUE ELSE FALSE END AS is_own_testimonial
-            FROM SIJARTA.TESTIMONI t
-            JOIN SIJARTA.TR_PEMESANAN_JASA tpj ON t.id_tr_pemesanan = tpj.id
-            JOIN SIJARTA.PELANGGAN p ON tpj.id_pelanggan = p.id
-            JOIN SIJARTA."USER" u ON p.id = u.id
-            JOIN SIJARTA.PEKERJA pk ON tpj.id_pekerja = pk.id
-            JOIN SIJARTA.SUBKATEGORI_JASA sj ON tpj.id_kategori_jasa = sj.id
-            WHERE 
-                pk.id = %s AND 
-                sj.id = %s
-            ORDER BY t.tgl DESC
-        """, [current_user_id, worker_id, subkategori_id])
-        
-        testimonials = cursor.fetchall()
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT 
+                    t.rating, 
+                    t.teks AS comment, 
+                    u.nama AS customer_name,
+                    t.tgl AS testimonial_date,
+                    sj.nama_subkategori AS service_subcategory,
+                    tpj.id AS order_id,
+                    CASE WHEN tpj.id_pelanggan = %s THEN TRUE ELSE FALSE END AS is_own_testimonial
+                FROM SIJARTA.TESTIMONI t
+                JOIN SIJARTA.TR_PEMESANAN_JASA tpj ON t.id_tr_pemesanan = tpj.id
+                JOIN SIJARTA.PELANGGAN p ON tpj.id_pelanggan = p.id
+                JOIN SIJARTA."USER" u ON p.id = u.id
+                JOIN SIJARTA.SUBKATEGORI_JASA sj ON tpj.id_kategori_jasa = sj.id
+                WHERE 
+                    tpj.id_pekerja = %s AND 
+                    tpj.id_kategori_jasa = %s
+                ORDER BY t.tgl DESC
+            """, [current_user_id, worker_id, subkategori_id])
+            
+            testimonials = cursor.fetchall()
 
-        testimonial_list = [
-            {
-                'rating': row[0],
-                'comment': row[1],
-                'author': row[2],
-                'date': row[3].strftime("%Y-%m-%d") if row[3] else None,
-                'service_subcategory': row[4],
-                'order_id': row[5],
-                'is_own_testimonial': row[6]
-            } for row in testimonials
-        ]
-        
+            testimonial_list = [
+                {
+                    'rating': row[0],
+                    'comment': row[1],
+                    'author': row[2],
+                    'date': row[3].strftime("%Y-%m-%d") if row[3] else None,
+                    'service_subcategory': row[4],
+                    'order_id': row[5],
+                    'is_own_testimonial': row[6],
+                } for row in testimonials
+            ]
+            
+            return JsonResponse({
+                'testimonials': testimonial_list
+            })
+
+    except Exception as e:
+        logger.error(f"Error in get_testimoni: {str(e)}")
         return JsonResponse({
-            'testimonials': testimonial_list
-        })
+            'error': 'Terjadi kesalahan saat mengambil testimoni.',
+            'details': str(e)
+        }, status=500)
 
-# masih error
 @require_http_methods(["POST"])
 @csrf_exempt
 def submit_testimonial(request):
@@ -224,45 +211,34 @@ def submit_testimonial(request):
             return JsonResponse({'error': 'Silakan login terlebih dahulu.'}, status=401)
 
         data = json.loads(request.body)
-        order_id = data.get('order_id')
+        worker_id = data.get('order_id')
         rating = data.get('rating')
         comment = data.get('comment')
 
         logger.error(data)
 
-        if not order_id or not rating or not comment:
+        if not worker_id or not rating or not comment:
             return JsonResponse({'error': 'Data tidak lengkap.'}, status=400)
 
-        if rating < 1 or rating > 5:
-            return JsonResponse({'error': 'Rating harus antara 1-5.'}, status=400)
-
         user_id = request.session['user'].get('id')
+
+        logger.error(worker_id)
+        logger.error(user_id)
 
         with connection.cursor() as cursor:
 
             cursor.execute("""
-                SELECT id_pekerja, id 
+                SELECT id
                 FROM SIJARTA.TR_PEMESANAN_JASA 
-                WHERE id = %s AND id_pelanggan = %s
-            """, [order_id, user_id])
+                WHERE id_pekerja = %s AND id_pelanggan = %s
+            """, [worker_id, user_id])
+
             order_info = cursor.fetchone()
+            order_id = order_info[0]
 
-            if not order_info:
-                return JsonResponse({'error': 'Pesanan tidak ditemukan.'}, status=404)
+            logger.error(order_id)
 
-            worker_id = order_info[0]
-
-            cursor.execute("""
-                SELECT COUNT(*) 
-                FROM SIJARTA.TESTIMONI 
-                WHERE id_tr_pemesanan = %s
-            """, [order_id])
-            testimonial_count = cursor.fetchone()[0]
-
-            if testimonial_count > 0:
-                return JsonResponse({'error': 'Testimoni sudah pernah dibuat untuk pesanan ini.'}, status=400)
-
-            current_date = datetime.now().date()
+            current_date = datetime.now()
             cursor.execute("""
                 INSERT INTO SIJARTA.TESTIMONI 
                 (id_tr_pemesanan, tgl, teks, rating) 
@@ -299,63 +275,50 @@ def submit_testimonial(request):
 @require_http_methods(["DELETE"])
 @csrf_exempt
 def delete_testimoni(request):
-    try:
-        if 'user' not in request.session:
-            return JsonResponse({'error': 'Silakan login terlebih dahulu.'}, status=401)
+    if 'user' not in request.session:
+        return JsonResponse({'error': 'Silakan login terlebih dahulu.'}, status=401)
 
-        data = json.loads(request.body)
-        order_id = data.get('order_id')
-        testimonial_date = data.get('testimonial_date')
+    data = json.loads(request.body)
+    order_id = data.get('order_id')
+    testimonial_date = data.get('testimonial_date')
 
-        if not order_id:
-            return JsonResponse({'error': 'Order ID tidak diberikan.'}, status=400)
+    user_id = request.session['user'].get('id')
 
-        user_id = request.session['user'].get('id')
+    logger.error(user_id)
 
-        logger.error(user_id)
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT tpj.id_pekerja 
+            FROM SIJARTA.TESTIMONI t
+            JOIN SIJARTA.TR_PEMESANAN_JASA tpj ON t.id_tr_pemesanan = tpj.id
+            WHERE t.id_tr_pemesanan = %s AND tpj.id_pelanggan = %s
+        """, [order_id, user_id])
 
-        with connection.cursor() as cursor:
-            cursor.execute("""
-                SELECT tpj.id_pekerja 
+        worker_info = cursor.fetchone()
+
+        worker_id = worker_info[0]
+
+        cursor.execute("""
+            DELETE FROM SIJARTA.TESTIMONI 
+            WHERE id_tr_pemesanan = %s AND tgl = %s
+        """, [order_id, testimonial_date])
+
+        cursor.execute("""
+            WITH worker_testimonials AS (
+                SELECT t.rating
                 FROM SIJARTA.TESTIMONI t
                 JOIN SIJARTA.TR_PEMESANAN_JASA tpj ON t.id_tr_pemesanan = tpj.id
-                WHERE t.id_tr_pemesanan = %s AND tpj.id_pelanggan = %s
-            """, [order_id, user_id])
-            worker_info = cursor.fetchone()
+                WHERE tpj.id_pekerja = %s
+            )
+            UPDATE SIJARTA.PEKERJA 
+            SET rating = COALESCE((
+                SELECT AVG(rating) 
+                FROM worker_testimonials
+            ), 0)
+            WHERE id = %s
+        """, [worker_id, worker_id])
 
-            if not worker_info:
-                return JsonResponse({'error': 'Testimoni tidak ditemukan.'}, status=404)
-
-            worker_id = worker_info[0]
-
-            cursor.execute("""
-                DELETE FROM SIJARTA.TESTIMONI 
-                WHERE id_tr_pemesanan = %s AND tgl = %s
-            """, [order_id, testimonial_date])
-
-            cursor.execute("""
-                WITH worker_testimonials AS (
-                    SELECT t.rating
-                    FROM SIJARTA.TESTIMONI t
-                    JOIN SIJARTA.TR_PEMESANAN_JASA tpj ON t.id_tr_pemesanan = tpj.id
-                    WHERE tpj.id_pekerja = %s
-                )
-                UPDATE SIJARTA.PEKERJA 
-                SET rating = COALESCE((
-                    SELECT AVG(rating) 
-                    FROM worker_testimonials
-                ), 0)
-                WHERE id = %s
-            """, [worker_id, worker_id])
-
-            return JsonResponse({
-                'message': 'Testimoni berhasil dihapus!',
-                'status': 'success'
-            })
-
-    except Exception as e:
-        logger.error(f"Error in delete_testimoni: {str(e)}")
         return JsonResponse({
-            'error': 'Terjadi kesalahan saat menghapus testimoni.',
-            'details': str(e)
-        }, status=500)
+            'message': 'Testimoni berhasil dihapus!',
+            'status': 'success'
+        })
