@@ -65,7 +65,7 @@
                 </button>
             {% endif %}
         </div>
-        <p class="text-gray-600 mb-2">{{subkategori.deskripsi}}</p>
+        <p class="text-gray-600 mb-2">{{subkategori.0.deskripsi}}</p>
 
         <div class="top-0 py-4 font-medium text-gray-700 shadow-sm">
             Pilihan Sesi Layanan
@@ -78,7 +78,7 @@
                         <span class="font-medium">Sesi Layanan {{subcat.sesi}}</span> | Rp {{subcat.harga}}
                     </div>
                     {% if request.session.user.role|lower == "pelanggan" %}
-                        <button class="w-auto px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" onclick="showOrderModal('{{subkategori.0.kategori_jasa_id}}', {{subcat.sesi}}, {{subcat.harga}})">
+                        <button class="w-auto px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" onclick="showOrderModal('{{subcat.subkategori_id}}','{{subcat.sesi}}','{{subcat.harga}}')">
                             Order
                         </button>
                     {% endif %}

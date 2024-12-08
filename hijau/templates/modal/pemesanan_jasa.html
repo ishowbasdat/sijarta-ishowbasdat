@@ -35,13 +35,6 @@
                             class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                             placeholder="Masukkan kode diskon"
                         >
-                        <button 
-                            type="button"
-                            onclick="checkDiscount()"
-                            class="ml-2 px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                        >
-                            Cek
-                        </button>
                     </div>
                 </div>
 
@@ -85,12 +78,12 @@
 
     function showOrderModal(kategori_jasa_id, sesi, price) {
         basePrice = price;
-    
+
         // Store kategori_jasa_id and sesi as data attributes on the form
         const orderServiceForm = document.getElementById('orderServiceForm');
         orderServiceForm.dataset.kategoriJasaId = kategori_jasa_id;
         orderServiceForm.dataset.sesi = sesi;
-    
+
         fetch('{% url 'hijau:get_metode_pembayaran' %}')
             .then(response => response.json())
             .then(data => {
@@ -106,7 +99,7 @@
             .catch(error => console.error('Error fetching payment methods:', error));
     
         // Set initial total payment
-        document.getElementById('totalPayment').value = formatCurrency(basePrice);
+        document.getElementById('totalPayment').value = basePrice;
     
         // Show modal
         document.getElementById('orderServiceModal').classList.remove('hidden');
@@ -125,7 +118,7 @@
             'totalPayment': document.getElementById('totalPayment').value,
             'paymentMethod': document.getElementById('paymentMethod').value
         };
-    
+        
         // Make API call to create order
         fetch('{% url 'hijau:create_order'%}', {
             method: 'POST',
@@ -165,37 +158,9 @@
         discountAmount = 0;
     }
 
-    function checkDiscount() {
-        const discountCode = document.getElementById('discountCode').value;
-        
-        // Make API call to check discount
-        fetch('{% url 'hijau:validate_discount' %}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-            },
-            body: JSON.stringify({ kode: discountCode, transaksi: basePrice})
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.valid) {
-                discountAmount = data.potongan;
-                updateTotalPayment();
-                alert('Kode diskon berhasil diterapkan!');
-            } else {
-                alert('Kode diskon tidak valid');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Terjadi kesalahan saat memeriksa kode diskon');
-        });
-    }
-
     function updateTotalPayment() {
         const total = basePrice - discountAmount;
-        document.getElementById('totalPayment').value = formatCurrency(total);
+        document.getElementById('totalPayment').value = total;
     }
 
     function formatCurrency(amount) {
@@ -203,39 +168,5 @@
             style: 'currency', 
             currency: 'IDR' 
         }).format(amount);
-    }
-
-    function handleOrderSubmit(event) {
-        event.preventDefault();
-        
-        const formData = {
-            'orderDate': document.getElementById('orderDate').value,
-            'discountCode': document.getElementById('discountCode').value,
-            'totalPayment': document.getElementById('totalPayment').value,
-            'paymentMethod': document.getElementById('paymentMethod').value
-        };
-
-        // Make API call to create order
-        fetch('{% url 'hijau:create_order'%}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-            },
-            body: JSON.stringify(formData)
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Redirect to order view page
-                window.location.href = '{% url 'hijau:pesanan' %}';
-            } else {
-                alert(data.message || 'Terjadi kesalahan saat membuat pesanan');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Terjadi kesalahan saat membuat pesanan');
-        });
     }
 </script>

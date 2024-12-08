@@ -246,7 +246,7 @@ INSERT INTO SIJARTA.STATUS_PESANAN VALUES
 ('0b97c6a2-b8d7-42a2-a0c3-f3867ea6dd22', 'Mencari Pekerja Terdekat'),
 ('f6c936b2-54c9-49dc-84b9-664e3cded1e5', 'Menunggu Pekerja Berangkat'),
 ('ee71d120-34aa-4659-9e4f-606cf2545935', 'Pekerja Tiba di Lokasi'),
-('636fbe63-0ab1-42c4-ab96-87391e12abde', 'Menunggu Pembayaran'),
+('636fbe63-0ab1-42c4-ab96-87391e12abde', 'Pesanan Dibatalkan'),
 ('e89ac7f7-8168-4861-8a67-7b601cf720c2', 'Pelayanan Jasa sedang Dilakukan'),
 ('7d2d2293-9fc0-4acb-898a-e1fd710c2269', 'Pesanan Selesai');
 

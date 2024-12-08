@@ -130,8 +130,8 @@ CREATE TABLE IF NOT EXISTS SIJARTA.TR_PEMBELIAN_VOUCHER (
 CREATE TABLE IF NOT EXISTS SIJARTA.TR_PEMESANAN_JASA (
     id UUID PRIMARY KEY,
     tgl_pemesanan DATE NOT NULL,
-    tgl_pekerjaan DATE NOT NULL,
-    waktu_pekerjaan TIMESTAMP NOT NULL, 
+    tgl_pekerjaan DATE,
+    waktu_pekerjaan TIMESTAMP, 
     total_biaya DECIMAL NOT NULL CHECK (total_biaya >= 0),
     id_pelanggan UUID,
     id_pekerja UUID,
