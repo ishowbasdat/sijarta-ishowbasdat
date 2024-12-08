@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.db import connection
+from django.db import connection, IntegrityError, transaction
 from datetime import date, datetime
 from decimal import Decimal
 import uuid
+import django
 
 # Create your views here.
 def landing(request):
@@ -60,47 +61,54 @@ def register(request):
         return redirect('hijau:homepage')
     
     if request.method == 'POST':
-        id = uuid.uuid4()
-        nama = request.POST.get('nama')
-        jenis_kelamin = request.POST.get('jenis_kelamin')
-        no_hp = request.POST.get('no_hp')
-        pwd = request.POST.get('pwd')
-        tgl_lahir = request.POST.get('tgl_lahir')
-        alamat = request.POST.get('alamat')
-        role = request.POST.get('role')
-        
-        with connection.cursor() as cursor:
-            cursor.execute("""
-                SELECT 1 FROM SIJARTA."USER" WHERE no_hp = %s
-            """, [no_hp])
+        try:
+            with transaction.atomic():
+                id = uuid.uuid4()
+                nama = request.POST.get('nama')
+                jenis_kelamin = request.POST.get('jenis_kelamin')
+                no_hp = request.POST.get('no_hp')
+                pwd = request.POST.get('pwd')
+                tgl_lahir = request.POST.get('tgl_lahir')
+                alamat = request.POST.get('alamat')
+                role = request.POST.get('role')
             
-            if cursor.fetchone():
-                messages.error(request, 'Nomor HP telah terdaftar')
+                with connection.cursor() as cursor:
+                    cursor.execute("""
+                                INSERT INTO SIJARTA."USER" (id, nama, jenis_kelamin, no_hp, pwd, tgl_lahir, alamat, saldo_mypay)
+                                VALUES (%s, %s, %s, %s, %s, %s, %s, 0)
+                                """, [id, nama, jenis_kelamin, no_hp, pwd, tgl_lahir, alamat])
+                    
+                    if role == 'PELANGGAN':
+                        cursor.execute("""
+                                    INSERT INTO SIJARTA.PELANGGAN (id, level)
+                                    VALUES (%s, 'Basic')
+                                    """, [id])
+                        
+                    elif role == 'PEKERJA':
+                        nama_bank = request.POST.get('nama_bank')
+                        nomor_rekening = request.POST.get('nomor_rekening')
+                        npwp = request.POST.get('npwp')
+                        link_foto = request.POST.get('link_foto')
+                        cursor.execute("""
+                                    INSERT INTO SIJARTA.PEKERJA (id, nama_bank, nomor_rekening, npwp, link_foto, rating, jml_pesanan_selesai)
+                                        VALUES (%s, %s, %s, %s, %s, 0, 0)
+                                    """, [id, nama_bank, nomor_rekening, npwp, link_foto])
+                                    
+        except django.db.utils.InternalError as e:
+            if "Nomor HP" in str(e):
+                messages.error(request, 'No HP sudah terdaftar')
                 return redirect('kuning:login')
-            
-            # TODO: Cek kombinasi nama_bank dan nomor rekening, serta NPWP unik - perlu dihandle ga?
-            
-            cursor.execute("""
-                           INSERT INTO SIJARTA."USER" (id, nama, jenis_kelamin, no_hp, pwd, tgl_lahir, alamat, saldo_mypay)
-                           VALUES (%s, %s, %s, %s, %s, %s, %s, 0)
-                           """, [id, nama, jenis_kelamin, no_hp, pwd, tgl_lahir, alamat])
-            
-            if role == 'PELANGGAN':
-                cursor.execute("""
-                               INSERT INTO SIJARTA.PELANGGAN (id, level)
-                               VALUES (%s, 'Basic')
-                               """, [id])
-                
-            elif role == 'PEKERJA':
-                nama_bank = request.POST.get('nama_bank')
-                nomor_rekening = request.POST.get('nomor_rekening')
-                npwp = request.POST.get('npwp')
-                link_foto = request.POST.get('link_foto')
-                cursor.execute("""
-                               INSERT INTO SIJARTA.PEKERJA (id, nama_bank, nomor_rekening, npwp, link_foto, rating, jml_pesanan_selesai)
-                                 VALUES (%s, %s, %s, %s, %s, 0, 0)
-                               """, [id, nama_bank, nomor_rekening, npwp, link_foto])
+            else:
+                messages.error(request, 'Terjadi kesalahan')
+                return redirect('kuning:register')
+        
+        except Exception as e:
+            messages.error(request, f'Terjadi kesalahan')
+            return redirect('kuning:register')
+        
+        messages.success(request, 'Pendaftaran berhasil!')
         return redirect('kuning:login')
+        
     return render(request, 'register.html')
 
 # TODO: Cehck butuh ga tombol update, handle corner case juga
