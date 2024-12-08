@@ -95,8 +95,6 @@ INSERT INTO SIJARTA.SUBKATEGORI_JASA VALUES
 ('18831c74-fb17-4094-98a1-da083a814bfc', 'Pijat Relaksasi', 'Layanan pijat untuk relaksasi seluruh tubuh', 'f9d5d1db-cd8d-4476-96ad-5ec424977290'),
 ('71428286-a3c6-4489-884b-79810b9f0cd4', 'Potong Rambut', 'Layanan potong dan styling rambut', '37226a20-3d4d-4792-a4b2-56b52380a587');
 
-
-
 -- 9. SESI_LAYANAN
 INSERT INTO SIJARTA.SESI_LAYANAN VALUES 
 ('342e2903-fae6-450e-ad25-c22189b087b8', 1, 15000.00),

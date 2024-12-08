@@ -8,7 +8,42 @@
 </div>
 
 <script>
-    function fetchWorkerTestimonials(workerId) {
+    function deleteTestimonial(orderId, testimonialDate) {
+        if (!confirm('Apakah Anda yakin ingin menghapus testimoni ini?')) {
+            return;
+        }
+
+        fetch('/biru/api/delete_testimoni/', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ 
+                order_id: orderId,
+                testimonial_date: testimonialDate
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Gagal menghapus testimoni');
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert(data.message);
+            const currentWorkerId = document.querySelector('.worker-box.active')?.getAttribute('data-worker-id');
+            if (currentWorkerId) {
+                fetchWorkerTestimonials(currentWorkerId);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Gagal menghapus testimoni. Silakan coba lagi.');
+        });
+    }
+
+    function fetchWorkerTestimonials(workerId) {        
         const testimonialContainer = document.getElementById('testimonial-container');
 
         testimonialContainer.innerHTML = `
@@ -17,7 +52,7 @@
             </div>
         `;
 
-        fetch(`/biru/api/get_testimoni/${workerId}/`)
+        fetch(`/biru/api/get_testimoni/${workerId}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Gagal memuat testimoni');
@@ -34,27 +69,38 @@
                             'p-4', 
                             'text-gray-800', 
                             'border-b', 
-                            'border-gray-200'
+                            'border-gray-200',
+                            'relative'
                         );
                         const starRating = '★'.repeat(testi.rating) + '☆'.repeat(5 - testi.rating);
                         
                         testiElement.innerHTML = `
-                            <div class="flex items-center justify-between mb-2">
-                                <div class="text-yellow-500">
-                                    ${starRating}
+                            <div class="relative">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="text-yellow-500">
+                                        ${starRating}
+                                    </div>
                                 </div>
-                                <span class="text-sm text-gray-500">${testi.date}</span>
+                                <p class="mb-2 font-medium">Oleh: ${testi.author}</p>
+                                <p>${testi.comment}</p>
+                                <span class="text-sm text-gray-500 absolute bottom-0 right-0">
+                                    ${testi.date}
+                                </span>
+                                ${testi.is_own_testimonial ? `
+                                    <button onclick="deleteTestimonial('${testi.order_id}', '${testi.date}')" 
+                                        class="absolute top-2 right-2 text-red-500 hover:text-red-700">
+                                        🗑️
+                                    </button>
+                                ` : ''}
                             </div>
-                            <p class="mb-2 font-medium">Oleh: ${testi.author}</p>
-                            <p>${testi.comment}</p>
                         `;
-                        
+
                         testimonialContainer.appendChild(testiElement);
                     });
                 } else {
                     testimonialContainer.innerHTML = `
                         <div class="p-4 text-gray-600 text-center">
-                            Belum ada testimoni untuk pekerja ini.
+                            Belum ada testimoni untuk pekerja ini pada subkategori ini.
                         </div>
                     `;
                 }
@@ -74,6 +120,9 @@
         
         workerBoxes.forEach(box => {
             box.addEventListener('click', () => {
+                workerBoxes.forEach(b => b.classList.remove('active'));
+                box.classList.add('active');
+
                 const workerId = box.getAttribute('data-worker-id');
                 if (workerId) {
                     fetchWorkerTestimonials(workerId);
