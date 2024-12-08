@@ -10,6 +10,7 @@ import uuid
 from datetime import datetime, timezone, timedelta
 
 logger = logging.getLogger(__name__)
+jakarta_offset = timezone(timedelta(hours=7)) # WIB timezone
 
 def discount(request):
     if 'user' not in request.session:
@@ -98,7 +99,6 @@ def buy_voucher(request):
             
                 purchase_id = uuid.uuid4()
 
-                jakarta_offset = timezone(timedelta(hours=7)) # WIB timezone
                 current_date = datetime.now(jakarta_offset).date()
                 expiry_date = current_date + timedelta(days)
                 
@@ -201,7 +201,6 @@ def get_testimoni(request, subkategori_id, worker_id):
             'testimonials': testimonial_list
         })
 
-
 @require_http_methods(["POST"])
 @csrf_exempt
 def submit_testimonial(request):
@@ -237,7 +236,7 @@ def submit_testimonial(request):
 
             logger.error(order_id)
 
-            current_date = datetime.now()
+            current_date = datetime.now(jakarta_offset)
             cursor.execute("""
                 INSERT INTO SIJARTA.TESTIMONI 
                 (id_tr_pemesanan, tgl, teks, rating) 
