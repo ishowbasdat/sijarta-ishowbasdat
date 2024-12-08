@@ -85,16 +85,17 @@ def mypay_transaction(request):
                             INSERT INTO SIJARTA.TR_MYPAY VALUES
                             (%s, %s, %s, %s, %s)
                         """, [uuid.uuid4(), id, formatted_pg_date, nominal_topup, '44a6e520-f3e7-4761-87e8-1748e1465aae'])
-                    return redirect('merah:mypay_info')  
+                    messages.success(request, 'Topup berhasil!')
+                    return redirect('merah:mypay_transaction')  
                 else:
                     messages.error(request,  "Nominal Topup tidak valid")
 
             elif kategori == 'Membayar transaksi jasa':
                 jasa_id = request.POST.get('jasa')
                 harga_jasa = request.POST.get('harga_jasa')
+                print(jasa_id)
 
                 if jasa_id and harga_jasa:
-
                     if user_saldo >= float(harga_jasa):
                         cursor.execute("""
                             UPDATE SIJARTA."USER"
@@ -111,12 +112,13 @@ def mypay_transaction(request):
                             INSERT INTO SIJARTA.TR_MYPAY VALUES
                             (%s, %s, %s, %s ,%s)
                         """, [uuid.uuid4(), id, formatted_pg_date, harga_jasa, '546fa422-0eca-4da0-90d2-2cb106bccea4'])
-                        return redirect('merah:mypay_info')  
+                        messages.success(request, 'Pembayaran berhasil!')
+                        return redirect('merah:mypay_transaction')  
                     else:
-                        messages.error(request,  "Transaksi tidak valid atau saldo kurang")
+                        messages.error(request,  "Saldo tidak cukup!")
                         return redirect('merah:mypay_transaction') 
                 else:
-                    messages.error(request,  "Transaksi jasa kosong atau harga jasa kosong")
+                    messages.info(request,  "Harap Pilih Transaksi Jasa!")
 
             elif kategori == 'Transfer MyPay ke pengguna lain':
                 no_hp_tujuan = request.POST.get('no_hp_tujuan')
@@ -153,13 +155,13 @@ def mypay_transaction(request):
                             INSERT INTO SIJARTA.TR_MYPAY VALUES
                             (%s, %s, %s, %s, %s)
                         """, [uuid.uuid4(), recipient_id, formatted_pg_date, nominal_transfer, '8347f8e9-677e-43f6-b9d4-4d3fd5211e4d'])
-
+                        messages.success(request, 'Transfer berhasil!')
                         return redirect('merah:mypay_info')
                     else:
-                        messages.error(request,  "Saldo tidak cukup")
+                        messages.error(request,  "Saldo tidak cukup!")
                         return redirect('merah:mypay_transaction') 
                 else:
-                    messages.error(request,  "Nomor HP tidak valid atau nominal transfer tidak valid")
+                    messages.error(request,  "Nomor HP tidak valid atau nominal transfer tidak valid!")
 
             elif kategori == 'Withdrawal MyPay ke rekening bank':
                 bank = request.POST.get('bank')
@@ -178,12 +180,13 @@ def mypay_transaction(request):
                             INSERT INTO SIJARTA.TR_MYPAY VALUES
                             (%s, %s, %s, %s, %s)
                         """, [uuid.uuid4(), id, formatted_pg_date, nominal_withdrawal, '7080df35-dd42-44cf-b09f-956414f5d499'])
-                        return redirect('merah:mypay_info') 
+                        messages.success(request, 'Withdrawal berhasil!')
+                        return redirect('merah:mypay_transaction') 
                     else:
                         messages.error(request,  "Saldo tidak cukup")
                         return redirect('merah:mypay_transaction') 
                 else:
-                    messages.error(request,  "Bank dan/atau rekening kosong atau saldo tidak valid")
+                    messages.error(request, "Bank dan/atau rekening kosong atau saldo tidak valid")
 
     with connection.cursor() as cursor:
         cursor.execute("""
@@ -293,7 +296,6 @@ def pekerjaan_jasa(request):
             
             row = cursor.fetchone()[0]
 
-            # Tambahkan 3 hari ke timestamp
             waktu_pekerjaan = now + timedelta(days=row)
             formatted_waktu_pekerjaan = waktu_pekerjaan.strftime("%Y-%m-%d %H:%M:%S.%f").rstrip("0").rstrip(".")
             cursor.execute("""
@@ -301,7 +303,9 @@ def pekerjaan_jasa(request):
                             SET waktu_pekerjaan = %s
                             WHERE id = %s
                         """, [formatted_waktu_pekerjaan, pesanan_id])
-            return redirect('merah:status_pekerjaan_jasa')  
+            
+            messages.success(request, 'Pengambilan Pekerjaan berhasil!')
+            return redirect('merah:pekerjaan_jasa')  
         
         cursor.execute("""
                         SELECT KJ.id, KJ.nama_kategori
@@ -342,20 +346,9 @@ def get_subkategori_jasa(request, kategori_id):
 def filter_pekerjaan_jasa(request, kategori_id, subkategori_id):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest' and request.method == "GET":
         with connection.cursor() as cursor:
-            if kategori_id == uuid.UUID('2233108e-9383-45d8-ac3a-752c8e1f8810') or subkategori_id == uuid.UUID('b6cea022-ddb7-49f9-b1f4-a131778e038a') :
-                cursor.execute("""
-                    SELECT SJ.nama_subkategori, SJ.deskripsi, TP.total_biaya, TP.id, TP.tgl_pemesanan, TP.sesi, SL.sesi, U.nama
-                    FROM SIJARTA.TR_PEMESANAN_JASA TP
-                    JOIN SIJARTA.SESI_LAYANAN SL ON TP.id_kategori_jasa = SL.subkategori_id AND TP.sesi = SL.sesi
-                    JOIN SIJARTA.SUBKATEGORI_JASA SJ ON SL.subkategori_id = SJ.id
-                    JOIN SIJARTA.TR_PEMESANAN_STATUS TS ON TS.id_tr_pemesanan = TP.id
-                    JOIN SIJARTA."USER" U ON TP.id_pelanggan = U.id
-                    WHERE TS.id_status = '0b97c6a2-b8d7-42a2-a0c3-f3867ea6dd22' AND TS.tgl_waktu = (
-                        SELECT MAX(TPS.tgl_waktu)
-                        FROM SIJARTA.TR_PEMESANAN_STATUS TPS
-                        WHERE TPS.id_tr_pemesanan = TS.id_tr_pemesanan
-                    )
-                """)
+            if kategori_id == uuid.UUID("bdc1388f-3209-4d46-a884-6ee6c9bffb1e") and subkategori_id == uuid.UUID("556caba3-9576-4db0-83ee-0c6146a49fbe"):
+                messages.error(request, "Harap isi kategori dan subkategori!")
+                return JsonResponse({'empty': 'No Filter Applied'})
             else:
                 cursor.execute("""
                     SELECT SJ.nama_subkategori, SJ.deskripsi, TP.total_biaya, TP.id, TP.tgl_pemesanan, TP.sesi, SL.sesi, U.nama
@@ -400,17 +393,21 @@ def status_pekerjaan_jasa(request):
                                 INSERT INTO SIJARTA.TR_PEMESANAN_STATUS VALUES
                                 (%s, %s, %s)
                             """, [pesanan_id, 'ee71d120-34aa-4659-9e4f-606cf2545935', formatted_timestamp])
+                messages.success(request, 'Berhasil Melanjutkan Pekerjaan!')
+
             elif status_pesanan == "Pekerja Tiba di Lokasi":
                 cursor.execute("""
                                 INSERT INTO SIJARTA.TR_PEMESANAN_STATUS VALUES
                                 (%s, %s, %s)
                             """, [pesanan_id, 'e89ac7f7-8168-4861-8a67-7b601cf720c2', formatted_timestamp])
+                messages.success(request, 'Berhasil Melanjutkan Pekerjaan!')
             
             elif status_pesanan == "Pelayanan Jasa sedang Dilakukan":
                 cursor.execute("""
                                 INSERT INTO SIJARTA.TR_PEMESANAN_STATUS VALUES
                                 (%s, %s, %s)
                             """, [pesanan_id, '7d2d2293-9fc0-4acb-898a-e1fd710c2269', formatted_timestamp])
+                messages.success(request, 'Berhasil Melanjutkan Pekerjaan!')
 
         cursor.execute("""
                         SELECT *

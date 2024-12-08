@@ -18,6 +18,29 @@
                 </div>
             </div>
 
+            {% if messages %}
+            <div class="mt-4 space-y-2 plus-jakarta-sans-bold">
+            {% for message in messages %}
+                {% if message.tags == "success" %}
+                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-r" role="alert">
+                        <p class="font-bold">Success</p>
+                        <p>{{ message }}</p>
+                    </div>
+                {% elif message.tags == "error" %}
+                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-r" role="alert">
+                        <p class="font-bold">Error</p>
+                        <p>{{ message }}</p>
+                    </div>
+                {% else %}
+                    <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded-r" role="alert">
+                        <p class="font-bold">Info</p>
+                        <p>{{ message }}</p>
+                    </div>
+                {% endif %}
+            {% endfor %}
+            </div>
+            {% endif %}
+
             <form method="POST" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 {% csrf_token %}
 
@@ -58,7 +81,7 @@
                 <div class="mb-4">
                     <label for="jasa" class="block text-gray-700 text-lg font-bold mb-2">Service</label>
                     <select id="jasa" name="jasa" class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="empty"></option>
+                        <option value=""></option>
                         {% for tr in tr_data %}
                             <option value="{{ tr.id }}">{{ tr.nama_subkategori }}, {{ tr.deskripsi }} ({{tr.sesi}} Sesi)</option>
                         {% endfor %}

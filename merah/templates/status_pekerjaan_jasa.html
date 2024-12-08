@@ -28,6 +28,28 @@
                     Cari
                 </button>
             </div>
+            {% if messages %}
+            <div class="mt-4 space-y-2 plus-jakarta-sans-bold">
+                {% for message in messages %}
+                    {% if message.tags == "success" %}
+                        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-r" role="alert">
+                            <p class="font-bold">Success</p>
+                            <p>{{ message }}</p>
+                        </div>
+                    {% elif message.tags == "error" %}
+                        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-r" role="alert">
+                            <p class="font-bold">Error</p>
+                            <p>{{ message }}</p>
+                        </div>
+                    {% else %}
+                        <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded-r" role="alert">
+                            <p class="font-bold">Info</p>
+                            <p>{{ message }}</p>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
         </div>
 
         <div id="status-pekerjaan-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

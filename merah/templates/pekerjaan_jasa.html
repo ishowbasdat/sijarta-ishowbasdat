@@ -33,10 +33,33 @@
         <!-- Daftar Pesanan Jasa -->
         <div class="mt-8">
             <h3 class="text-xl">Daftar Pesanan Jasa</h3>
-                <div id="pesanan-jasa" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-4">
-                <!-- Pesanan Jasa akan ditampilkan di sini sebagai card -->
-                </div>
+            <div id="pesanan-jasa" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-4">
+            <!-- Pesanan Jasa akan ditampilkan di sini sebagai card -->
+            </div>
         </div>
+
+        {% if messages %}
+        <div id="message" class="mt-4 space-y-2 plus-jakarta-sans-bold">
+        {% for message in messages %}
+            {% if message.tags == "success" %}
+                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-r" role="alert">
+                    <p class="font-bold">Success</p>
+                    <p>{{ message }}</p>
+                </div>
+            {% elif message.tags == "error" %}
+                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-r" role="alert">
+                    <p class="font-bold">Error</p>
+                    <p>{{ message }}</p>
+                </div>
+            {% else %}
+                <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded-r" role="alert">
+                    <p class="font-bold">Info</p>
+                    <p>{{ message }}</p>
+                </div>
+            {% endif %}
+        {% endfor %}
+        </div>
+        {% endif %}
     </div>
 </div>
 
@@ -89,7 +112,7 @@
 
         // Check if both category and subcategory are empty
         if (!kategori && !subkategori) {
-            console.log('Filter masih kosong');
+            url = `/merah/filter-pekerjaan-jasa/bdc1388f-3209-4d46-a884-6ee6c9bffb1e/556caba3-9576-4db0-83ee-0c6146a49fbe`;
         }
 
         try {
@@ -97,7 +120,11 @@
                             headers: { "X-Requested-With": "XMLHttpRequest" } 
                         });
             const data = await response.json();
-            displayPesanan(data.pekerjaan);
+            if (data.empty) {
+                location.reload();
+            } else {
+                displayPesanan(data.pekerjaan);
+            }
         } catch (error) {
             console.error('Error filtering pekerjaan jasa:', error);
         }
@@ -105,6 +132,8 @@
 
     function displayPesanan(pesananList) {
         const pesananContainer = document.getElementById("pesanan-jasa");
+        const messageContainer = document.getElementById("message");
+        messageContainer.innerHTML = "";
         pesananContainer.innerHTML = ""; // Hapus konten sebelumnya
         pesananList.forEach(pesanan => {
             const card = document.createElement("div");
