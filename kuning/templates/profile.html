@@ -176,7 +176,7 @@
                 {% csrf_token %}
                 <div class="flex items-center">
                     <label class="text-gray-600 w-28 text-sm">Nama:</label>
-                    <input type="text" name="nama" value=""
+                    <input type="text" name="nama" value="" required
                            class="flex-1 rounded border border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
                 </div>
                 <div class="flex items-center">
@@ -194,39 +194,45 @@
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-28 text-sm">No HP:</label>
-                    <input type="text" name="no_hp" value=""
+                    <input type="text" name="no_hp" value="" required
                            class="flex-1 rounded border border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-28 text-sm">Tanggal Lahir:</label>
-                    <input type="date" name="tgl_lahir" value=""
+                    <input type="date" name="tgl_lahir" value="" required
                            class="flex-1 rounded border border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-28 text-sm">Alamat:</label>
-                    <input type="text" name="alamat" value=""
+                    <input type="text" name="alamat" value="" required
                            class="flex-1 rounded border border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
                 </div>
 
-                {% if request.session.user.role != 'PELANGGAN' %}
+                {% if request.session.user.role == 'PEKERJA' %}
                 <div class="flex items-center">
                     <label class="text-gray-600 w-28 text-sm">Nama Bank:</label>
-                    <input type="text" name="nama_bank" value=""
-                           class="flex-1 rounded border border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
-                </div>
+                    <select name="nama_bank" 
+                            class="flex-1 rounded border border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                        <option value="GoPay">GoPay</option>
+                        <option value="OVO">OVO</option>
+                        <option value="Virtual Account BCA">Virtual Account BCA</option>
+                        <option value="Virtual Account BNI">Virtual Account BNI</option>
+                        <option value="Virtual Account Mandiri">Virtual Account Mandiri</option>
+                    </select>
+                </div>                
                 <div class="flex items-center">
                     <label class="text-gray-600 w-28 text-sm">No Rekening:</label>
-                    <input type="text" name="nomor_rekening" value=""
+                    <input type="text" name="nomor_rekening" value="" required
                            class="flex-1 rounded border border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-28 text-sm">NPWP:</label>
-                    <input type="text" name="npwp" value=""
+                    <input type="text" name="npwp" value="" required
                            class="flex-1 rounded border border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-28 text-sm">URL Foto:</label>
-                    <input type="url" name="link_foto" value=""
+                    <input type="url" name="link_foto" value="" required
                            class="flex-1 rounded border border-gray-300 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
                 </div>
                 {% endif %}
@@ -268,8 +274,8 @@
             document.querySelector('input[name="jenis_kelamin"][value="P"]').checked = true;
         }
 
-        {% if request.session.user.role != 'PELANGGAN' %}
-        document.querySelector('input[name="nama_bank"]').value = '{{ user_data.nama_bank }}';
+        {% if request.session.user.role == 'PEKERJA' %}
+        document.querySelector('select[name="nama_bank"]').value = '{{ user_data.nama_bank }}';
         document.querySelector('input[name="nomor_rekening"]').value = '{{ user_data.nomor_rekening }}';
         document.querySelector('input[name="npwp"]').value = '{{ user_data.npwp }}';
         document.querySelector('input[name="link_foto"]').value = '{{ user_data.link_foto }}';
@@ -290,7 +296,7 @@
 
     document.querySelector('form').addEventListener('submit', function(event) {
         const requiredFields = ['nama', 'no_hp', 'tgl_lahir', 'alamat'];
-        {% if request.session.user.role != 'PELANGGAN' %}
+        {% if request.session.user.role == 'PEKERJA' %}
         requiredFields.push('nama_bank', 'nomor_rekening', 'npwp');
         {% endif %}
 
