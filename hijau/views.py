@@ -7,6 +7,7 @@ from django.http import HttpResponse, HttpResponseForbidden
 from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse, HttpResponseBadRequest
 from kuning.views import landing
+from django.contrib import messages
 import json
 import uuid
 
@@ -110,7 +111,7 @@ def subkategori(request, id):
             
         if subcategory is None:
             return redirect('homepage')
-        
+        #print role
         context = {'subkategori' : subcategory, 'pekerja' : pekerja, 'is_joined' : is_joined}
         return render(request, 'subkategori.html', context)
 
@@ -228,7 +229,8 @@ def pesanan(request):
 @require_http_methods(["POST"])
 def cancel_pesanan(request, id):
     if request.session['user']['role'] != 'PELANGGAN':
-        return JsonResponse({"success": False, "message": "Only 'PELANGGAN' role can delete an order."})
+        messages.error(request, 'Only \'PELANGGAN\' role can delete an order.')
+        return redirect(cancel_pesanan)
     
     # check whether the order belongs to the user
     with connection.cursor() as cursor:
@@ -239,7 +241,8 @@ def cancel_pesanan(request, id):
                        """, [id, request.session['user']['id']])
         
         if cursor.fetchone() is None:
-            return JsonResponse({"success": False, "message": "The order does not belong to you."})
+            messages.error(request, 'The order does not belong to you.')
+            return redirect(cancel_pesanan)
     
     current_date = datetime.now()
     with connection.cursor() as cursor:
