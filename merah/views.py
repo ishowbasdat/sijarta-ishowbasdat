@@ -25,7 +25,6 @@ def mypay_info(request):
 
         user_data = dict(zip([column[0] for column in cursor.description], row))
 
-        # Fetch transaction history data
         cursor.execute("""
                        SELECT TR.nominal, K.nama, TR.tgl
                        FROM SIJARTA."USER" AS U 
@@ -53,7 +52,6 @@ def mypay_transaction(request):
     role = request.session['user'].get('role')
 
     if request.method == 'POST':
-        # Get current timezone-aware timestamp
         now = timezone.now()
         formatted_timestamp = now.strftime("%Y-%m-%d %H:%M:%S.%f")
         formatted_timestamp = formatted_timestamp.rstrip("0").rstrip(".")
@@ -63,7 +61,6 @@ def mypay_transaction(request):
 
         kategori = request.POST.get('kategori')
 
-        # Handle different transaction categories
         with connection.cursor() as cursor:
             cursor.execute("""
                         SELECT saldo_mypay 
@@ -93,8 +90,6 @@ def mypay_transaction(request):
             elif kategori == 'Membayar transaksi jasa':
                 jasa_id = request.POST.get('jasa')
                 harga_jasa = request.POST.get('harga_jasa')
-                print(jasa_id)
-
                 if jasa_id and harga_jasa:
                     if user_saldo >= float(harga_jasa):
                         cursor.execute("""
@@ -127,14 +122,12 @@ def mypay_transaction(request):
                 if no_hp_tujuan and nominal_transfer and float(nominal_transfer) > 0:
 
                     if user_saldo >= float(nominal_transfer):
-                        # Deduct from sender
                         cursor.execute("""
                             UPDATE SIJARTA."USER"
                             SET saldo_mypay = saldo_mypay - %s
                             WHERE id = %s
                         """, [nominal_transfer, id])
 
-                        # Add to recipient
                         cursor.execute("""
                             UPDATE SIJARTA."USER"
                             SET saldo_mypay = saldo_mypay + %s
@@ -167,6 +160,10 @@ def mypay_transaction(request):
                 bank = request.POST.get('bank')
                 rekening = request.POST.get('rekening')
                 nominal_withdrawal = request.POST.get('nominal_withdrawal')
+
+                if len(rekening) < 10 or len(rekening) > 16 or not (rekening.isdigit()):
+                    messages.error(request,  "Nomor Rekening harus berupa angka sepanjang 10-16 digit!")
+                    return redirect('merah:mypay_transaction')
 
                 if bank and rekening and nominal_withdrawal and float(nominal_withdrawal) > 0:
                     if user_saldo >= float(nominal_withdrawal):
@@ -236,7 +233,6 @@ def mypay_transaction(request):
         return render(request, 'mypay_transaction.html', {'user': user_data,'category_data': category_data, 'tr_data': tr_data})
 
 def get_service_price(request, service_id):
-    # Check if the request is an AJAX request by looking for the X-Requested-With header
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest' and request.method == "GET":
         with connection.cursor() as cursor:
             cursor.execute("""
@@ -248,10 +244,10 @@ def get_service_price(request, service_id):
             row = cursor.fetchone()
 
             if row:
-                total_biaya = row[0]  # Correctly extract the price value
+                total_biaya = row[0]
                 return JsonResponse({'total_biaya': total_biaya})
             else:
-                return JsonResponse({'error': 'Service not found'}, status=404)
+                return JsonResponse({'total_biaya': 0})
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
@@ -371,6 +367,7 @@ def filter_pekerjaan_jasa(request, kategori_id, subkategori_id):
             else:
                 columns = [col[0] for col in cursor.description]
                 pekerjaan_jasa = [dict(zip(columns, row)) for row in rows]
+                print(pekerjaan_jasa)
                 return JsonResponse({'pekerjaan': pekerjaan_jasa})
             
     return JsonResponse({'error': 'Invalid request'}, status=400)
@@ -407,18 +404,44 @@ def status_pekerjaan_jasa(request):
                                 INSERT INTO SIJARTA.TR_PEMESANAN_STATUS VALUES
                                 (%s, %s, %s)
                             """, [pesanan_id, '7d2d2293-9fc0-4acb-898a-e1fd710c2269', formatted_timestamp])
-                messages.success(request, 'Berhasil Melanjutkan Pekerjaan!')
+                
+                cursor.execute("""
+                                UPDATE SIJARTA.PEKERJA
+                                SET jml_pesanan_selesai = jml_pesanan_selesai + 1
+                                WHERE id = %s
+                            """, [id])
+                messages.success(request, 'Berhasil Menuntaskan Pekerjaan!')
 
         cursor.execute("""
                         SELECT *
                         FROM SIJARTA.STATUS_PESANAN
                         WHERE status NOT IN ('Menunggu Pembayaran', 'Mencari Pekerja Terdekat')
                        """)
+        
         rows = cursor.fetchall()
         columns = [col[0] for col in cursor.description]
         status = [dict(zip(columns, row)) for row in rows]    
 
-    return render(request, 'status_pekerjaan_jasa.html',  {'statuses': status})
+        cursor.execute("""
+                            SELECT SJ.nama_subkategori, TP.total_biaya, TP.id, TP.tgl_pemesanan, TP.sesi, U.nama, SP.status
+                            FROM SIJARTA.TR_PEMESANAN_JASA TP
+                            JOIN SIJARTA.SESI_LAYANAN SL ON TP.id_kategori_jasa = SL.subkategori_id AND TP.sesi = SL.sesi
+                            JOIN SIJARTA.SUBKATEGORI_JASA SJ ON SL.subkategori_id = SJ.id
+                            JOIN SIJARTA.TR_PEMESANAN_STATUS TS ON TS.id_tr_pemesanan = TP.id
+                            JOIN SIJARTA."USER" U ON TP.id_pelanggan = U.id
+                            JOIN SIJARTA.STATUS_PESANAN SP ON TS.id_status = SP.id
+                            WHERE TP.id_pekerja = %s AND SP.status NOT IN ('Menunggu Pembayaran', 'Mencari Pekerja Terdekat') AND TS.tgl_waktu = (
+                                SELECT MAX(TPS.tgl_waktu)
+                                FROM SIJARTA.TR_PEMESANAN_STATUS TPS
+                                WHERE TPS.id_tr_pemesanan = TS.id_tr_pemesanan
+                            )
+                        """, [id])
+
+        rows = cursor.fetchall()
+        columns = [col[0] for col in cursor.description]
+        pekerjaan_jasa = [dict(zip(columns, row)) for row in rows]
+
+    return render(request, 'status_pekerjaan_jasa.html',  {'statuses': status, 'pekerjaan_jasa': pekerjaan_jasa})
 
 def filter_status_pekerjaan_jasa(request, nama_jasa, status_pesanan):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest' and request.method == "GET":
