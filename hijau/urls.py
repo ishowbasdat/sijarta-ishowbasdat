@@ -1,4 +1,4 @@
-from .views import homepage, subkategori, get_metode_pembayaran, validate_discount, create_order, pesanan
+from .views import homepage, subkategori, get_metode_pembayaran, validate_discount, create_order, pesanan, cancel_pesanan
 from django.urls import path
 
 app_name = 'hijau'
@@ -9,5 +9,6 @@ urlpatterns = [
     path('api/get-metode-pembayaran/', get_metode_pembayaran, name='get_metode_pembayaran'),
     path('api/check-discount/', validate_discount, name='validate_discount'),
     path('api/create-order/', create_order, name='create_order'),
-    path('pesanan/', pesanan, name='pesanan')
+    path('pesanan/', pesanan, name='pesanan'),
+    path('cancel-pesanan/<str:id>', cancel_pesanan, name='cancel_pesanan')
 ]

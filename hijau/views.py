@@ -190,23 +190,10 @@ def create_order(request):
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
 @require_http_methods(["GET"])
-def pesanan(request):
-    
-    # Dummy session
-    request.session['user'] = {
-        'id': 'ce820534-45af-4871-9d91-4da9e52dc988',
-        'nama': 'Christian Raphael Heryanto',
-        'jenis_kelamin': 'L',
-        'no_hp': '081213151719',
-        'pwd': 'ThisIsMyPasswordDontHackMePls',
-        'tgl_lahir': '2005-01-01',
-        'alamat': 'Jalan Haji Kukusan',
-        'saldo_mypay': 200000.00,
-        'role': 'PELANGGAN'
-    }
+def pesanan(request):   
     
     if request.session['user']['role'] != 'PELANGGAN':
-        return HttpResponseBadRequest()
+        return redirect('homepage')
 
     with connection.cursor() as cursor:
         cursor.execute("""
@@ -218,7 +205,12 @@ def pesanan(request):
                         LEFT JOIN SIJARTA.SUBKATEGORI_JASA sj ON sl.subkategori_id = sj.id
                         LEFT JOIN SIJARTA.PEKERJA p ON tpj.id_pekerja = p.id
                         LEFT JOIN SIJARTA."USER" u ON p.id = u.id
-                        WHERE tpj.id_pelanggan = %s;
+                        WHERE tpj.id_pelanggan = %s
+                        AND tps.tgl_waktu = (
+                            SELECT MAX(tps2.tgl_waktu)
+                            FROM SIJARTA.TR_PEMESANAN_STATUS tps2
+                            WHERE tps2.id_tr_pemesanan = tps.id_tr_pemesanan
+                        );
                        """, [request.session['user']['id']])
         data = [dict(zip([ column[0] for column in cursor.description ], row)) for row in cursor.fetchall()]
         
@@ -232,3 +224,29 @@ def pesanan(request):
                        """)
         status = [dict(zip([ column[0] for column in cursor.description ], row)) for row in cursor.fetchall()]
     return render(request, 'pesanan.html', {'data': data, 'subcategories': subcategories, 'status': status})
+
+@require_http_methods(["POST"])
+def cancel_pesanan(request, id):
+    if request.session['user']['role'] != 'PELANGGAN':
+        return JsonResponse({"success": False, "message": "Only 'PELANGGAN' role can delete an order."})
+    
+    # check whether the order belongs to the user
+    with connection.cursor() as cursor:
+        cursor.execute("""
+                        SELECT * FROM SIJARTA.TR_PEMESANAN_JASA
+                        WHERE id = %s
+                        AND id_pelanggan = %s
+                       """, [id, request.session['user']['id']])
+        
+        if cursor.fetchone() is None:
+            return JsonResponse({"success": False, "message": "The order does not belong to you."})
+    
+    current_date = datetime.now()
+    with connection.cursor() as cursor:
+        #alter table change status to cancelled
+        cursor.execute("""
+                        INSERT INTO SIJARTA.TR_PEMESANAN_STATUS
+                        (id_tr_pemesanan, id_status, tgl_waktu)
+                        VALUES (%s, (SELECT id FROM SIJARTA.STATUS_PESANAN WHERE status = 'Pesanan Dibatalkan'), %s)
+                        """, [id, current_date])
+    return JsonResponse({"success": True, "message": "Order canceled successfully."})
