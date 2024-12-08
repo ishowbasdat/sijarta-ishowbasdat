@@ -87,9 +87,7 @@ def mypay_transaction(request):
                         """, [uuid.uuid4(), id, formatted_pg_date, nominal_topup, '44a6e520-f3e7-4761-87e8-1748e1465aae'])
                     return redirect('merah:mypay_info')  
                 else:
-                    return render(request, 'mypay_transaction.html', {
-                        'error': 'Invalid Top-Up Amount',
-                    })
+                    messages.error(request,  "Nominal Topup tidak valid")
 
             elif kategori == 'Membayar transaksi jasa':
                 jasa_id = request.POST.get('jasa')
@@ -115,9 +113,10 @@ def mypay_transaction(request):
                         """, [uuid.uuid4(), id, formatted_pg_date, harga_jasa, '546fa422-0eca-4da0-90d2-2cb106bccea4'])
                         return redirect('merah:mypay_info')  
                     else:
-                        return render(request, 'mypay_transaction.html', {
-                            'error': 'Insufficient Balance',
-                        })
+                        messages.error(request,  "Transaksi tidak valid atau saldo kurang")
+                        return redirect('merah:mypay_transaction') 
+                else:
+                    messages.error(request,  "Transaksi jasa kosong atau harga jasa kosong")
 
             elif kategori == 'Transfer MyPay ke pengguna lain':
                 no_hp_tujuan = request.POST.get('no_hp_tujuan')
@@ -155,9 +154,12 @@ def mypay_transaction(request):
                             (%s, %s, %s, %s, %s)
                         """, [uuid.uuid4(), recipient_id, formatted_pg_date, nominal_transfer, '8347f8e9-677e-43f6-b9d4-4d3fd5211e4d'])
 
-                        return redirect('merah:mypay_info') 
+                        return redirect('merah:mypay_info')
                     else:
+                        messages.error(request,  "Saldo tidak cukup")
                         return redirect('merah:mypay_transaction') 
+                else:
+                    messages.error(request,  "Nomor HP tidak valid atau nominal transfer tidak valid")
 
             elif kategori == 'Withdrawal MyPay ke rekening bank':
                 bank = request.POST.get('bank')
@@ -178,9 +180,10 @@ def mypay_transaction(request):
                         """, [uuid.uuid4(), id, formatted_pg_date, nominal_withdrawal, '7080df35-dd42-44cf-b09f-956414f5d499'])
                         return redirect('merah:mypay_info') 
                     else:
-                        return render(request, 'mypay_transaction.html', {
-                            'error': 'Insufficient Balance',
-                        })
+                        messages.error(request,  "Saldo tidak cukup")
+                        return redirect('merah:mypay_transaction') 
+                else:
+                    messages.error(request,  "Bank dan/atau rekening kosong atau saldo tidak valid")
 
     with connection.cursor() as cursor:
         cursor.execute("""
@@ -444,6 +447,51 @@ def filter_status_pekerjaan_jasa(request, nama_jasa, status_pesanan):
                 columns = [col[0] for col in cursor.description]
                 pekerjaan_jasa = [dict(zip(columns, row)) for row in rows]
                 return JsonResponse({'pekerjaan': pekerjaan_jasa})
+        
+        elif nama_jasa == "any":
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                            SELECT SJ.nama_subkategori, TP.total_biaya, TP.id, TP.tgl_pemesanan, TP.sesi, U.nama, SP.status
+                            FROM SIJARTA.TR_PEMESANAN_JASA TP
+                            JOIN SIJARTA.SESI_LAYANAN SL ON TP.id_kategori_jasa = SL.subkategori_id AND TP.sesi = SL.sesi
+                            JOIN SIJARTA.SUBKATEGORI_JASA SJ ON SL.subkategori_id = SJ.id
+                            JOIN SIJARTA.TR_PEMESANAN_STATUS TS ON TS.id_tr_pemesanan = TP.id
+                            JOIN SIJARTA."USER" U ON TP.id_pelanggan = U.id
+                            JOIN SIJARTA.STATUS_PESANAN SP ON TS.id_status = SP.id
+                            WHERE TP.id_pekerja = %s AND SP.status NOT IN ('Menunggu Pembayaran', 'Mencari Pekerja Terdekat') AND SP.id = %s AND TS.tgl_waktu = (
+                                SELECT MAX(TPS.tgl_waktu)
+                                FROM SIJARTA.TR_PEMESANAN_STATUS TPS
+                                WHERE TPS.id_tr_pemesanan = TS.id_tr_pemesanan
+                            )
+                        """, [id, status_pesanan])
+
+                rows = cursor.fetchall()
+                columns = [col[0] for col in cursor.description]
+                pekerjaan_jasa = [dict(zip(columns, row)) for row in rows]
+                return JsonResponse({'pekerjaan': pekerjaan_jasa})
+        
+        elif status_pesanan == uuid.UUID("0f6cf279-d325-4e55-be8a-eac84939e0fc"):
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                            SELECT SJ.nama_subkategori, TP.total_biaya, TP.id, TP.tgl_pemesanan, TP.sesi, U.nama, SP.status
+                            FROM SIJARTA.TR_PEMESANAN_JASA TP
+                            JOIN SIJARTA.SESI_LAYANAN SL ON TP.id_kategori_jasa = SL.subkategori_id AND TP.sesi = SL.sesi
+                            JOIN SIJARTA.SUBKATEGORI_JASA SJ ON SL.subkategori_id = SJ.id
+                            JOIN SIJARTA.TR_PEMESANAN_STATUS TS ON TS.id_tr_pemesanan = TP.id
+                            JOIN SIJARTA."USER" U ON TP.id_pelanggan = U.id
+                            JOIN SIJARTA.STATUS_PESANAN SP ON TS.id_status = SP.id
+                            WHERE TP.id_pekerja = %s AND SP.status NOT IN ('Menunggu Pembayaran', 'Mencari Pekerja Terdekat') AND SJ.nama_subkategori LIKE %s  AND TS.tgl_waktu = (
+                                SELECT MAX(TPS.tgl_waktu)
+                                FROM SIJARTA.TR_PEMESANAN_STATUS TPS
+                                WHERE TPS.id_tr_pemesanan = TS.id_tr_pemesanan
+                            )
+                        """, [id, f'%{nama_jasa}%'])
+
+                rows = cursor.fetchall()
+                columns = [col[0] for col in cursor.description]
+                pekerjaan_jasa = [dict(zip(columns, row)) for row in rows]
+                return JsonResponse({'pekerjaan': pekerjaan_jasa})
+            
         else:
             with connection.cursor() as cursor:
                 cursor.execute("""
@@ -467,4 +515,3 @@ def filter_status_pekerjaan_jasa(request, nama_jasa, status_pesanan):
                 return JsonResponse({'pekerjaan': pekerjaan_jasa})
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
-        # TODO:something 

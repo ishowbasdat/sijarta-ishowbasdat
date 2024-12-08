@@ -46,6 +46,10 @@
 
         if (!status && !namaJasa) {
             url = `/merah/filter-status-pekerjaan-jasa/any/0f6cf279-d325-4e55-be8a-eac84939e0fc`; // Use the endpoint without any parameters
+        } else if (!status) {
+            url = `/merah/filter-status-pekerjaan-jasa/${namaJasa}/0f6cf279-d325-4e55-be8a-eac84939e0fc`; // Use the endpoint without any parameters
+        } else if (!namaJasa) {
+            url = `/merah/filter-status-pekerjaan-jasa/any/${status}`;
         }
 
         try {
