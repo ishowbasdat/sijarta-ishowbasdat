@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.db import connection, IntegrityError, transaction
+from django.db import connection, transaction
 from datetime import date, datetime
 from decimal import Decimal
 import uuid
@@ -111,7 +111,6 @@ def register(request):
         
     return render(request, 'register.html')
 
-# TODO: Cehck butuh ga tombol update, handle corner case juga
 def profile(request):
     if 'user' not in request.session:
         return redirect('kuning:login')
@@ -171,23 +170,36 @@ def profile(request):
         tgl_lahir = request.POST.get('tgl_lahir')
         alamat = request.POST.get('alamat')
         
-        with connection.cursor() as cursor:
-            cursor.execute("""
-                           UPDATE SIJARTA."USER"
-                           SET nama = %s, jenis_kelamin = %s, no_hp = %s, tgl_lahir = %s, alamat = %s
-                           where id = %s
-                           """, [nama, jenis_kelamin, no_hp, tgl_lahir, alamat, id])
-            
-            if role == 'PEKERJA':
-                nama_bank = request.POST.get('nama_bank')
-                nomor_rekening = request.POST.get('nomor_rekening')
-                npwp = request.POST.get('npwp')
-                link_foto = request.POST.get('link_foto')
+        try:
+            with connection.cursor() as cursor:
                 cursor.execute("""
-                               UPDATE SIJARTA.PEKERJA
-                               SET nama_bank = %s, nomor_rekening = %s, npwp = %s, link_foto = %s
-                               WHERE id = %s
-                               """, [nama_bank, nomor_rekening, npwp, link_foto, id])
+                            UPDATE SIJARTA."USER"
+                            SET nama = %s, jenis_kelamin = %s, no_hp = %s, tgl_lahir = %s, alamat = %s
+                            where id = %s
+                            """, [nama, jenis_kelamin, no_hp, tgl_lahir, alamat, id])
+                
+                if role == 'PEKERJA':
+                    nama_bank = request.POST.get('nama_bank')
+                    nomor_rekening = request.POST.get('nomor_rekening')
+                    npwp = request.POST.get('npwp')
+                    link_foto = request.POST.get('link_foto')
+                    cursor.execute("""
+                                UPDATE SIJARTA.PEKERJA
+                                SET nama_bank = %s, nomor_rekening = %s, npwp = %s, link_foto = %s
+                                WHERE id = %s
+                                """, [nama_bank, nomor_rekening, npwp, link_foto, id])
+                    
+        except django.db.utils.InternalError as e:
+            if "Nomor HP" in str(e):
+                messages.error(request, 'No HP sudah terdaftar')
+                return redirect('kuning:profile')
+            else:
+                messages.error(request, 'Terjadi kesalahan')
+                return redirect('kuning:profile')
+        
+        except Exception as e:
+            messages.error(request, f'Terjadi kesalahan')
+            return redirect('kuning:profile')
         
         request.session['user']['nama'] = nama
         request.session.save()
