@@ -31,11 +31,11 @@ INSERT INTO SIJARTA.PELANGGAN VALUES
 
 -- 4. PEKERJA
 INSERT INTO SIJARTA.PEKERJA VALUES
-('52a79acb-f262-4c97-a303-8ed5687136b0', 'Bank Mandiri', '140001234567890', '12.345.678.5-678.000', 'https://p16-va.lemon8cdn.com/tos-alisg-v-a3e477-sg/oECGEmxHAeAAX95AIlDnRmbUQAIDgp4ABQfiut~tplv-tej9nj120t-origin.webp', 4.8, 150),
-('914d70f3-6f69-4573-8334-4852f72b44c9', 'Bank BNI', '009001234567890', '31.654.987.2-435.000', 'https://image.popmama.com/content-images/post/20220208/openingjpg-11b4aeff3bb18fa97f7954c2cb2abb68.jpg?width=600&height=auto', 4.5, 120),
-('dc47021a-5ea6-47c8-8653-1fadac5ce466', 'Bank BCA', '001501234567890', '45.987.654.8-321.000', 'https://darahkubiru.com/wp-content/uploads/2023/06/yuji-itadori-dari-jujutsu-kaisen-1.jpg', 4.9, 50),
-('d8c84f25-72f2-40b9-aba9-2ceb1ef34bac', 'Bank Mandiri', '140001234567891', '11.123.456.7-890.000', 'https://cdn.vcgamers.com/news/wp-content/uploads/2023/08/Gambar-Anime.jpg', 4.6, 175),
-('94dc8a6d-811f-4eb6-8e8c-dd36686f4554', 'Bank BCA', '001501234567892', '62.456.789.9-123.000', 'https://png.pngtree.com/thumb_back/fh260/background/20230524/pngtree-an-anime-girl-in-headphones-looking-at-the-city-with-lights-image_2680902.jpg', 4.7, 130);
+('52a79acb-f262-4c97-a303-8ed5687136b0', 'Virtual Account Mandiri', '140001234567890', '12.345.678.5-678.000', 'https://p16-va.lemon8cdn.com/tos-alisg-v-a3e477-sg/oECGEmxHAeAAX95AIlDnRmbUQAIDgp4ABQfiut~tplv-tej9nj120t-origin.webp', 4.8, 150),
+('914d70f3-6f69-4573-8334-4852f72b44c9', 'OVO', '009001234567890', '31.654.987.2-435.000', 'https://image.popmama.com/content-images/post/20220208/openingjpg-11b4aeff3bb18fa97f7954c2cb2abb68.jpg?width=600&height=auto', 4.5, 120),
+('dc47021a-5ea6-47c8-8653-1fadac5ce466', 'GoPay', '001501234567890', '45.987.654.8-321.000', 'https://darahkubiru.com/wp-content/uploads/2023/06/yuji-itadori-dari-jujutsu-kaisen-1.jpg', 4.9, 50),
+('d8c84f25-72f2-40b9-aba9-2ceb1ef34bac', 'Virtual Account BCA', '140001234567891', '11.123.456.7-890.000', 'https://cdn.vcgamers.com/news/wp-content/uploads/2023/08/Gambar-Anime.jpg', 4.6, 175),
+('94dc8a6d-811f-4eb6-8e8c-dd36686f4554', 'Virtual Account BNI', '001501234567892', '62.456.789.9-123.000', 'https://png.pngtree.com/thumb_back/fh260/background/20230524/pngtree-an-anime-girl-in-headphones-looking-at-the-city-with-lights-image_2680902.jpg', 4.7, 130);
 
 -- 5. KATEGORI_TR_MYPAY
 INSERT INTO SIJARTA.KATEGORI_TR_MYPAY VALUES 
