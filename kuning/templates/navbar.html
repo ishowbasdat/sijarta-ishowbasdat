@@ -20,7 +20,7 @@
                     Homepage
                 </a>
 
-                <a href="#" class="text-center text-lg text-[#1f1c61] plus-jakarta-sans-bold px-3 py-2 mr-2">
+                <a href="{% url 'merah:mypay_info' %}" class="text-center text-lg text-[#1f1c61] plus-jakarta-sans-bold px-3 py-2 mr-2">
                     MyPay
                 </a>
 
@@ -29,20 +29,20 @@
                     Kelola Pesanan
                 </a>
 
-                <a href="#" class="text-center text-lg text-[#1f1c61] plus-jakarta-sans-bold px-3 py-2 mr-2">
+                <a href="{% url 'biru:discount' %}" class="text-center text-lg text-[#1f1c61] plus-jakarta-sans-bold px-3 py-2 mr-2">
                     Diskon
                 </a>
                 {% elif request.session.user.role == 'PEKERJA' %}
-                <a href="#" class="text-center text-lg text-[#1f1c61] plus-jakarta-sans-bold px-3 py-2 mr-2">
+                <a href="{% url 'merah:pekerjaan_jasa' %}" class="text-center text-lg text-[#1f1c61] plus-jakarta-sans-bold px-3 py-2 mr-2">
                     Kelola Pekerjaan
                 </a>
                 
-                <a href="#" class="text-center text-lg text-[#1f1c61] plus-jakarta-sans-bold px-3 py-2 mr-2">
+                <a href="{% url 'merah:status_pekerjaan_jasa' %}" class="text-center text-lg text-[#1f1c61] plus-jakarta-sans-bold px-3 py-2 mr-2">
                     Kelola Status Pekerjaan
                 </a>
                 {% endif %}
 
-                <a href="#" class="text-center text-lg text-[#1f1c61] plus-jakarta-sans-bold px-3 py-2 mr-2">
+                <a href="{% url 'kuning:profile' %}" class="text-center text-lg text-[#1f1c61] plus-jakarta-sans-bold px-3 py-2 mr-2">
                     Profile
                 </a>
 
@@ -52,7 +52,7 @@
                         {{ request.session.user.nama }} 
                     </span>
                     {% if request.session.user.role == 'PELANGGAN' %}
-                    (Pelanggan)
+                    (Pengguna)
                     {% elif request.session.user.role == 'PEKERJA' %}
                     (Pekerja)
                     {% endif %}
