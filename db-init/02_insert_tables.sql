@@ -42,6 +42,7 @@ INSERT INTO SIJARTA.KATEGORI_TR_MYPAY VALUES
 ('44a6e520-f3e7-4761-87e8-1748e1465aae', 'Topup MyPay'),
 ('546fa422-0eca-4da0-90d2-2cb106bccea4', 'Membayar transaksi jasa'),
 ('6390060b-0746-4da9-a6f0-4d3ee63c4d28', 'Transfer MyPay ke pengguna lain'),
+('8347f8e9-677e-43f6-b9d4-4d3fd5211e4d', 'Transfer MyPay dari pengguna lain'),
 ('b43d8c74-b918-43ec-ab5f-30a1796b9543', 'Menerima honor transaksi jasa'),
 ('7080df35-dd42-44cf-b09f-956414f5d499', 'Withdrawal MyPay ke rekening bank');
 
@@ -246,8 +247,8 @@ INSERT INTO SIJARTA.STATUS_PESANAN VALUES
 ('0b97c6a2-b8d7-42a2-a0c3-f3867ea6dd22', 'Mencari Pekerja Terdekat'),
 ('f6c936b2-54c9-49dc-84b9-664e3cded1e5', 'Menunggu Pekerja Berangkat'),
 ('ee71d120-34aa-4659-9e4f-606cf2545935', 'Pekerja Tiba di Lokasi'),
-('636fbe63-0ab1-42c4-ab96-87391e12abde', 'Menunggu Pembayaran'),
 ('e89ac7f7-8168-4861-8a67-7b601cf720c2', 'Pelayanan Jasa sedang Dilakukan'),
+('636fbe63-0ab1-42c4-ab96-87391e12abde', 'Pesanan Dibatalkan'),
 ('7d2d2293-9fc0-4acb-898a-e1fd710c2269', 'Pesanan Selesai');
 
 -- 17. TR_PEMESANAN_STATUS
@@ -257,7 +258,7 @@ INSERT INTO SIJARTA.TR_PEMESANAN_STATUS VALUES
 ( '5019c3ff-e043-426f-b68f-a75fcbfd9586', 'f6c936b2-54c9-49dc-84b9-664e3cded1e5', '2024-01-10 14:05:10'),
 ( '6f23ee1f-cb9d-4692-9d32-114144454f31', 'ee71d120-34aa-4659-9e4f-606cf2545935', '2024-01-12 16:45:30'),
 ( '8e530da8-5082-44a1-9023-cd81fdb1965a', '636fbe63-0ab1-42c4-ab96-87391e12abde', '2024-01-15 18:20:55'),
-( '8fd4654e-4eca-4055-9692-5fd494f0d04f', 'e89ac7f7-8168-4861-8a67-7b601cf720c2', '2024-01-20 07:55:12'),
+( '8fd4654e-4eca-4055-9692-5fd494f0d04f', '7d2d2293-9fc0-4acb-898a-e1fd710c2269', '2024-01-20 07:55:12'),
 ( 'bdf4d13d-d084-4109-bf43-0070af96226f', '7d2d2293-9fc0-4acb-898a-e1fd710c2269', '2024-01-25 12:10:05'),
 ( '8dc17103-c3e2-4591-ad29-15e02f099832', '0b97c6a2-b8d7-42a2-a0c3-f3867ea6dd22', '2024-01-28 14:25:33'),
 ( 'de87b24b-548c-4c2a-b919-e9e18ad1fc85', 'f6c936b2-54c9-49dc-84b9-664e3cded1e5', '2024-01-30 17:05:27'),
