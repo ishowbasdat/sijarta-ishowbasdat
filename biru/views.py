@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 import logging
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 
 logger = logging.getLogger(__name__)
 
@@ -66,6 +66,7 @@ def get_metode_bayar(request):
             """
         )
         metode_bayar = cursor.fetchall()
+
         return JsonResponse({
             'metode_bayar': [list(m) for m in metode_bayar]
         })
@@ -81,69 +82,71 @@ def buy_voucher(request):
         voucher_code = data.get('kode')
         payment_method_id = data.get('metode_bayar')
 
-        # todo: handle metode bayar selain mypay (kl perlu)
-        
-        with connection.cursor() as cursor:
-            cursor.execute("""
-                SELECT harga, kuota_penggunaan 
-                FROM SIJARTA.VOUCHER 
-                WHERE kode = %s AND kuota_penggunaan > 0
-            """, [voucher_code])
-            voucher_info = cursor.fetchone()
-            voucher_price, voucher_quota = voucher_info
+        if payment_method_id == 'a3c14e6e-1d39-458c-8323-8e70671817fb':        
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    SELECT harga, jml_hari_berlaku, kuota_penggunaan 
+                    FROM SIJARTA.VOUCHER 
+                    WHERE kode = %s AND kuota_penggunaan > 0
+                """, [voucher_code])
+                voucher_info = cursor.fetchone()
 
-            if user_balance < voucher_price:
-                return JsonResponse({'error': 'Saldo tidak mencukupi.'}, status=400)
-        
-            purchase_id = uuid.uuid4()
-            current_date = datetime.now().date() # todo: set to indo timezone
-            expiry_date = current_date + timedelta(days=int(voucher_info[0])) # todo: fix expired date (masih salah)
+                voucher_price, days, voucher_quota = voucher_info
+
+                if user_balance < voucher_price:
+                    return JsonResponse({'error': 'Saldo tidak mencukupi.'}, status=400)
             
-            cursor.execute("""
-                INSERT INTO SIJARTA.TR_PEMBELIAN_VOUCHER 
-                (id, tgl_awal, tgl_akhir, telah_digunakan, id_pelanggan, id_voucher, id_metode_bayar)
-                VALUES (%s, %s, %s, 0, %s, %s, %s)
-            """, [
-                purchase_id, 
-                current_date, 
-                expiry_date, 
-                user_id, 
-                voucher_code, 
-                payment_method_id
-            ])
+                purchase_id = uuid.uuid4()
 
-            cursor.execute("""
-                SELECT id FROM SIJARTA.KATEGORI_TR_MYPAY 
-                WHERE id = '546fa422-0eca-4da0-90d2-2cb106bccea4'
-            """, [])
-            kategori_id = cursor.fetchone()[0]
+                jakarta_offset = timezone(timedelta(hours=7)) # WIB timezone
+                current_date = datetime.now(jakarta_offset).date()
+                expiry_date = current_date + timedelta(days)
+                
+                cursor.execute("""
+                    INSERT INTO SIJARTA.TR_PEMBELIAN_VOUCHER 
+                    (id, tgl_awal, tgl_akhir, telah_digunakan, id_pelanggan, id_voucher, id_metode_bayar)
+                    VALUES (%s, %s, %s, 0, %s, %s, %s)
+                """, [
+                    purchase_id, 
+                    current_date, 
+                    expiry_date, 
+                    user_id, 
+                    voucher_code, 
+                    payment_method_id
+                ])
 
-            tr_mypay_id = str(uuid.uuid4())
-            cursor.execute("""
-                INSERT INTO SIJARTA.TR_MYPAY 
-                (id, user_id, tgl, nominal, kategori_id)
-                VALUES (%s, %s, %s, %s, %s)
-            """, [
-                tr_mypay_id,
-                user_id, 
-                current_date, 
-                voucher_price,
-                kategori_id
-            ])
+                cursor.execute("""
+                    SELECT id FROM SIJARTA.KATEGORI_TR_MYPAY 
+                    WHERE id = 'd516d5f5-3142-44a5-8f36-b91b38147c36'
+                """, [])
+                kategori_id = cursor.fetchone()[0]
 
-            cursor.execute("""
-                UPDATE SIJARTA."USER" 
-                SET saldo_mypay = saldo_mypay - %s 
-                WHERE id = %s
-            """, [voucher_price, user_id])
+                tr_mypay_id = str(uuid.uuid4())
+                cursor.execute("""
+                    INSERT INTO SIJARTA.TR_MYPAY 
+                    (id, user_id, tgl, nominal, kategori_id)
+                    VALUES (%s, %s, %s, %s, %s)
+                """, [
+                    tr_mypay_id,
+                    user_id, 
+                    current_date, 
+                    voucher_price,
+                    kategori_id
+                ])
 
-            request.session['user']['saldo_mypay'] -= float(voucher_price)
-            request.session.save()
+                cursor.execute("""
+                    UPDATE SIJARTA."USER" 
+                    SET saldo_mypay = saldo_mypay - %s 
+                    WHERE id = %s
+                """, [voucher_price, user_id])
+
+                request.session['user']['saldo_mypay'] -= float(voucher_price)
+                request.session.save()
             
-            return JsonResponse({
-                'message': 'Voucher berhasil dibeli!',
-                'new_balance': request.session['user']['saldo_mypay']
-            })
+        return JsonResponse({
+            'message': 'Voucher berhasil dibeli!',
+            'new_balance': request.session['user']['saldo_mypay']
+        })
     
     except Exception as e:
         logger.error(f"Error in buy_voucher: {str(e)}")
@@ -154,54 +157,50 @@ def buy_voucher(request):
 @csrf_exempt
 @require_http_methods(["GET"])
 def get_testimoni(request, subkategori_id, worker_id):
-    try:
-        current_user_id = request.session['user'].get('id', None)
+    if 'user' not in request.session:
+        return JsonResponse({'error': 'Silakan login terlebih dahulu.'}, status=401)
+    
+    current_user_id = request.session['user'].get('id', None)
 
-        with connection.cursor() as cursor:
-            cursor.execute("""
-                SELECT 
-                    t.rating, 
-                    t.teks AS comment, 
-                    u.nama AS customer_name,
-                    t.tgl AS testimonial_date,
-                    sj.nama_subkategori AS service_subcategory,
-                    tpj.id AS order_id,
-                    CASE WHEN tpj.id_pelanggan = %s THEN TRUE ELSE FALSE END AS is_own_testimonial
-                FROM SIJARTA.TESTIMONI t
-                JOIN SIJARTA.TR_PEMESANAN_JASA tpj ON t.id_tr_pemesanan = tpj.id
-                JOIN SIJARTA.PELANGGAN p ON tpj.id_pelanggan = p.id
-                JOIN SIJARTA."USER" u ON p.id = u.id
-                JOIN SIJARTA.SUBKATEGORI_JASA sj ON tpj.id_kategori_jasa = sj.id
-                WHERE 
-                    tpj.id_pekerja = %s AND 
-                    tpj.id_kategori_jasa = %s
-                ORDER BY t.tgl DESC
-            """, [current_user_id, worker_id, subkategori_id])
-            
-            testimonials = cursor.fetchall()
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT 
+                t.rating, 
+                t.teks AS comment, 
+                u.nama AS customer_name,
+                t.tgl AS testimonial_date,
+                sj.nama_subkategori AS service_subcategory,
+                tpj.id AS order_id,
+                CASE WHEN tpj.id_pelanggan = %s THEN TRUE ELSE FALSE END AS is_own_testimonial
+            FROM SIJARTA.TESTIMONI t
+            JOIN SIJARTA.TR_PEMESANAN_JASA tpj ON t.id_tr_pemesanan = tpj.id
+            JOIN SIJARTA.PELANGGAN p ON tpj.id_pelanggan = p.id
+            JOIN SIJARTA."USER" u ON p.id = u.id
+            JOIN SIJARTA.SUBKATEGORI_JASA sj ON tpj.id_kategori_jasa = sj.id
+            WHERE 
+                tpj.id_pekerja = %s AND 
+                tpj.id_kategori_jasa = %s
+            ORDER BY t.tgl DESC
+        """, [current_user_id, worker_id, subkategori_id])
+        
+        testimonials = cursor.fetchall()
 
-            testimonial_list = [
-                {
-                    'rating': row[0],
-                    'comment': row[1],
-                    'author': row[2],
-                    'date': row[3].strftime("%Y-%m-%d") if row[3] else None,
-                    'service_subcategory': row[4],
-                    'order_id': row[5],
-                    'is_own_testimonial': row[6],
-                } for row in testimonials
-            ]
-            
-            return JsonResponse({
-                'testimonials': testimonial_list
-            })
-
-    except Exception as e:
-        logger.error(f"Error in get_testimoni: {str(e)}")
+        testimonial_list = [
+            {
+                'rating': row[0],
+                'comment': row[1],
+                'author': row[2],
+                'date': row[3].strftime("%Y-%m-%d") if row[3] else None,
+                'service_subcategory': row[4],
+                'order_id': row[5],
+                'is_own_testimonial': row[6],
+            } for row in testimonials
+        ]
+        
         return JsonResponse({
-            'error': 'Terjadi kesalahan saat mengambil testimoni.',
-            'details': str(e)
-        }, status=500)
+            'testimonials': testimonial_list
+        })
+
 
 @require_http_methods(["POST"])
 @csrf_exempt
@@ -275,8 +274,6 @@ def submit_testimonial(request):
 @require_http_methods(["DELETE"])
 @csrf_exempt
 def delete_testimoni(request):
-    if 'user' not in request.session:
-        return JsonResponse({'error': 'Silakan login terlebih dahulu.'}, status=401)
 
     data = json.loads(request.body)
     order_id = data.get('order_id')
