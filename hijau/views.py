@@ -102,7 +102,7 @@ def subkategori(request, id):
                                     WHEN COUNT(*) = 0 THEN false 
                                     ELSE true 
                                 END AS has_joined 
-                            FROM pekerja_kategori_jasa 
+                            FROM SIJARTA.pekerja_kategori_jasa 
                             WHERE pekerja_id = %s 
                             AND kategori_jasa_id = %s
                         """, [request.session['user']['id'], subcategory[0]['kategori_jasa_id']])
