@@ -44,6 +44,7 @@ INSERT INTO SIJARTA.KATEGORI_TR_MYPAY VALUES
 ('6390060b-0746-4da9-a6f0-4d3ee63c4d28', 'Transfer MyPay ke pengguna lain'),
 ('b43d8c74-b918-43ec-ab5f-30a1796b9543', 'Menerima honor transaksi jasa'),
 ('7080df35-dd42-44cf-b09f-956414f5d499', 'Withdrawal MyPay ke rekening bank'),
+('8347f8e9-677e-43f6-b9d4-4d3fd5211e4d', 'Transfer MyPay dari pengguna lain'),
 ('d516d5f5-3142-44a5-8f36-b91b38147c36', 'Membayar transaksi voucher');
 
 -- 6. TR_MYPAY
