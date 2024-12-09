@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,9 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-@6$0^=54dp$!i3zcn1ujghixcs0145j0lukg5bb*sb)1)!34$@'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG' , True)
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'db']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -80,14 +82,13 @@ WSGI_APPLICATION = 'sijarta.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'sijarta',
-        'USER': 'sijarta',
-        'PASSWORD': 'mypassword',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': os.getenv('PGDATABASE', 'sijarta'), 
+        'USER': os.getenv('PGUSER', 'sijarta'),    
+        'PASSWORD': os.getenv('PGPASSWORD', 'mypassword'),  
+        'HOST': os.getenv('PGHOST', 'localhost'), 
+        'PORT': os.getenv('PGPOST', '5432'),         
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
