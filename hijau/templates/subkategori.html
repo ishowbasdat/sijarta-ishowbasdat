@@ -29,7 +29,7 @@
                 document.getElementById('join-button').style.display = 'none';
                 document.getElementById('disabled-button').style.display = 'block';
                 alert('Successfully joined!');
-                window.location.reload();
+                window.location.reload(); // Consider reload instead of redirect
             } else {
                 const errorText = await response.text();
                 console.error('Error response:', errorText);
@@ -41,12 +41,10 @@
         }
     }
 </script>
-
 {% endblock meta %}
 
 {% block content %}
 {% include 'navbar.html' %}
-
 <div class="pt-28 min-h-screen bg-gray-50   ~! py-8 px-4 sm:px-6 lg:px-8">
     <div class="max-w-7xl mx-auto">
         <!-- Title Section -->
@@ -79,8 +77,8 @@
                     <div>
                         <span class="font-medium">Sesi Layanan {{subcat.sesi}}</span> | Rp {{subcat.harga}}
                     </div>
-                    {% if request.session.user.role == "PENGGUNA" %}
-                        <button class="w-auto px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" onclick="showOrderModal('{{subkategori.0.kategori_jasa_id}}', {{subcat.sesi}}, {{subcat.harga}})">
+                    {% if request.session.user.role|lower == "pelanggan" %}
+                        <button class="w-auto px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" onclick="showOrderModal('{{subcat.subkategori_id}}','{{subcat.sesi}}','{{subcat.harga}}')">
                             Order
                         </button>
                     {% endif %}
@@ -95,10 +93,9 @@
         <div div class="bg-white rounded-lg shadow-sm h-full sm:h-full">
             <div id='pekerja-container' class="flex flex-row justify-left items-center overflow-x-auto">
                 {% for pekerja in pekerja %}
-                <div class="worker-box p-4 text-gray-800 flex flex-col justify-between items-center border-r border-gray-200" 
-                    data-worker-id="{{ pekerja.id }}"
-                    data-subkategori-id="{{ subkategori.0.subkategori_id }}"
-                    style="cursor: pointer;">
+                <div class="p-4 text-gray-800 flex flex-col justify-between items-center border-r border-gray-200"
+                     data-worker-id="{{ pekerja.id }}"
+                    data-subkategori-id="{{ subkategori.0.subkategori_id }}">
                     <img src="{{pekerja.link_foto}}" alt="{{pekerja.nama}}" class="w-24 h-24 rounded-full mb-2 object-cover">
                     <div class="flex flex-col items-center">
                         <span class="font-medium">{{pekerja.nama}}</span>
@@ -119,5 +116,3 @@
 
 {% include 'modal/profile.html' %}
 {% include 'modal/pemesanan_jasa.html' %}
-
-{% endblock %}

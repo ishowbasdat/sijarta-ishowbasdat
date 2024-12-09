@@ -10,4 +10,3 @@ urlpatterns = [
     path('api/create-order/', create_order, name='create_order'),
     path('pesanan/', pesanan, name='pesanan'),
     path('cancel-pesanan/<str:id>', cancel_pesanan, name='cancel_pesanan')
-]
