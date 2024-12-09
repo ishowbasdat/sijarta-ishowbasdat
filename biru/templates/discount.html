@@ -316,6 +316,7 @@
             }
         } catch (error) {
             console.error('Error in confirmPurchase:', error);
+            closeConfirmationModal();
             showFailedModal();
         }
     }

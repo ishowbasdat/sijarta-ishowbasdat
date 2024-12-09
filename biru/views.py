@@ -162,6 +162,11 @@ def get_testimoni(request, subkategori_id, worker_id):
     
     current_user_id = request.session['user'].get('id', None)
 
+    if subkategori_id == None:
+        return JsonResponse({
+            'testimonials': []
+        })
+
     with connection.cursor() as cursor:
         cursor.execute("""
             SELECT 
@@ -209,11 +214,12 @@ def submit_testimonial(request):
             return JsonResponse({'error': 'Silakan login terlebih dahulu.'}, status=401)
 
         data = json.loads(request.body)
+        subkategori_name = data.get('subkategori_name')
         worker_id = data.get('order_id')
         rating = data.get('rating')
         comment = data.get('comment')
 
-        logger.error(data)
+        logger.error(subkategori_name)
 
         if not worker_id or not rating or not comment:
             return JsonResponse({'error': 'Data tidak lengkap.'}, status=400)
@@ -226,10 +232,11 @@ def submit_testimonial(request):
         with connection.cursor() as cursor:
 
             cursor.execute("""
-                SELECT id
-                FROM SIJARTA.TR_PEMESANAN_JASA 
-                WHERE id_pekerja = %s AND id_pelanggan = %s
-            """, [worker_id, user_id])
+                SELECT trj.id
+                FROM SIJARTA.TR_PEMESANAN_JASA trj
+                JOIN SIJARTA.SUBKATEGORI_JASA sj ON trj.id_kategori_jasa = sj.id
+                WHERE trj.id_pekerja = %s AND trj.id_pelanggan = %s AND sj.nama_subkategori = %s
+            """, [worker_id, user_id, subkategori_name])
 
             order_info = cursor.fetchone()
             order_id = order_info[0]
@@ -299,22 +306,47 @@ def delete_testimoni(request):
             WHERE id_tr_pemesanan = %s AND tgl = %s
         """, [order_id, testimonial_date])
 
-        cursor.execute("""
-            WITH worker_testimonials AS (
-                SELECT t.rating
-                FROM SIJARTA.TESTIMONI t
-                JOIN SIJARTA.TR_PEMESANAN_JASA tpj ON t.id_tr_pemesanan = tpj.id
-                WHERE tpj.id_pekerja = %s
-            )
-            UPDATE SIJARTA.PEKERJA 
-            SET rating = COALESCE((
-                SELECT AVG(rating) 
-                FROM worker_testimonials
-            ), 0)
-            WHERE id = %s
-        """, [worker_id, worker_id])
+        cursor.execute(
+            """
+            SELECT COUNT(t.rating) FROM SIJARTA.TESTIMONI t
+            JOIN SIJARTA.TR_PEMESANAN_JASA tpj ON t.id_tr_pemesanan = tpj.id
+            WHERE tpj.id_pekerja = %s
+            """, [worker_id]
+        )
 
-        return JsonResponse({
+        count_testimoni = cursor.fetchone()[0]
+
+        if count_testimoni == 0:
+
+            cursor.execute(
+                """
+                UPDATE SIJARTA.PEKERA
+                SET rating = 0 WHERE id = %s
+                """, [worker_id]
+            )
+
+            return JsonResponse({
             'message': 'Testimoni berhasil dihapus!',
             'status': 'success'
-        })
+        }) 
+        
+        else:
+            cursor.execute("""
+                WITH worker_testimonials AS (
+                    SELECT t.rating
+                    FROM SIJARTA.TESTIMONI t
+                    JOIN SIJARTA.TR_PEMESANAN_JASA tpj ON t.id_tr_pemesanan = tpj.id
+                    WHERE tpj.id_pekerja = %s
+                )
+                UPDATE SIJARTA.PEKERJA 
+                SET rating = COALESCE((
+                    SELECT AVG(rating) 
+                    FROM worker_testimonials
+                ), 0)
+                WHERE id = %s
+            """, [worker_id, worker_id])
+
+            return JsonResponse({
+                'message': 'Testimoni berhasil dihapus!',
+                'status': 'success'
+            })

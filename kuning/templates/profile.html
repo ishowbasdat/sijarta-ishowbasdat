@@ -47,7 +47,7 @@
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-32 text-sm">Saldo MyPay:</label>
-                    <span class="font-medium text-sm">Rp {{ user_data.saldo_mypay|floatformat:2 }}</span>
+                    <span id="saldoMypay" class="font-medium text-sm"></span>
                 </div>
                 <div class="pt-4">
                     <button onclick="submitUpdatePelanggan()" 
@@ -146,7 +146,7 @@
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-40 text-sm">Saldo MyPay:</label>
-                    <span class="font-medium text-sm">Rp {{ user_data.saldo_mypay|floatformat:2 }}</span>
+                    <span id="saldoMypay" class="font-medium text-sm"></span>
                 </div>
                 <div class="flex items-center">
                     <label class="text-gray-600 w-40 text-sm">Nama Bank:</label>
@@ -267,7 +267,23 @@
             document.querySelector('input[name="jenis_kelamin"][value="P"]').checked = true;
         }
     }
+
+    function formatCurrency(number) {
+        return new Intl.NumberFormat('id-ID', { 
+            style: 'currency', 
+            currency: 'IDR',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0 
+        }).format(number);
+    }
     
+    function setSaldoMypay() {
+        const saldoElement = document.getElementById('saldoMypay');
+        if (saldoElement) {
+            saldoElement.textContent = formatCurrency({{ user_data.saldo_mypay }});
+        }
+    }
+
     function submitUpdatePekerja() {
         document.querySelector('input[name="nama"]').value = '{{ user_data.nama }}';
         document.querySelector('input[name="no_hp"]').value = '{{ user_data.no_hp }}';
@@ -283,5 +299,7 @@
             document.querySelector('input[name="jenis_kelamin"][value="P"]').checked = true;
         }
     }
+
+    document.addEventListener('DOMContentLoaded', setSaldoMypay);
 </script>
 {% endblock content %}

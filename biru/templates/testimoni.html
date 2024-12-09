@@ -77,9 +77,11 @@
 
 <script>
     let currentOrderIdForTestimoni = null;
+    let currentSubkategoriName = null;
 
-    function openTesti(orderId) {
+    function openTesti(orderId, subkategoriName) {
         currentOrderIdForTestimoni = orderId;
+        currentSubkategoriName = subkategoriName;
         document.getElementById('testimonialModal').classList.remove('hidden');
         document.body.style.overflow = 'hidden';
     }
@@ -90,11 +92,25 @@
         currentOrderIdForTestimoni = null;
     }
 
+    function showNotification(message, isSuccess = true) {
+        const successMessage = document.getElementById('successMessage');
+        successMessage.textContent = message;
+        
+        successMessage.classList.remove('bg-green-500', 'bg-red-500');
+        successMessage.classList.add(isSuccess ? 'bg-green-500' : 'bg-red-500');
+        
+        successMessage.classList.remove('hidden');
+        
+        setTimeout(() => {
+            successMessage.classList.add('hidden');
+        }, 4000);
+    }
+
     function handleSubmitTesti(event) {
         event.preventDefault();
         
-        if (!currentOrderIdForTestimoni) {
-            alert('Terjadi kesalahan. Silakan coba lagi.');
+        if (!currentOrderIdForTestimoni || !currentSubkategoriName) {
+            showNotification('Terjadi kesalahan. Silakan coba lagi.', false);
             return;
         }
         
@@ -108,6 +124,7 @@
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
+                subkategori_name: currentSubkategoriName,
                 order_id: currentOrderIdForTestimoni,
                 rating: rating,
                 comment: comment
@@ -119,20 +136,11 @@
                 throw new Error(data.error);
             }
 
-            const successMessage = document.getElementById('successMessage');
-            successMessage.textContent = 'Terima kasih atas testimoni Anda!';
-            successMessage.classList.remove('hidden');
-            
-            setTimeout(() => {
-                successMessage.classList.add('hidden');
-            }, 3000);
-
             closeModal();
-            
-            location.reload();
+            showNotification('Terima kasih atas testimoni Anda!');
         })
         .catch(error => {
-            alert(error.message);
+            showNotification(error.message || 'Gagal mengirim testimoni. Silakan coba lagi.', false);
         });
     }
 
