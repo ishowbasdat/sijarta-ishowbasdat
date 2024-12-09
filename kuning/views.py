@@ -8,9 +8,15 @@ import django
 
 # Create your views here.
 def landing(request):
+    if 'user' in request.session:
+        return redirect('hijau:homepage')
+    
     return render(request, 'landing.html')
 
 def login(request):
+    if 'user' in request.session:
+        return redirect('hijau:homepage')
+    
     if request.method == 'POST':
         no_hp = request.POST.get('no_hp')
         pwd = request.POST.get('pwd')
@@ -28,32 +34,32 @@ def login(request):
             
             row = cursor.fetchone()
             if row:
-                user = dict(zip([column[0] for column in cursor.description], row))
+                user_data = dict(zip([column[0] for column in cursor.description], row))
+                user = {
+                    key: user_data[key] for key in user_data.keys() if key in ['id', 'nama', 'role', 'saldo_mypay']
+                }
                 
-                for key, value in user.items():
-                    if isinstance(value, (date, datetime)):
-                        user[key] = value.isoformat()
-                    elif isinstance(value, uuid.UUID):
-                        user[key] = str(value)
-                    elif isinstance(value, Decimal):
-                        user[key] = float(value)    
+                if isinstance(user.get('id'), uuid.UUID):
+                    user['id'] = str(user.get('id'))
+                if isinstance(user.get('saldo_mypay'), Decimal):
+                    user['saldo_mypay'] = float(user.get('saldo_mypay'))
             else:
                 user = None
-            
-            if user and pwd == user.get('pwd'):
+
+            if user and pwd == user_data.get('pwd'):
                 request.session['user'] = user
                 request.session.save()
-                print(request.session['user'].get('role'))
-                return redirect('kuning:landing')
+                return redirect('hijau:homepage')
             else:
-                print('Error')
-                # TODO: Tunggu chris, redirect ke homepage
+                messages.error(request, 'No HP atau Password salah')
+                return redirect('kuning:login')
                 
-            # TODO: Kalau ga ketemu, tunjukin error msg
-            
     return render(request, 'login.html')
 
 def register(request):
+    if 'user' in request.session:
+        return redirect('hijau:homepage')
+    
     if request.method == 'POST':
         try:
             with transaction.atomic():
@@ -106,17 +112,62 @@ def register(request):
     return render(request, 'register.html')
 
 def profile(request):
-    if 'id' not in request.session:
-        return redirect('login')
+    if 'user' not in request.session:
+        return redirect('kuning:login')
     
-    id = request.session.user.get('id')
-    role = request.session.user.get('role')
+    id = request.session['user'].get('id')
+    role = request.session['user'].get('role')
     
+    with connection.cursor() as cursor:
+        cursor.execute("""
+                       SELECT U.* FROM SIJARTA."USER" AS U WHERE U.id = %s
+                       """, [id])
+        row = cursor.fetchone()
+        
+        if row:
+            user_data = dict(zip([column[0] for column in cursor.description], row))
+            if isinstance(user_data.get('tgl_lahir'), (date, datetime)):
+                user_data['tgl_lahir'] = user_data.get('tgl_lahir').strftime('%d-%m-%Y')
+                
+            if role == 'PELANGGAN':
+                cursor.execute("""
+                               SELECT * FROM SIJARTA.PELANGGAN WHERE id = %s
+                               """, [id])
+                row = cursor.fetchone()
+                pelanggan_data = dict(zip([column[0] for column in cursor.description], row))
+                pelanggan_data.pop('id', None)
+                user_data.update(pelanggan_data)
+                
+            elif role == 'PEKERJA':
+                cursor.execute("""
+                               SELECT * FROM SIJARTA.PEKERJA WHERE id = %s
+                               """, [id])
+                row = cursor.fetchone()
+                pekerja_data = dict(zip([column[0] for column in cursor.description], row))
+                pekerja_data.pop('id', None)
+                user_data.update(pekerja_data)
+                
+                cursor.execute("""
+                               SELECT KJ.nama_kategori
+                               FROM SIJARTA.KATEGORI_JASA AS KJ
+                               JOIN SIJARTA.PEKERJA_KATEGORI_JASA AS PKJ
+                               ON KJ.id = PKJ.kategori_jasa_id
+                               WHERE PKJ.pekerja_id = %s
+                               """, [id])
+                rows = cursor.fetchall()
+                user_data['kategori_jasa'] = [
+                    {
+                        'nama_kategori': row[0]
+                    }
+                    
+                    for row in rows
+                ]
+           
     if request.method == 'POST':
         nama = request.POST.get('nama')
         jenis_kelamin = request.POST.get('jenis_kelamin')
         no_hp = request.POST.get('no_hp')
-        tanggal_lahir = request.POST.get('tanggal_lahir')
+        tgl_lahir = request.POST.get('tgl_lahir')
         alamat = request.POST.get('alamat')
         
         try:
@@ -157,4 +208,4 @@ def profile(request):
 
 def logout(request):
     request.session.flush()
-    return redirect('kuning:login')
+    return redirect('kuning:landing')
