@@ -46,7 +46,7 @@
             </div>
             <div class="flex items-center">
                 <label class="text-gray-600 w-32 text-sm">Saldo MyPay:</label>
-                <span class="font-medium text-sm">Rp {{ user_data.saldo_mypay|floatformat:2 }}</span>
+                <span id="saldoMyPay" class="font-medium text-sm" data-saldo="{{ user_data.saldo_mypay }}"></span>
             </div>
             <div class="pt-4">
                 <button onclick="openUpdateModal()" 
@@ -96,7 +96,7 @@
             </div>
             <div class="flex items-center">
                 <label class="text-gray-600 w-40 text-sm">Saldo MyPay:</label>
-                <span class="font-medium text-sm">Rp {{ user_data.saldo_mypay|floatformat:2 }}</span>
+                <span id="saldoMyPay2" class="font-medium text-sm" data-saldo="{{ user_data.saldo_mypay }}"></span>
             </div>
             <div class="flex items-center">
                 <label class="text-gray-600 w-40 text-sm">Nama Bank:</label>
@@ -282,11 +282,28 @@
         {% endif %}
     }
 
+    function formatCurrency(number) {
+        return new Intl.NumberFormat('id-ID', { 
+            style: 'currency', 
+            currency: 'IDR',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0 
+        }).format(number);
+    }
+
     window.onclick = function(event) {
         if (event.target === modal) {
             closeModal();
         }
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const saldoElements = document.querySelectorAll('[id^="saldoMyPay"]');
+        saldoElements.forEach(element => {
+            const saldo = parseFloat(element.getAttribute('data-saldo'));
+            element.textContent = formatCurrency(saldo);
+        });
+    });
 
     document.addEventListener('keydown', function(event) {
         if (event.key === 'Escape' && !modal.classList.contains('hidden')) {
