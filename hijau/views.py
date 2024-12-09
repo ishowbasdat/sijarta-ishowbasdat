@@ -60,7 +60,7 @@ def subkategori(request, id):
             
             with connection.cursor() as cursor:
                 cursor.execute("""
-                    INSERT INTO pekerja_kategori_jasa (pekerja_id, kategori_jasa_id)
+                    INSERT INTO SIJARTA.pekerja_kategori_jasa (pekerja_id, kategori_jasa_id)
                     VALUES (%s, %s)
                 """, [pekerja_id, kategori_jasa_id])
             return JsonResponse({'status': 'success'})
