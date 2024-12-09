@@ -251,4 +251,3 @@ def cancel_pesanan(request, id):
                         VALUES (%s, (SELECT id FROM SIJARTA.STATUS_PESANAN WHERE status = 'Pesanan Dibatalkan'), %s)
                         """, [id, current_date])
     return JsonResponse({"success": True, "message": "Order canceled successfully."})
-
