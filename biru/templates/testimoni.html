@@ -76,8 +76,12 @@
 </style>
 
 <script>
+    let currentOrderIdForTestimoni = null;
+    let currentSubkategoriName = null;
 
-    function openTesti() {
+    function openTesti(orderId, subkategoriName) {
+        currentOrderIdForTestimoni = orderId;
+        currentSubkategoriName = subkategoriName;
         document.getElementById('testimonialModal').classList.remove('hidden');
         document.body.style.overflow = 'hidden';
     }
@@ -85,38 +89,59 @@
     function closeModal() {
         document.getElementById('testimonialModal').classList.add('hidden');
         document.body.style.overflow = 'auto';
+        currentOrderIdForTestimoni = null;
+    }
+
+    function showNotification(message, isSuccess = true) {
+        const successMessage = document.getElementById('successMessage');
+        successMessage.textContent = message;
+        
+        successMessage.classList.remove('bg-green-500', 'bg-red-500');
+        successMessage.classList.add(isSuccess ? 'bg-green-500' : 'bg-red-500');
+        
+        successMessage.classList.remove('hidden');
+        
+        setTimeout(() => {
+            successMessage.classList.add('hidden');
+        }, 4000);
     }
 
     function handleSubmitTesti(event) {
         event.preventDefault();
         
+        if (!currentOrderIdForTestimoni || !currentSubkategoriName) {
+            showNotification('Terjadi kesalahan. Silakan coba lagi.', false);
+            return;
+        }
+        
         const formData = new FormData(event.target);
         const rating = parseInt(formData.get('rating'));
-        const komentar = formData.get('komentar');
-        let testimonials = JSON.parse(localStorage.getItem('testimonials') || '[]');
+        const comment = formData.get('komentar');
 
-        testimonials.push({
-            rating: rating,
-            comment: komentar,
-            timestamp: new Date().toISOString(),
-            author: 'Christian Raphael Heryanto'
+        fetch('/biru/api/submit-testimoni/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                subkategori_name: currentSubkategoriName,
+                order_id: currentOrderIdForTestimoni,
+                rating: rating,
+                comment: comment
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+
+            closeModal();
+            showNotification('Terima kasih atas testimoni Anda!');
+        })
+        .catch(error => {
+            showNotification(error.message || 'Gagal mengirim testimoni. Silakan coba lagi.', false);
         });
-        
-        localStorage.setItem('testimonials', JSON.stringify(testimonials));
-        showSuccessMessage();
-        closeModal();
-        event.target.reset();
-
-        window.dispatchEvent(new Event('testimonialsUpdated'));
-    }
-
-    function showSuccessMessage() {
-        const successMessage = document.getElementById('successMessage');
-        successMessage.classList.remove('hidden');
-        
-        setTimeout(() => {
-            successMessage.classList.add('hidden');
-        }, 3000);
     }
 
     window.addEventListener('click', function(event) {
