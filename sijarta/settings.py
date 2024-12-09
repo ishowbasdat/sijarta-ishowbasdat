@@ -125,16 +125,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = '/static/'
-
-if DEBUG:
-    STATICFILES_DIRS = [
-        BASE_DIR / 'staticfiles' 
-    ]
-else:
-    if os.getenv('RAILWAY_STATIC'):
-        STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-    else:
-        STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = 'staticfiles'
+STATICFILES_DIRS = [
+    BASE_DIR / 'static' 
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
