@@ -306,9 +306,11 @@ INSERT INTO SIJARTA.TESTIMONI VALUES
 ('09b9e4f9-b2e5-4799-b652-939637670ff8', '2024-04-25', 'Bersih sekali, sangat direkomendasikan!', 5),
 ('2d3642cc-6d9f-448a-9d30-8dbdc2b373b1', '2024-04-01', 'Hasilnya cukup oke, tidak ada yang istimewa.', 3),
 ('2217803d-3e5d-48cd-bb9e-c699e2e95a32', '2024-04-05', 'Pelayanan cepat dan hasilnya baik.', 4),
-('8fd4654e-4eca-4055-9692-5fd494f0d04f', '2024-02-05', 'Penyetrika handal', 1);
-
-
---'6f23ee1f-cb9d-4692-9d32-114144454f31', '2024-01-04', '2024-01-08', '2024-01-08 14:00:00', 35000.00,  'de600d74-5d18-4c30-85a0-7401ca06f3f1', 'd8c84f25-72f2-40b9-aba9-2ceb1ef34bac', '8e37bb39-c1ef-4552-b93a-d7823d2debf9', 1, 'PROMOMEGABONUS'  , '0823f75d-5636-472c-a0dc-31339955584a'),
---('8e530da8-5082-44a1-9023-cd81fdb1965a', '2024-01-05', '2024-01-09', '2024-01-09 15:30:00', 65000.00,  '5785126d-33fc-4466-8c4a-9e9cbf2e0444', '94dc8a6d-811f-4eb6-8e8c-dd36686f4554', '8e37bb39-c1ef-4552-b93a-d7823d2debf9', 2, 'PROMORAINBOW'    , 'a9741cba-ba94-4c92-9902-0ee34f5f50ac'),
---('8fd4654e-4eca-4055-9692-5fd494f0d04f
+('8fd4654e-4eca-4055-9692-5fd494f0d04f', '2024-02-05', 'Penyetrika handal', 1),
+('3003a0d7-42d2-4044-857f-efd280b81397', '2024-03-08', 'Hari ini hasilnya masih kotor, cukup kecewa', 1),
+('3003a0d7-42d2-4044-857f-efd280b81397', '2024-03-09', 'Ada perbaikian dari kemarin tapi masih kecewa', 2),
+('3003a0d7-42d2-4044-857f-efd280b81397', '2024-03-10', 'Cukup oke', 3),
+('3003a0d7-42d2-4044-857f-efd280b81397', '2024-04-07', 'Sip, hasilnya cukup bersih', 4),
+('3003a0d7-42d2-4044-857f-efd280b81397', '2024-05-07', 'Waduh, cukup kacau lagi. Ada apa ini?', 2),
+('3003a0d7-42d2-4044-857f-efd280b81397', '2024-06-07', 'Keren! hasilnya sangat bersih, saya sangat puas', 5),
+('3003a0d7-42d2-4044-857f-efd280b81397', '2024-07-07', 'Mantap, bersih sekali! Namun, ada sedikit noda', 4);
