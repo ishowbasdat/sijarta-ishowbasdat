@@ -10,7 +10,7 @@ INSERT INTO SIJARTA."USER" VALUES
 ('914d70f3-6f69-4573-8334-4852f72b44c9', 'Bambang Surya', 'L', '087654321098', 'SuryaMaster234!', '1985-08-20', 'Jalan Merpati Raya', 1800000.00),
 ('dc47021a-5ea6-47c8-8653-1fadac5ce466', 'Anita Wijaya', 'P', '081345678901', 'Anita2023#Secure', '1995-04-25', 'Jalan Anggrek Baru', 2000000.00),
 ('d8c84f25-72f2-40b9-aba9-2ceb1ef34bac', 'Nadya Putri', 'P', '082112345678', 'NadyaPutri!2024', '1992-11-03', 'Jalan Kemuning Jaya', 2200000.00),
-('94dc8a6d-811f-4eb6-8e8c-dd36686f4554', 'Dini Rahayu', 'P', '081234567890', 'RahayuPassword88*', '1988-07-18', 'Jalan Dahlia Indah', 2500000.00);
+('94dc8a6d-811f-4eb6-8e8c-dd36686f4554', 'Dini Rahayu', 'P', '081234567777', 'RahayuPasswordDeh', '1988-07-18', 'Jalan Dahlia Indah', 2500000.00);
 
 -- 2. METODE_BAYAR
 INSERT INTO SIJARTA.METODE_BAYAR VALUES
@@ -31,11 +31,11 @@ INSERT INTO SIJARTA.PELANGGAN VALUES
 
 -- 4. PEKERJA
 INSERT INTO SIJARTA.PEKERJA VALUES
-('52a79acb-f262-4c97-a303-8ed5687136b0', 'Bank Mandiri', '140001234567890', '12.345.678.5-678.000', 'https://p16-va.lemon8cdn.com/tos-alisg-v-a3e477-sg/oECGEmxHAeAAX95AIlDnRmbUQAIDgp4ABQfiut~tplv-tej9nj120t-origin.webp', 4.8, 150),
-('914d70f3-6f69-4573-8334-4852f72b44c9', 'Bank BNI', '009001234567890', '31.654.987.2-435.000', 'https://image.popmama.com/content-images/post/20220208/openingjpg-11b4aeff3bb18fa97f7954c2cb2abb68.jpg?width=600&height=auto', 4.5, 120),
-('dc47021a-5ea6-47c8-8653-1fadac5ce466', 'Bank BCA', '001501234567890', '45.987.654.8-321.000', 'https://darahkubiru.com/wp-content/uploads/2023/06/yuji-itadori-dari-jujutsu-kaisen-1.jpg', 4.9, 50),
-('d8c84f25-72f2-40b9-aba9-2ceb1ef34bac', 'Bank Mandiri', '140001234567891', '11.123.456.7-890.000', 'https://cdn.vcgamers.com/news/wp-content/uploads/2023/08/Gambar-Anime.jpg', 4.6, 175),
-('94dc8a6d-811f-4eb6-8e8c-dd36686f4554', 'Bank BCA', '001501234567892', '62.456.789.9-123.000', 'https://png.pngtree.com/thumb_back/fh260/background/20230524/pngtree-an-anime-girl-in-headphones-looking-at-the-city-with-lights-image_2680902.jpg', 4.7, 130);
+('52a79acb-f262-4c97-a303-8ed5687136b0', 'Virtual Account Mandiri', '140001234567890', '12.345.678.5-678.000', 'https://p16-va.lemon8cdn.com/tos-alisg-v-a3e477-sg/oECGEmxHAeAAX95AIlDnRmbUQAIDgp4ABQfiut~tplv-tej9nj120t-origin.webp', 4.8, 150),
+('914d70f3-6f69-4573-8334-4852f72b44c9', 'OVO', '009001234567890', '31.654.987.2-435.000', 'https://image.popmama.com/content-images/post/20220208/openingjpg-11b4aeff3bb18fa97f7954c2cb2abb68.jpg?width=600&height=auto', 4.5, 120),
+('dc47021a-5ea6-47c8-8653-1fadac5ce466', 'GoPay', '001501234567890', '45.987.654.8-321.000', 'https://images-ext-1.discordapp.net/external/H3-I7VaDxTTC-5E8QAzzmImktRrzK1kws_8yEB_L-68/https/i.pinimg.com/736x/9b/41/cc/9b41cc7a0c6eddc0ca305cc63e5df5af.jpg?format=webp&width=972&height=1108', 4.9, 50),
+('d8c84f25-72f2-40b9-aba9-2ceb1ef34bac', 'Virtual Account BCA', '140001234567891', '11.123.456.7-890.000', 'https://cdn.vcgamers.com/news/wp-content/uploads/2023/08/Gambar-Anime.jpg', 4.6, 175),
+('94dc8a6d-811f-4eb6-8e8c-dd36686f4554', 'Virtual Account BNI', '001501234567892', '62.456.789.9-123.000', 'https://png.pngtree.com/thumb_back/fh260/background/20230524/pngtree-an-anime-girl-in-headphones-looking-at-the-city-with-lights-image_2680902.jpg', 4.7, 130);
 
 -- 5. KATEGORI_TR_MYPAY
 INSERT INTO SIJARTA.KATEGORI_TR_MYPAY VALUES 
@@ -43,7 +43,8 @@ INSERT INTO SIJARTA.KATEGORI_TR_MYPAY VALUES
 ('546fa422-0eca-4da0-90d2-2cb106bccea4', 'Membayar transaksi jasa'),
 ('6390060b-0746-4da9-a6f0-4d3ee63c4d28', 'Transfer MyPay ke pengguna lain'),
 ('b43d8c74-b918-43ec-ab5f-30a1796b9543', 'Menerima honor transaksi jasa'),
-('7080df35-dd42-44cf-b09f-956414f5d499', 'Withdrawal MyPay ke rekening bank');
+('7080df35-dd42-44cf-b09f-956414f5d499', 'Withdrawal MyPay ke rekening bank'),
+('d516d5f5-3142-44a5-8f36-b91b38147c36', 'Membayar transaksi voucher');
 
 -- 6. TR_MYPAY
 INSERT INTO SIJARTA.TR_MYPAY VALUES 
@@ -93,8 +94,6 @@ INSERT INTO SIJARTA.SUBKATEGORI_JASA VALUES
 ('7297c14d-8dda-434a-b7b5-0b6dbb0a0b17', 'Cuci AC', 'Layanan pembersihan rutin untuk unit AC', '35db18e5-c6a0-4519-8b3d-7a0f7c39e82d'),
 ('18831c74-fb17-4094-98a1-da083a814bfc', 'Pijat Relaksasi', 'Layanan pijat untuk relaksasi seluruh tubuh', 'f9d5d1db-cd8d-4476-96ad-5ec424977290'),
 ('71428286-a3c6-4489-884b-79810b9f0cd4', 'Potong Rambut', 'Layanan potong dan styling rambut', '37226a20-3d4d-4792-a4b2-56b52380a587');
-
-
 
 -- 9. SESI_LAYANAN
 INSERT INTO SIJARTA.SESI_LAYANAN VALUES 
@@ -219,26 +218,26 @@ INSERT INTO SIJARTA.TR_PEMESANAN_JASA VALUES
 ('5019c3ff-e043-426f-b68f-a75fcbfd9586', '2024-01-03', '2024-01-07', '2024-01-07 11:00:00', 40000.00,  'f8681d0c-7aa3-44d7-b4ed-aa7d920c84b4', 'dc47021a-5ea6-47c8-8653-1fadac5ce466', '342e2903-fae6-450e-ad25-c22189b087b8', 3, 'PROMOEXTRADEAL'  , '80a5fb37-8fe5-4039-8d8d-e6c2074f9316'),
 ('6f23ee1f-cb9d-4692-9d32-114144454f31', '2024-01-04', '2024-01-08', '2024-01-08 14:00:00', 35000.00,  'de600d74-5d18-4c30-85a0-7401ca06f3f1', 'd8c84f25-72f2-40b9-aba9-2ceb1ef34bac', '8e37bb39-c1ef-4552-b93a-d7823d2debf9', 1, 'PROMOMEGABONUS'  , '0823f75d-5636-472c-a0dc-31339955584a'),
 ('8e530da8-5082-44a1-9023-cd81fdb1965a', '2024-01-05', '2024-01-09', '2024-01-09 15:30:00', 65000.00,  '5785126d-33fc-4466-8c4a-9e9cbf2e0444', '94dc8a6d-811f-4eb6-8e8c-dd36686f4554', '8e37bb39-c1ef-4552-b93a-d7823d2debf9', 2, 'PROMORAINBOW'    , 'a9741cba-ba94-4c92-9902-0ee34f5f50ac'),
-('8fd4654e-4eca-4055-9692-5fd494f0d04f', '2024-01-06', '2024-01-10', '2024-01-10 16:45:00', 90000.00,  'ce820534-45af-4871-9d91-4da9e52dc988', '52a79acb-f262-4c97-a303-8ed5687136b0', '8e37bb39-c1ef-4552-b93a-d7823d2debf9', 3, 'PROMOSPECIALDAY' , 'cff8443c-7fef-4f8c-9e10-5b698d1ff6f3'),
+('8fd4654e-4eca-4055-9692-5fd494f0d04f', '2024-01-06', '2024-01-10', '2024-01-10 16:45:00', 90000.00,  'ce820534-45af-4871-9d91-4da9e52dc988', '52a79acb-f262-4c97-a303-8ed5687136b0', '71428286-a3c6-4489-884b-79810b9f0cd4', 3, 'PROMOSPECIALDAY' , 'cff8443c-7fef-4f8c-9e10-5b698d1ff6f3'),
 ('bdf4d13d-d084-4109-bf43-0070af96226f', '2024-01-07', '2024-01-11', '2024-01-11 17:30:00', 60000.00,  '0b35b618-026e-459a-8f8d-47ffadd5df6d', '52a79acb-f262-4c97-a303-8ed5687136b0', 'affbc756-0a6f-48af-8bdf-62bfd6a6bd28', 1, 'PROMOBESTDEAL'   , '7bfd66f8-fce1-429a-907d-97f94d2b7675'),
 ('8dc17103-c3e2-4591-ad29-15e02f099832', '2024-01-08', '2024-01-12', '2024-01-12 18:00:00', 100000.00, 'f8681d0c-7aa3-44d7-b4ed-aa7d920c84b4', '914d70f3-6f69-4573-8334-4852f72b44c9', 'affbc756-0a6f-48af-8bdf-62bfd6a6bd28', 2, 'PROMOFLASHSALE'  , '80a5fb37-8fe5-4039-8d8d-e6c2074f9316'),
 ('de87b24b-548c-4c2a-b919-e9e18ad1fc85', '2024-01-09', '2024-01-13', '2024-01-13 19:15:00', 120000.00, 'de600d74-5d18-4c30-85a0-7401ca06f3f1', 'dc47021a-5ea6-47c8-8653-1fadac5ce466', 'affbc756-0a6f-48af-8bdf-62bfd6a6bd28', 3, 'PROMOFINALHOUR'  , '0823f75d-5636-472c-a0dc-31339955584a'),
-('2d3642cc-6d9f-448a-9d30-8dbdc2b373b1', '2024-01-10', '2024-01-14', '2024-01-14 20:30:00', 10000.00,  '5785126d-33fc-4466-8c4a-9e9cbf2e0444', 'd8c84f25-72f2-40b9-aba9-2ceb1ef34bac', '44073dfd-d8f3-4aee-b090-6fe75e068025', 1, 'PROMOMANTAP'     , 'a3c14e6e-1d39-458c-8323-8e70671817fb'),
-('2217803d-3e5d-48cd-bb9e-c699e2e95a32', '2024-01-11', '2024-01-15', '2024-01-15 21:45:00', 18000.00,  'ce820534-45af-4871-9d91-4da9e52dc988', '94dc8a6d-811f-4eb6-8e8c-dd36686f4554', '44073dfd-d8f3-4aee-b090-6fe75e068025', 2, 'UNTUNGTERUSSS'   , '7bfd66f8-fce1-429a-907d-97f94d2b7675'),
-('3003a0d7-42d2-4044-857f-efd280b81397', '2024-01-12', '2024-01-16', '2024-01-16 22:00:00', 25000.00,  '0b35b618-026e-459a-8f8d-47ffadd5df6d', '914d70f3-6f69-4573-8334-4852f72b44c9', '44073dfd-d8f3-4aee-b090-6fe75e068025', 3, 'HEMATBANYAK'     , '80a5fb37-8fe5-4039-8d8d-e6c2074f9316'),
-('f39b91e4-bc61-47ae-a8cf-b9d20361fc9a', '2024-01-13', '2024-01-17', '2024-01-17 23:15:00', 13000.00,  'f8681d0c-7aa3-44d7-b4ed-aa7d920c84b4', '52a79acb-f262-4c97-a303-8ed5687136b0', '096c5059-8e91-4ca7-a1e0-3491336b9b82', 1, 'DISKONGOKIL'     , '0823f75d-5636-472c-a0dc-31339955584a'),
-('97faede6-3306-4973-b69e-42762ba6b495', '2024-01-14', '2024-01-18', '2024-01-18 10:30:00', 25000.00,  'de600d74-5d18-4c30-85a0-7401ca06f3f1', '914d70f3-6f69-4573-8334-4852f72b44c9', '096c5059-8e91-4ca7-a1e0-3491336b9b82', 2, 'BELANJACERIA'    , 'a9741cba-ba94-4c92-9902-0ee34f5f50ac'),
-('1d810223-e910-40b4-8e3c-9ecfd5269d16', '2024-01-15', '2024-01-19', '2024-01-19 11:45:00', 35000.00,  '5785126d-33fc-4466-8c4a-9e9cbf2e0444', 'dc47021a-5ea6-47c8-8653-1fadac5ce466', '096c5059-8e91-4ca7-a1e0-3491336b9b82', 3, 'UNTUNGBERSAMA'   , 'cff8443c-7fef-4f8c-9e10-5b698d1ff6f3'),
+('2d3642cc-6d9f-448a-9d30-8dbdc2b373b1', '2024-01-10', '2024-01-14', '2024-01-14 20:30:00', 10000.00,  '5785126d-33fc-4466-8c4a-9e9cbf2e0444', 'd8c84f25-72f2-40b9-aba9-2ceb1ef34bac', '7297c14d-8dda-434a-b7b5-0b6dbb0a0b17', 1, 'PROMOMANTAP'     , 'a3c14e6e-1d39-458c-8323-8e70671817fb'),
+('2217803d-3e5d-48cd-bb9e-c699e2e95a32', '2024-01-11', '2024-01-15', '2024-01-15 21:45:00', 18000.00,  'ce820534-45af-4871-9d91-4da9e52dc988', '94dc8a6d-811f-4eb6-8e8c-dd36686f4554', '18831c74-fb17-4094-98a1-da083a814bfc', 2, 'UNTUNGTERUSSS'   , '7bfd66f8-fce1-429a-907d-97f94d2b7675'),
+('3003a0d7-42d2-4044-857f-efd280b81397', '2024-01-12', '2024-01-16', '2024-01-16 22:00:00', 25000.00,  '0b35b618-026e-459a-8f8d-47ffadd5df6d', '914d70f3-6f69-4573-8334-4852f72b44c9', '7297c14d-8dda-434a-b7b5-0b6dbb0a0b17', 3, 'HEMATBANYAK'     , '80a5fb37-8fe5-4039-8d8d-e6c2074f9316'),
+('f39b91e4-bc61-47ae-a8cf-b9d20361fc9a', '2024-01-13', '2024-01-17', '2024-01-17 23:15:00', 13000.00,  'f8681d0c-7aa3-44d7-b4ed-aa7d920c84b4', '52a79acb-f262-4c97-a303-8ed5687136b0', '71428286-a3c6-4489-884b-79810b9f0cd4', 1, 'DISKONGOKIL'     , '0823f75d-5636-472c-a0dc-31339955584a'),
+('97faede6-3306-4973-b69e-42762ba6b495', '2024-01-14', '2024-01-18', '2024-01-18 10:30:00', 25000.00,  'de600d74-5d18-4c30-85a0-7401ca06f3f1', '914d70f3-6f69-4573-8334-4852f72b44c9', '7297c14d-8dda-434a-b7b5-0b6dbb0a0b17', 2, 'BELANJACERIA'    , 'a9741cba-ba94-4c92-9902-0ee34f5f50ac'),
+('1d810223-e910-40b4-8e3c-9ecfd5269d16', '2024-01-15', '2024-01-19', '2024-01-19 11:45:00', 35000.00,  '5785126d-33fc-4466-8c4a-9e9cbf2e0444', 'dc47021a-5ea6-47c8-8653-1fadac5ce466', '18831c74-fb17-4094-98a1-da083a814bfc', 3, 'UNTUNGBERSAMA'   , 'cff8443c-7fef-4f8c-9e10-5b698d1ff6f3'),
 ('93a02b9a-a002-48c2-a9dc-76e9a64890cb', '2024-01-16', '2024-01-20', '2024-01-20 12:00:00', 15000.00,  'ce820534-45af-4871-9d91-4da9e52dc988', 'd8c84f25-72f2-40b9-aba9-2ceb1ef34bac', '60651b5e-32eb-4d04-96ea-51e263fe5120', 1, 'HAPPYCUSTOMER'   , 'a3c14e6e-1d39-458c-8323-8e70671817fb'),
-('88bbdeea-58d9-4cb4-a3ea-ae42107ad188', '2024-01-17', '2024-01-21', '2024-01-21 13:15:00', 30000.00,  '0b35b618-026e-459a-8f8d-47ffadd5df6d', '94dc8a6d-811f-4eb6-8e8c-dd36686f4554', '60651b5e-32eb-4d04-96ea-51e263fe5120', 2, 'SAVEBIGTIME'     , 'a3c14e6e-1d39-458c-8323-8e70671817fb'),
-('9e16669a-45d5-4555-bd85-2b9e0016c245', '2024-01-18', '2024-01-22', '2024-01-22 14:30:00', 45000.00,  'f8681d0c-7aa3-44d7-b4ed-aa7d920c84b4', '52a79acb-f262-4c97-a303-8ed5687136b0', '60651b5e-32eb-4d04-96ea-51e263fe5120', 3, 'SUPERUNTUNG'     , '7bfd66f8-fce1-429a-907d-97f94d2b7675'),
-('b99e0a9c-0506-49e8-975e-50b15317d8a6', '2024-01-19', '2024-01-23', '2024-01-23 15:45:00', 25000.00,  'de600d74-5d18-4c30-85a0-7401ca06f3f1', '914d70f3-6f69-4573-8334-4852f72b44c9', 'cd0d7ef5-0381-4b50-be01-698264dda637', 1, 'BELANJARAME'     , '80a5fb37-8fe5-4039-8d8d-e6c2074f9316'),
-('c5213fe8-24cc-4daf-b162-943c85102c48', '2024-01-20', '2024-01-24', '2024-01-24 16:00:00', 45000.00,  '5785126d-33fc-4466-8c4a-9e9cbf2e0444', 'dc47021a-5ea6-47c8-8653-1fadac5ce466', 'cd0d7ef5-0381-4b50-be01-698264dda637', 2, 'DISKONHEBAT'     , '0823f75d-5636-472c-a0dc-31339955584a'),
-('44139880-c1e2-4cfe-aba1-a8c67cdca616', '2024-01-21', '2024-01-25', '2024-01-25 17:15:00', 60000.00,  'ce820534-45af-4871-9d91-4da9e52dc988', 'd8c84f25-72f2-40b9-aba9-2ceb1ef34bac', 'cd0d7ef5-0381-4b50-be01-698264dda637', 3, 'UNTUNGTERUSSS'   , 'a9741cba-ba94-4c92-9902-0ee34f5f50ac'),
-('c6f5c866-aa34-4b1e-b456-ac5266af305f', '2024-01-22', '2024-01-26', '2024-01-26 18:30:00', 125000.00, '0b35b618-026e-459a-8f8d-47ffadd5df6d', '94dc8a6d-811f-4eb6-8e8c-dd36686f4554', '7297c14d-8dda-434a-b7b5-0b6dbb0a0b17', 1, 'HEMATBANYAK'     , 'cff8443c-7fef-4f8c-9e10-5b698d1ff6f3'),
-('c12afaa5-b4ba-4716-a848-48bc5a19112f', '2024-01-23', '2024-01-27', '2024-01-27 19:00:00', 225000.00, 'f8681d0c-7aa3-44d7-b4ed-aa7d920c84b4', '52a79acb-f262-4c97-a303-8ed5687136b0', '7297c14d-8dda-434a-b7b5-0b6dbb0a0b17', 2, 'DISKONGOKIL'     , '7bfd66f8-fce1-429a-907d-97f94d2b7675'),
+('88bbdeea-58d9-4cb4-a3ea-ae42107ad188', '2024-01-17', '2024-01-21', '2024-01-21 13:15:00', 30000.00,  '0b35b618-026e-459a-8f8d-47ffadd5df6d', '94dc8a6d-811f-4eb6-8e8c-dd36686f4554', '18831c74-fb17-4094-98a1-da083a814bfc', 2, 'SAVEBIGTIME'     , 'a3c14e6e-1d39-458c-8323-8e70671817fb'),
+('9e16669a-45d5-4555-bd85-2b9e0016c245', '2024-01-18', '2024-01-22', '2024-01-22 14:30:00', 45000.00,  'f8681d0c-7aa3-44d7-b4ed-aa7d920c84b4', '52a79acb-f262-4c97-a303-8ed5687136b0', 'cd0d7ef5-0381-4b50-be01-698264dda637', 3, 'SUPERUNTUNG'     , '7bfd66f8-fce1-429a-907d-97f94d2b7675'),
+('b99e0a9c-0506-49e8-975e-50b15317d8a6', '2024-01-19', '2024-01-23', '2024-01-23 15:45:00', 25000.00,  'de600d74-5d18-4c30-85a0-7401ca06f3f1', '914d70f3-6f69-4573-8334-4852f72b44c9', '7297c14d-8dda-434a-b7b5-0b6dbb0a0b17', 1, 'BELANJARAME'     , '80a5fb37-8fe5-4039-8d8d-e6c2074f9316'),
+('c5213fe8-24cc-4daf-b162-943c85102c48', '2024-01-20', '2024-01-24', '2024-01-24 16:00:00', 45000.00,  '5785126d-33fc-4466-8c4a-9e9cbf2e0444', 'dc47021a-5ea6-47c8-8653-1fadac5ce466', '18831c74-fb17-4094-98a1-da083a814bfc', 2, 'DISKONHEBAT'     , '0823f75d-5636-472c-a0dc-31339955584a'),
+('44139880-c1e2-4cfe-aba1-a8c67cdca616', '2024-01-21', '2024-01-25', '2024-01-25 17:15:00', 60000.00,  'ce820534-45af-4871-9d91-4da9e52dc988', 'd8c84f25-72f2-40b9-aba9-2ceb1ef34bac', '7297c14d-8dda-434a-b7b5-0b6dbb0a0b17', 3, 'UNTUNGTERUSSS'   , 'a9741cba-ba94-4c92-9902-0ee34f5f50ac'),
+('c6f5c866-aa34-4b1e-b456-ac5266af305f', '2024-01-22', '2024-01-26', '2024-01-26 18:30:00', 125000.00, '0b35b618-026e-459a-8f8d-47ffadd5df6d', '94dc8a6d-811f-4eb6-8e8c-dd36686f4554', '18831c74-fb17-4094-98a1-da083a814bfc', 1, 'HEMATBANYAK'     , 'cff8443c-7fef-4f8c-9e10-5b698d1ff6f3'),
+('c12afaa5-b4ba-4716-a848-48bc5a19112f', '2024-01-23', '2024-01-27', '2024-01-27 19:00:00', 225000.00, 'f8681d0c-7aa3-44d7-b4ed-aa7d920c84b4', '52a79acb-f262-4c97-a303-8ed5687136b0', '096c5059-8e91-4ca7-a1e0-3491336b9b82', 2, 'DISKONGOKIL'     , '7bfd66f8-fce1-429a-907d-97f94d2b7675'),
 ('cc91d59d-59fe-4f5a-87b3-cb14d13dfed0', '2024-01-24', '2024-01-28', '2024-01-28 20:15:00', 300000.00, 'de600d74-5d18-4c30-85a0-7401ca06f3f1', '914d70f3-6f69-4573-8334-4852f72b44c9', '7297c14d-8dda-434a-b7b5-0b6dbb0a0b17', 3, 'BELANJACERIA'    , '80a5fb37-8fe5-4039-8d8d-e6c2074f9316'),
-('09b9e4f9-b2e5-4799-b652-939637670ff8', '2024-01-25', '2024-01-29', '2024-01-29 21:30:00', 88000.00,  '5785126d-33fc-4466-8c4a-9e9cbf2e0444', '914d70f3-6f69-4573-8334-4852f72b44c9', '18831c74-fb17-4094-98a1-da083a814bfc', 1, 'BELANJACERIA'    , '0823f75d-5636-472c-a0dc-31339955584a');
+('09b9e4f9-b2e5-4799-b652-939637670ff8', '2024-01-25', '2024-01-29', '2024-01-29 21:30:00', 88000.00,  '5785126d-33fc-4466-8c4a-9e9cbf2e0444', '914d70f3-6f69-4573-8334-4852f72b44c9', '7297c14d-8dda-434a-b7b5-0b6dbb0a0b17', 1, 'BELANJACERIA'    , '0823f75d-5636-472c-a0dc-31339955584a');
 
 -- 16. STATUS_PESANAN
 INSERT INTO SIJARTA.STATUS_PESANAN VALUES
@@ -290,20 +289,28 @@ INSERT INTO SIJARTA.TR_PEMESANAN_STATUS VALUES
 
 -- 18. TESTIMONI
 INSERT INTO SIJARTA.TESTIMONI VALUES
-('2217803d-3e5d-48cd-bb9e-c699e2e95a32', '2024-03-05', 'Pakaiannya jadi bersih sekali dan skill menyetrikanya sudah tidak diragukan lagi!', 5),
+('2217803d-3e5d-48cd-bb9e-c699e2e95a32', '2024-03-05', 'Layanan sudah tidak diragukan lagi!', 5),
 ('3003a0d7-42d2-4044-857f-efd280b81397', '2024-03-07', 'hasilnya sangat bersih tapi sayangnya masih ada noda yang tertinggal.', 4),
-('f39b91e4-bc61-47ae-a8cf-b9d20361fc9a', '2024-03-10', 'Hasilnya bagus sekali, dapur saya juga jadi bersih. Namun, pelayanannya lambat.', 3),
+('f39b91e4-bc61-47ae-a8cf-b9d20361fc9a', '2024-03-10', 'Saya minta mullet, tapi malah dibotakin. Saya sangat sedih', 3),
 ('97faede6-3306-4973-b69e-42762ba6b495', '2024-03-12', 'Layanan yang sangat baik dan ramah, dapur jadi kinclong. saya suka sekali!', 5),
-('1d810223-e910-40b4-8e3c-9ecfd5269d16', '2024-03-15', 'Layanan tidak sesuai harapan. Dapur masih kotor.', 2),
-('93a02b9a-a002-48c2-a9dc-76e9a64890cb', '2024-03-20', 'Rumah jadi bersih seperti rumah baru! Saya sangat merekomendasikan!', 5),
+('1d810223-e910-40b4-8e3c-9ecfd5269d16', '2024-03-15', 'Pijit tidak enak, terlalu pelan', 2),
+('93a02b9a-a002-48c2-a9dc-76e9a64890cb', '2024-03-20', 'AC jadi bersih wow!', 5),
 ('88bbdeea-58d9-4cb4-a3ea-ae42107ad188', '2024-03-25', 'Harga terlalu mahal apabila dibandingkan hasil dari layanannya.', 3),
 ('9e16669a-45d5-4555-bd85-2b9e0016c245', '2024-03-01', 'Pelayanan cepat dan hasil cukup memuaskan!', 4),
-('b99e0a9c-0506-49e8-975e-50b15317d8a6', '2024-03-05', 'Hasil bagus, tetapi masih ada noda di bagian bawah karpet', 3),
+('b99e0a9c-0506-49e8-975e-50b15317d8a6', '2024-03-05', 'AC masih kotor, tetapi cukup oke', 3),
 ('c5213fe8-24cc-4daf-b162-943c85102c48', '2024-03-10', 'Sangat puas dengan hasil pelayanan yang diberikan.', 5),
-('44139880-c1e2-4cfe-aba1-a8c67cdca616', '2024-04-12', 'Hasil oke, sofa dan karpet jadi bersih.', 4),
-('c6f5c866-aa34-4b1e-b456-ac5266af305f', '2024-04-15', 'AC masih kotor, kualitas layanan tidak sesuai harga.', 2),
-('c12afaa5-b4ba-4716-a848-48bc5a19112f', '2024-04-18', 'Hasil layanan yang sangat luar biasa! AC jadi bersih sekali.', 5),
+('44139880-c1e2-4cfe-aba1-a8c67cdca616', '2024-04-12', 'AC sangat bersih, tetapi masih bau', 4),
+('c6f5c866-aa34-4b1e-b456-ac5266af305f', '2024-04-15', 'Seperti digelitikin semut', 2),
+('c12afaa5-b4ba-4716-a848-48bc5a19112f', '2024-04-18', 'SWow dapur saya jadi super bersih!', 5),
 ('cc91d59d-59fe-4f5a-87b3-cb14d13dfed0', '2024-04-20', 'Hasil pencucian AC cukup oke, tetapi bisa diperbaiki', 3),
-('09b9e4f9-b2e5-4799-b652-939637670ff8', '2024-04-25', 'Layanan pijat yang sangat baik, badan jadi tidak pegel. Sangat direkomendasikan!', 5),
+('09b9e4f9-b2e5-4799-b652-939637670ff8', '2024-04-25', 'Bersih sekali, sangat direkomendasikan!', 5),
 ('2d3642cc-6d9f-448a-9d30-8dbdc2b373b1', '2024-04-01', 'Hasilnya cukup oke, tidak ada yang istimewa.', 3),
-('2217803d-3e5d-48cd-bb9e-c699e2e95a32', '2024-04-05', 'Pelayanan cepat dan hasilnya baik.', 4);
+('2217803d-3e5d-48cd-bb9e-c699e2e95a32', '2024-04-05', 'Pijitnya enak dan mantap, salut!', 4),
+('8fd4654e-4eca-4055-9692-5fd494f0d04f', '2024-02-05', 'Pencukur yang harus belajar lagi', 1),
+('3003a0d7-42d2-4044-857f-efd280b81397', '2024-03-08', 'Hari ini hasilnya masih kotor, cukup kecewa', 1),
+('3003a0d7-42d2-4044-857f-efd280b81397', '2024-03-09', 'Ada perbaikian dari kemarin tapi masih kecewa', 2),
+('3003a0d7-42d2-4044-857f-efd280b81397', '2024-03-10', 'Cukup oke', 3),
+('3003a0d7-42d2-4044-857f-efd280b81397', '2024-04-07', 'Sip, hasilnya cukup bersih', 4),
+('3003a0d7-42d2-4044-857f-efd280b81397', '2024-05-07', 'Waduh, cukup kacau lagi. Ada apa ini?', 2),
+('3003a0d7-42d2-4044-857f-efd280b81397', '2024-06-07', 'Keren! hasilnya sangat bersih, saya sangat puas', 5),
+('3003a0d7-42d2-4044-857f-efd280b81397', '2024-07-07', 'Mantap, bersih sekali! Namun, ada sedikit noda', 4);
