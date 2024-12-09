@@ -2,33 +2,6 @@
 
 {% block meta %}
 <title>SIJARTA - Pesanan</title>
-
-<script>
-    function cancelOrder(orderId) {
-        if (confirm("Are you sure you want to cancel this order?")) {
-            fetch(`/hijau/cancel-pesanan/${orderId}`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': '{{ csrf_token }}',
-                    'Content-Type': 'application/json',
-                },
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert(data.message);
-                    location.reload(); // Reload to update the UI
-                } else {
-                    alert(data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert("An error occurred. Please try again.");
-            });
-        }
-    }
-</script>
 {% endblock meta %}
 
 {% block content %}
@@ -101,11 +74,11 @@
                     <div class="w-fit rounded-full px-2 p-1 mt-2 text-xs border border-gray-200">{{datum.status}}</div>
                 </div>
                 {% if datum.status == "Menunggu Pembayaran" or datum.status == "Mencari Pekerja Terdekat"%}
-                <button id="cancel" type="submit" onclick="cancelOrder('{{datum.id_tr_pemesanan}}')" class="w-full md:w-auto px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                <button type="submit" class="w-full md:w-auto px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
                     Batalkan
                 </button>
                 {% elif datum.status == "Pesanan Selesai"%}
-                <button type="submit" onclick="openTesti('{{ datum.id }}', '{{ datum.nama_subkategori }}')" class="w-full md:w-auto px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <button type="button" onclick="openTesti('{{ datum.id }}', '{{ datum.nama_subkategori }}')" class="w-full md:w-auto px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     Buat Testimoni
                 </button>
                 {% endif %}
