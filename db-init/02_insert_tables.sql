@@ -2,7 +2,7 @@
 -- 1. USER
 INSERT INTO SIJARTA."USER" VALUES
 ('ce820534-45af-4871-9d91-4da9e52dc988', 'Christian Raphael Heryanto', 'L', '081213151719', 'ThisIsMyPasswordDontHackMePls', '2005-01-01', 'Jalan Haji Kukusan', 200000.00),
-('0b35b618-026e-459a-8f8d-47ffadd5df6d', 'Steven Setiawan', 'L', '082265402230', 'Admin1234Hehe', '2005-02-27', 'Jalan Mandor Goweng', 3000.00),
+('0b35b618-026e-459a-8f8d-47ffadd5df6d', 'Steven Setiawan', 'L', '082265402230', 'Admin1234Hehe', '2005-02-27', 'Jalan Mandor Goweng', 1000000.00),
 ('f8681d0c-7aa3-44d7-b4ed-aa7d920c84b4', 'Pascal Hafidz Fajri', 'L', '081245557020', 'ThisIsPascalBro', '2005-03-02', 'Jalan Permata Indah', 2500000.00),
 ('de600d74-5d18-4c30-85a0-7401ca06f3f1', 'Muhammad Afwan Hafizh', 'L', '081260677789', 'AmeGanteng123', '2004-12-05', 'Jalan Mawar Putih', 500000.00),
 ('5785126d-33fc-4466-8c4a-9e9cbf2e0444', 'Aditya Putra', 'L', '081234567890', 'P@sswordAditya2024', '1998-05-10', 'Jalan Melati Indah', 1500000.00),
