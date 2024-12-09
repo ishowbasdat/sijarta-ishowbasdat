@@ -343,7 +343,6 @@ def filter_pekerjaan_jasa(request, kategori_id, subkategori_id):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest' and request.method == "GET":
         with connection.cursor() as cursor:
             if kategori_id == uuid.UUID("bdc1388f-3209-4d46-a884-6ee6c9bffb1e") and subkategori_id == uuid.UUID("556caba3-9576-4db0-83ee-0c6146a49fbe"):
-                messages.error(request, "Harap isi kategori dan subkategori!")
                 return JsonResponse({'empty': 'No Filter Applied'})
             else:
                 cursor.execute("""

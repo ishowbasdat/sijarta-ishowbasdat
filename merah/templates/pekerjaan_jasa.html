@@ -132,8 +132,6 @@
 
     function displayPesanan(pesananList) {
         const pesananContainer = document.getElementById("pesanan-jasa");
-        const messageContainer = document.getElementById("message");
-        messageContainer.innerHTML = "";
         pesananContainer.innerHTML = ""; // Hapus konten sebelumnya
         pesananList.forEach(pesanan => {
             const card = document.createElement("div");
