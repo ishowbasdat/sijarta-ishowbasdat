@@ -79,7 +79,7 @@ INSERT INTO SIJARTA.KATEGORI_JASA VALUES
 ('e46edbcc-a04a-49d0-b37d-93bbb228fb53', 'Home Cleaning'),
 ('4812608c-700a-4a89-bb2e-bc9939a5d90c', 'Deep Cleaning'),
 ('35db18e5-c6a0-4519-8b3d-7a0f7c39e82d', 'Service AC'),
-('f9d5d1db-cd8d-4476-96ad-5ec424977290', 'Message'),
+('f9d5d1db-cd8d-4476-96ad-5ec424977290', 'Massage'),
 ('37226a20-3d4d-4792-a4b2-56b52380a587', 'Hair Care');
 
 -- 8. SUBKATEGORI_JASA
@@ -397,7 +397,7 @@ INSERT INTO SIJARTA.KATEGORI_JASA VALUES
 ('e46edbcc-a04a-49d0-b37d-93bbb228fb53', 'Home Cleaning'),
 ('4812608c-700a-4a89-bb2e-bc9939a5d90c', 'Deep Cleaning'),
 ('35db18e5-c6a0-4519-8b3d-7a0f7c39e82d', 'Service AC'),
-('f9d5d1db-cd8d-4476-96ad-5ec424977290', 'Message'),
+('f9d5d1db-cd8d-4476-96ad-5ec424977290', 'Massage'),
 ('37226a20-3d4d-4792-a4b2-56b52380a587', 'Hair Care');
 
 -- 8. SUBKATEGORI_JASA
