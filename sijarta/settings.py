@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'biru',
     'hijau',
     'kuning',
+    'merah'
 ]
 
 MIDDLEWARE = [

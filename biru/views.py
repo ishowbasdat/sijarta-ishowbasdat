@@ -75,7 +75,10 @@ def get_metode_bayar(request):
 @require_http_methods(["POST"])
 @csrf_exempt
 def buy_voucher(request):
-    try:        
+    try:
+        if 'user' not in request.session:
+            return JsonResponse({'error': 'Silakan login terlebih dahulu.'}, status=401)
+        
         user_id = request.session['user'].get('id')
         user_balance = request.session['user'].get('saldo_mypay', 0)
 
@@ -157,9 +160,6 @@ def buy_voucher(request):
 @csrf_exempt
 @require_http_methods(["GET"])
 def get_testimoni(request, subkategori_id, worker_id):
-    if 'user' not in request.session:
-        return JsonResponse({'error': 'Silakan login terlebih dahulu.'}, status=401)
-    
     current_user_id = request.session['user'].get('id', None)
 
     if subkategori_id == None:

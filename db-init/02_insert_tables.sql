@@ -2,7 +2,7 @@
 -- 1. USER
 INSERT INTO SIJARTA."USER" VALUES
 ('ce820534-45af-4871-9d91-4da9e52dc988', 'Christian Raphael Heryanto', 'L', '081213151719', 'ThisIsMyPasswordDontHackMePls', '2005-01-01', 'Jalan Haji Kukusan', 200000.00),
-('0b35b618-026e-459a-8f8d-47ffadd5df6d', 'Steven Setiawan', 'L', '082265402230', 'Admin1234Hehe', '2005-02-27', 'Jalan Mandor Goweng', 1000000.00),
+('0b35b618-026e-459a-8f8d-47ffadd5df6d', 'Steven Setiawan', 'L', '082265402230', 'Admin1234Hehe', '2005-02-27', 'Jalan Mandor Goweng', 3000.00),
 ('f8681d0c-7aa3-44d7-b4ed-aa7d920c84b4', 'Pascal Hafidz Fajri', 'L', '081245557020', 'ThisIsPascalBro', '2005-03-02', 'Jalan Permata Indah', 2500000.00),
 ('de600d74-5d18-4c30-85a0-7401ca06f3f1', 'Muhammad Afwan Hafizh', 'L', '081260677789', 'AmeGanteng123', '2004-12-05', 'Jalan Mawar Putih', 500000.00),
 ('5785126d-33fc-4466-8c4a-9e9cbf2e0444', 'Aditya Putra', 'L', '081234567890', 'P@sswordAditya2024', '1998-05-10', 'Jalan Melati Indah', 1500000.00),
@@ -10,7 +10,7 @@ INSERT INTO SIJARTA."USER" VALUES
 ('914d70f3-6f69-4573-8334-4852f72b44c9', 'Bambang Surya', 'L', '087654321098', 'SuryaMaster234!', '1985-08-20', 'Jalan Merpati Raya', 1800000.00),
 ('dc47021a-5ea6-47c8-8653-1fadac5ce466', 'Anita Wijaya', 'P', '081345678901', 'Anita2023#Secure', '1995-04-25', 'Jalan Anggrek Baru', 2000000.00),
 ('d8c84f25-72f2-40b9-aba9-2ceb1ef34bac', 'Nadya Putri', 'P', '082112345678', 'NadyaPutri!2024', '1992-11-03', 'Jalan Kemuning Jaya', 2200000.00),
-('94dc8a6d-811f-4eb6-8e8c-dd36686f4554', 'Dini Rahayu', 'P', '081234567890', 'RahayuPassword88', '1988-07-18', 'Jalan Dahlia Indah', 2500000.00);
+('94dc8a6d-811f-4eb6-8e8c-dd36686f4554', 'Dini Rahayu', 'P', '081234567777', 'RahayuPasswordDeh', '1988-07-18', 'Jalan Dahlia Indah', 2500000.00);
 
 -- 2. METODE_BAYAR
 INSERT INTO SIJARTA.METODE_BAYAR VALUES
@@ -33,7 +33,7 @@ INSERT INTO SIJARTA.PELANGGAN VALUES
 INSERT INTO SIJARTA.PEKERJA VALUES
 ('52a79acb-f262-4c97-a303-8ed5687136b0', 'Virtual Account Mandiri', '140001234567890', '12.345.678.5-678.000', 'https://p16-va.lemon8cdn.com/tos-alisg-v-a3e477-sg/oECGEmxHAeAAX95AIlDnRmbUQAIDgp4ABQfiut~tplv-tej9nj120t-origin.webp', 4.8, 150),
 ('914d70f3-6f69-4573-8334-4852f72b44c9', 'OVO', '009001234567890', '31.654.987.2-435.000', 'https://image.popmama.com/content-images/post/20220208/openingjpg-11b4aeff3bb18fa97f7954c2cb2abb68.jpg?width=600&height=auto', 4.5, 120),
-('dc47021a-5ea6-47c8-8653-1fadac5ce466', 'GoPay', '001501234567890', '45.987.654.8-321.000', 'https://darahkubiru.com/wp-content/uploads/2023/06/yuji-itadori-dari-jujutsu-kaisen-1.jpg', 4.9, 50),
+('dc47021a-5ea6-47c8-8653-1fadac5ce466', 'GoPay', '001501234567890', '45.987.654.8-321.000', 'https://images-ext-1.discordapp.net/external/H3-I7VaDxTTC-5E8QAzzmImktRrzK1kws_8yEB_L-68/https/i.pinimg.com/736x/9b/41/cc/9b41cc7a0c6eddc0ca305cc63e5df5af.jpg?format=webp&width=972&height=1108', 4.9, 50),
 ('d8c84f25-72f2-40b9-aba9-2ceb1ef34bac', 'Virtual Account BCA', '140001234567891', '11.123.456.7-890.000', 'https://cdn.vcgamers.com/news/wp-content/uploads/2023/08/Gambar-Anime.jpg', 4.6, 175),
 ('94dc8a6d-811f-4eb6-8e8c-dd36686f4554', 'Virtual Account BNI', '001501234567892', '62.456.789.9-123.000', 'https://png.pngtree.com/thumb_back/fh260/background/20230524/pngtree-an-anime-girl-in-headphones-looking-at-the-city-with-lights-image_2680902.jpg', 4.7, 130);
 
@@ -245,7 +245,7 @@ INSERT INTO SIJARTA.STATUS_PESANAN VALUES
 ('0b97c6a2-b8d7-42a2-a0c3-f3867ea6dd22', 'Mencari Pekerja Terdekat'),
 ('f6c936b2-54c9-49dc-84b9-664e3cded1e5', 'Menunggu Pekerja Berangkat'),
 ('ee71d120-34aa-4659-9e4f-606cf2545935', 'Pekerja Tiba di Lokasi'),
-('636fbe63-0ab1-42c4-ab96-87391e12abde', 'Menunggu Pembayaran'),
+('636fbe63-0ab1-42c4-ab96-87391e12abde', 'Pesanan Dibatalkan'),
 ('e89ac7f7-8168-4861-8a67-7b601cf720c2', 'Pelayanan Jasa sedang Dilakukan'),
 ('7d2d2293-9fc0-4acb-898a-e1fd710c2269', 'Pesanan Selesai');
 
