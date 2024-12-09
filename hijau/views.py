@@ -170,6 +170,13 @@ def create_order(request):
                 VALUES ((SELECT id FROM SIJARTA.TR_PEMESANAN_JASA WHERE id_pelanggan = %s ORDER BY tgl_pemesanan DESC LIMIT 1), 
                         (SELECT id FROM SIJARTA.STATUS_PESANAN WHERE status = 'Menunggu Pembayaran'), %s)
                 """, [request.session['user']['id'], datetime.now()])
+            
+            cursor.execute("""
+                UPDATE SIJARTA."USER"
+                SET saldo = saldo - %s
+                WHERE id = %s
+                """, [total_biaya, request.session['user']['id']])
+            
         return JsonResponse({'success': True})
     except (DatabaseError, InvalidOperation, ValueError) as e:
         # Log the error for debugging
