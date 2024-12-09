@@ -128,13 +128,13 @@ STATIC_URL = '/static/'
 
 if DEBUG:
     STATICFILES_DIRS = [
-        BASE_DIR / 'static' 
+        BASE_DIR / 'staticfiles' 
     ]
 else:
     if os.getenv('RAILWAY_STATIC'):
-        STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+        STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     else:
-        STATIC_ROOT = BASE_DIR / 'static'
+        STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
