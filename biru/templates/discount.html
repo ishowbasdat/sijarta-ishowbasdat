@@ -144,7 +144,7 @@
     <h1 class="pt-20 text-2xl font-bold mb-6 text-center">DISKON</h1>
 
     <div class="bg-white rounded-lg shadow p-4 mb-8">
-        <h2 class="text-xl font-semibold mb-2">Saldo Pengguna</h2>
+        <h2 class="text-xl font-semibold mb-2">saldo ente</h2>
         <p class="text-2xl font-bold text-primary-blue" id="userBalance"></p>
     </div>
 
@@ -185,10 +185,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js"></script>
 
 <script>
-    const userData = {
-        balance: 12
-    };
-
     let selectedVoucherData = null;
 
     function formatCurrency(number) {
@@ -207,68 +203,8 @@
 
     function updateBalanceDisplay() {
         const balanceElement = document.getElementById('userBalance');
-        balanceElement.textContent = formatCurrency(userData.balance);
+        balanceElement.textContent = formatCurrency({{ request.session.user.saldo_mypay }});
     }
-
-    // function createVoucherCard(voucher) {
-    //     return `
-    //         <div class="discount-card bg-white rounded-lg shadow p-4">
-    //             <div class="flex items-center">
-    //                 <div class="flex-grow">
-    //                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-    //                         <div>
-    //                             <p class="text-sm text-gray-600">Kode</p>
-    //                             <p class="font-medium">${voucher[0]}</p>
-    //                         </div>
-    //                         <div>
-    //                             <p class="text-sm text-gray-600">Potongan</p>
-    //                             <p class="font-medium">${formatCurrency(voucher[1])}</p>
-    //                         </div>
-    //                         <div>
-    //                             <p class="text-sm text-gray-600">Min Transaksi Pemesanan</p>
-    //                             <p class="font-medium">${formatCurrency(voucher[2])}</p>
-    //                         </div>
-    //                         <div>
-    //                             <p class="text-sm text-gray-600">Jumlah Hari Berlaku</p>
-    //                             <p class="font-medium">${voucher[3]} hari</p>
-    //                         </div>
-    //                         <div>
-    //                             <p class="text-sm text-gray-600">Kuota Penggunaan</p>
-    //                             <p class="font-medium">${voucher[4]}</p>
-    //                         </div>
-    //                         <div>
-    //                             <p class="text-sm text-gray-600">Harga</p>
-    //                             <p class="font-medium">${formatCurrency(voucher[5])}</p>
-    //                         </div>
-    //                     </div>
-    //                 </div>
-    //                 <button onclick="showConfirmationModal('${voucher[0]}', ${voucher[5]}, ${voucher[4]}, ${voucher[3]})" 
-    //                         class="bg-primary-blue text-white px-4 py-2 rounded-lg ml-4 hover:bg-blue-600 transition-colors">
-    //                     Beli
-    //                 </button>
-    //             </div>
-    //         </div>
-    //     `;
-    // }
-
-    // function createPromoCard(promo) {
-    //     return `
-    //         <div class="swiper-slide">
-    //             <div class="promo-slide">
-    //                 <div class="flex flex-col h-full justify-between">
-    //                     <div>
-    //                         <h3 class="text-lg font-bold text-primary-blue mb-2">Promo Spesial!</h3>
-    //                         <p class="text-gray-600 mb-2">Kode: ${promo[0]}</p>
-    //                     </div>
-    //                     <div>
-    //                         <p class="text-sm text-gray-500">Berlaku sampai:</p>
-    //                         <p class="text-md font-semibold text-gray-700">${formatDate(promo[1])}</p>
-    //                     </div>
-    //                 </div>
-    //             </div>
-    //         </div>
-    //     `;
-    // }
 
     function showConfirmationModal(voucherCode, price, quota, validity) {
         selectedVoucherData = {
@@ -277,7 +213,7 @@
             quota: quota,
             validity: validity
         };
-        document.getElementById('userBalanceDisplay').textContent = formatCurrency(userData.balance);
+        document.getElementById('userBalanceDisplay').textContent = formatCurrency( {{ user_balance }});
         document.getElementById('voucherPriceDisplay').textContent = formatCurrency(price);
         document.getElementById('confirmationModal').classList.remove('hidden');
     }
@@ -309,16 +245,30 @@
         document.getElementById('failedModal').classList.add('hidden');
     }
 
-    async function purchaseVoucher(voucherCode) {
+    async function fetchPaymentMethods() {
+    try {
+        const response = await fetch('/biru/api/get-metode/');
+        const data = await response.json();
+        const paymentMethodDropdown = document.getElementById('paymentMethodDropdown');
+        paymentMethodDropdown.innerHTML = data.metode_bayar
+            .map(([id, nama]) => `<option value="${id}">${nama}</option>`)
+            .join('');
+    } catch (error) {
+        console.error('Error fetching payment methods:', error);
+        paymentMethodDropdown.innerHTML = '<option value="">Gagal memuat metode pembayaran</option>';
+    }
+}
+
+    async function purchaseVoucher(voucherCode, paymentMethodId) {
         try {
             const response = await fetch('/biru/api/buy-voucher/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    //'X-CSRFToken': getCookie('csrftoken')
                 },
                 body: JSON.stringify({
-                    kode: voucherCode
+                    kode: voucherCode,
+                    metode_bayar: paymentMethodId 
                 })
             });
             
@@ -338,27 +288,35 @@
     async function confirmPurchase() {
         if (!selectedVoucherData) return;
         try {
-            if (userData.balance < selectedVoucherData.price) {
+            if ( {{ user_balance }} < selectedVoucherData.price) {
+                closeConfirmationModal();
                 showFailedModal();
                 return;
             }
-            const result = await purchaseVoucher(selectedVoucherData.code);
+            const paymentMethodDropdown = document.getElementById('paymentMethodDropdown');
+            const selectedPaymentMethodId = paymentMethodDropdown.value;
+            if (!selectedPaymentMethodId) {
+                alert('Harap pilih metode pembayaran.');
+                return;
+            }
+            const result = await purchaseVoucher(selectedVoucherData.code, selectedPaymentMethodId);
             if (result.message === 'Voucher berhasil dibeli!') {
+                const newBalance = result.new_balance;
+                document.getElementById('userBalance').textContent = formatCurrency(newBalance);
+
                 closeConfirmationModal();
-                
-                userData.balance -= selectedVoucherData.price;
-                updateBalanceDisplay();
-                
                 showSuccessModal(
                     selectedVoucherData.code,
                     selectedVoucherData.quota,
                     selectedVoucherData.validity
                 );
             } else {
+                closeConfirmationModal();
                 showFailedModal();
             }
         } catch (error) {
             console.error('Error in confirmPurchase:', error);
+            closeConfirmationModal();
             showFailedModal();
         }
     }
@@ -391,7 +349,7 @@
                                         <p class="font-medium">${validity} hari</p>
                                     </div>
                                     <div>
-                                        <p class="text-sm text-gray-600">Kuota</p>
+                                        <p class="text-sm text-gray-600">Kuota Penggunaan</p>
                                         <p class="font-medium">${quota}</p>
                                     </div>
                                     <div>
@@ -471,21 +429,8 @@
     document.addEventListener('DOMContentLoaded', () => {
         fetchDiscounts();
         updateBalanceDisplay();
+        fetchPaymentMethods();
     });
 
-    // function getCookie(name) {
-    //     let cookieValue = null;
-    //     if (document.cookie && document.cookie !== '') {
-    //         const cookies = document.cookie.split(';');
-    //         for (let i = 0; i < cookies.length; i++) {
-    //             const cookie = cookies[i].trim();
-    //             if (cookie.substring(0, name.length + 1) === (name + '=')) {
-    //                 cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-    //                 break;
-    //             }
-    //         }
-    //     }
-    //     return cookieValue;
-    // }
 </script>
 {% endblock content %}

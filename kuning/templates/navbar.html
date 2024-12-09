@@ -20,7 +20,7 @@
                     Homepage
                 </a>
 
-                <a href="#" class="text-center text-lg text-[#1f1c61] plus-jakarta-sans-bold px-3 py-2 mr-2">
+                <a href="{% url 'merah:mypay_info' %}" class="text-center text-lg text-[#1f1c61] plus-jakarta-sans-bold px-3 py-2 mr-2">
                     MyPay
                 </a>
 
@@ -33,11 +33,11 @@
                     Diskon
                 </a>
                 {% elif request.session.user.role == 'PEKERJA' %}
-                <a href="#" class="text-center text-lg text-[#1f1c61] plus-jakarta-sans-bold px-3 py-2 mr-2">
+                <a href="{% url 'merah:pekerjaan_jasa' %}" class="text-center text-lg text-[#1f1c61] plus-jakarta-sans-bold px-3 py-2 mr-2">
                     Kelola Pekerjaan
                 </a>
                 
-                <a href="#" class="text-center text-lg text-[#1f1c61] plus-jakarta-sans-bold px-3 py-2 mr-2">
+                <a href="{% url 'merah:status_pekerjaan_jasa' %}" class="text-center text-lg text-[#1f1c61] plus-jakarta-sans-bold px-3 py-2 mr-2">
                     Kelola Status Pekerjaan
                 </a>
                 {% endif %}
