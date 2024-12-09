@@ -7,6 +7,7 @@ from django.http import HttpResponse, HttpResponseForbidden
 from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse, HttpResponseBadRequest
 from kuning.views import landing
+from django.contrib import messages
 import json
 import uuid
 
@@ -110,7 +111,7 @@ def subkategori(request, id):
             
         if subcategory is None:
             return redirect('homepage')
-        
+        #print role
         context = {'subkategori' : subcategory, 'pekerja' : pekerja, 'is_joined' : is_joined}
         return render(request, 'subkategori.html', context)
 
@@ -122,36 +123,13 @@ def get_metode_pembayaran(request):
     return JsonResponse(data, safe=False)
 
 @require_http_methods(["POST"])
-def validate_discount(request):
-    data = json.loads(request.body)
-    kode = data['kode']
-    transaksi = data['transaksi']
-    with connection.cursor() as cursor:
-        cursor.execute("""SELECT * 
-                       FROM SIJARTA.DISKON d
-                       LEFT JOIN SIJARTA.VOUCHER v ON d.kode = v.kode
-                       LEFT JOIN SIJARTA.PROMO p ON d.kode = p.kode
-                       WHERE d.kode = %s AND
-                       d.potongan >= 0 AND
-                       d.min_tr_pemesanan <= %s AND
-                       (v.kuota_PELANGGANan IS NULL OR v.kuota_PELANGGANan > 0) AND
-                       (v.jml_hari_berlaku IS NULL OR v.jml_hari_berlaku > 0) AND
-                       (p.tgl_akhir_berlaku IS NULL OR p.tgl_akhir_berlaku >= CURRENT_DATE)
-                       """, [kode, transaksi])
-        row = cursor.fetchone()
-        data = dict(zip([column[0] for column in cursor.description], row)) if row else None
-
-    if len(data) == 0:
-        return JsonResponse({'valid': False})
-    return JsonResponse({'valid': True, 'potongan': data['potongan']})
-
-@require_http_methods(["POST"])
 def create_order(request):
+    
     if request.session['user']['role'] != 'PELANGGAN':
         return HttpResponseBadRequest("Only 'PELANGGAN' role can create an order.")
    
     data = json.loads(request.body)
-   
+
     try:
         # Validate required fields
         required_fields = ['orderDate', 'kategori_jasa_id', 'sesi', 'totalPayment', 'paymentMethod']
@@ -162,6 +140,10 @@ def create_order(request):
         # Convert total payment to decimal
         total_biaya = Decimal(data.get('totalPayment').replace('Rp ', '').replace('.', '').replace(',', ''))
 
+        # check whether the date is in the future
+        if datetime.strptime(data.get('orderDate'), '%Y-%m-%d') < datetime.now():
+            return JsonResponse({'success': False, 'error': 'Order date must be in the future'}, status=400)
+        
         # Prepare discount code (convert empty string to None)
         discount_code = data.get('discountCode') or None
 
@@ -170,12 +152,10 @@ def create_order(request):
                 INSERT INTO SIJARTA.TR_PEMESANAN_JASA
                 (id, tgl_pemesanan, tgl_pekerjaan, waktu_pekerjaan, total_biaya, 
                 id_pelanggan, id_pekerja, id_kategori_jasa, sesi, id_diskon, id_metode_bayar)
-                VALUES (%s, %s, %s, %s, %s, %s, NULL, %s, %s, %s, %s)
+                VALUES (%s, %s, NULL, NULL, %s, %s, NULL, %s, %s, %s, %s)
                 """, [
                     uuid.uuid4(),
                     data.get('orderDate'),  # tgl_pemesanan
-                    data.get('orderDate'),  # tgl_pekerjaan (using order date as work date)
-                    datetime.now(),  # waktu_pekerjaan (current timestamp)
                     total_biaya,  # total_biaya
                     request.session['user']['id'],  # id_pelanggan
                     data.get('kategori_jasa_id'),  # id_kategori_jasa
@@ -183,6 +163,13 @@ def create_order(request):
                     discount_code,  # id_diskon
                     data.get('paymentMethod')  # id_metode_bayar
                 ])
+            
+            cursor.execute("""
+                INSERT INTO SIJARTA.TR_PEMESANAN_STATUS
+                (id_tr_pemesanan, id_status, tgl_waktu)
+                VALUES ((SELECT id FROM SIJARTA.TR_PEMESANAN_JASA WHERE id_pelanggan = %s ORDER BY tgl_pemesanan DESC LIMIT 1), 
+                        (SELECT id FROM SIJARTA.STATUS_PESANAN WHERE status = 'Menunggu Pembayaran'), %s)
+                """, [request.session['user']['id'], datetime.now()])
         return JsonResponse({'success': True})
     except (DatabaseError, InvalidOperation, ValueError) as e:
         # Log the error for debugging
@@ -190,10 +177,20 @@ def create_order(request):
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
 @require_http_methods(["GET"])
-def pesanan(request):
-    
+def pesanan(request):   
+    subcategory = request.GET.get('subcategory')
+    status = request.GET.get('status')
+    if subcategory == None or subcategory == "":
+        subcategory = '%'
+    else:
+        subcategory = f"%{subcategory}%"
+    if status == None or status == "":
+        status = '%'
+    else:
+        status = f"%{status}%"
+        
     if request.session['user']['role'] != 'PELANGGAN':
-        return HttpResponseBadRequest()
+        return redirect('homepage')
 
     with connection.cursor() as cursor:
         cursor.execute("""
@@ -205,8 +202,15 @@ def pesanan(request):
                         LEFT JOIN SIJARTA.SUBKATEGORI_JASA sj ON sl.subkategori_id = sj.id
                         LEFT JOIN SIJARTA.PEKERJA p ON tpj.id_pekerja = p.id
                         LEFT JOIN SIJARTA."USER" u ON p.id = u.id
-                        WHERE tpj.id_pelanggan = %s;
-                       """, [request.session['user']['id']])
+                        WHERE tpj.id_pelanggan = %s
+                        AND LOWER(sj.nama_subkategori) LIKE LOWER(%s)
+                        AND LOWER(sp.status) LIKE LOWER(%s)
+                        AND tps.tgl_waktu = (
+                            SELECT MAX(tps2.tgl_waktu)
+                            FROM SIJARTA.TR_PEMESANAN_STATUS tps2
+                            WHERE tps2.id_tr_pemesanan = tps.id_tr_pemesanan
+                        );
+                       """, [request.session['user']['id'], subcategory, status])
         data = [dict(zip([ column[0] for column in cursor.description ], row)) for row in cursor.fetchall()]
         
         cursor.execute("""
@@ -219,3 +223,31 @@ def pesanan(request):
                        """)
         status = [dict(zip([ column[0] for column in cursor.description ], row)) for row in cursor.fetchall()]
     return render(request, 'pesanan.html', {'data': data, 'subcategories': subcategories, 'status': status})
+
+@require_http_methods(["POST"])
+def cancel_pesanan(request, id):
+    if request.session['user']['role'] != 'PELANGGAN':
+        messages.error(request, 'Only \'PELANGGAN\' role can delete an order.')
+        return redirect(cancel_pesanan)
+    
+    # check whether the order belongs to the user
+    with connection.cursor() as cursor:
+        cursor.execute("""
+                        SELECT * FROM SIJARTA.TR_PEMESANAN_JASA
+                        WHERE id = %s
+                        AND id_pelanggan = %s
+                       """, [id, request.session['user']['id']])
+        
+        if cursor.fetchone() is None:
+            messages.error(request, 'The order does not belong to you.')
+            return redirect(cancel_pesanan)
+    
+    current_date = datetime.now()
+    with connection.cursor() as cursor:
+        #alter table change status to cancelled
+        cursor.execute("""
+                        INSERT INTO SIJARTA.TR_PEMESANAN_STATUS
+                        (id_tr_pemesanan, id_status, tgl_waktu)
+                        VALUES (%s, (SELECT id FROM SIJARTA.STATUS_PESANAN WHERE status = 'Pesanan Dibatalkan'), %s)
+                        """, [id, current_date])
+    return JsonResponse({"success": True, "message": "Order canceled successfully."})
