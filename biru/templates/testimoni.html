@@ -1,0 +1,153 @@
+<div id="testimonialModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4 relative transform transition-all">
+        <h2 class="text-xl font-bold mb-6 font-plus-jakarta text-center">Berikan Testimoni Anda!</h2>
+        
+        <form id="testimonialForm" onsubmit="handleSubmitTesti(event)" class="space-y-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2 text-center">Rating</label>
+                <div class="star-rating mb-2">
+                    <input type="radio" id="star5" name="rating" value="5" required />
+                    <label for="star5">★</label>
+                    <input type="radio" id="star4" name="rating" value="4" />
+                    <label for="star4">★</label>
+                    <input type="radio" id="star3" name="rating" value="3" />
+                    <label for="star3">★</label>
+                    <input type="radio" id="star2" name="rating" value="2" />
+                    <label for="star2">★</label>
+                    <input type="radio" id="star1" name="rating" value="1" />
+                    <label for="star1">★</label>
+                </div>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Komentar</label>
+                <textarea 
+                    name="komentar" 
+                    class="w-full p-3 border bg-blue-200 border-gray-300 rounded-lg focus:ring-[#4361ee] focus:border-[#4361ee] min-h-[120px]"
+                    required
+                ></textarea>
+            </div>
+
+            <div class="flex justify-end gap-2">
+                <button 
+                    type="button" 
+                    onclick="closeModal()" 
+                    class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                    Batal
+                </button>
+                <button 
+                    type="submit" 
+                    class="px-4 py-2 bg-[#4361ee] text-white rounded-lg hover:bg-green-500 transition-colors">
+                    Submit
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="successMessage" class="fixed bottom-5 right-5 bg-green-500 text-white px-6 py-3 rounded-lg hidden transform transition-all">
+    Terima kasih atas testimoni Anda!
+</div>
+
+<style>
+    .star-rating {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: center;
+        gap: 4px;
+    }
+
+    .star-rating input {
+        display: none;
+    }
+
+    .star-rating label {
+        cursor: pointer;
+        font-size: 30px;
+        color: #ddd;
+        transition: color 0.2s ease-in-out;
+    }
+
+    .star-rating label:hover,
+    .star-rating label:hover ~ label,
+    .star-rating input:checked ~ label {
+        color: #4361ee;
+    }
+</style>
+
+<script>
+    let currentOrderIdForTestimoni = null;
+    let currentSubkategoriName = null;
+
+    function openTesti(orderId, subkategoriName) {
+        currentOrderIdForTestimoni = orderId;
+        currentSubkategoriName = subkategoriName;
+        document.getElementById('testimonialModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        document.getElementById('testimonialModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+        currentOrderIdForTestimoni = null;
+    }
+
+    function showNotification(message, isSuccess = true) {
+        const successMessage = document.getElementById('successMessage');
+        successMessage.textContent = message;
+        
+        successMessage.classList.remove('bg-green-500', 'bg-red-500');
+        successMessage.classList.add(isSuccess ? 'bg-green-500' : 'bg-red-500');
+        
+        successMessage.classList.remove('hidden');
+        
+        setTimeout(() => {
+            successMessage.classList.add('hidden');
+        }, 4000);
+    }
+
+    function handleSubmitTesti(event) {
+        event.preventDefault();
+        
+        if (!currentOrderIdForTestimoni || !currentSubkategoriName) {
+            showNotification('Terjadi kesalahan. Silakan coba lagi.', false);
+            return;
+        }
+        
+        const formData = new FormData(event.target);
+        const rating = parseInt(formData.get('rating'));
+        const comment = formData.get('komentar');
+
+        fetch('/biru/api/submit-testimoni/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                subkategori_name: currentSubkategoriName,
+                order_id: currentOrderIdForTestimoni,
+                rating: rating,
+                comment: comment
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+
+            closeModal();
+            showNotification('Terima kasih atas testimoni Anda!');
+        })
+        .catch(error => {
+            showNotification(error.message || 'Gagal mengirim testimoni. Silakan coba lagi.', false);
+        });
+    }
+
+    window.addEventListener('click', function(event) {
+        const modal = document.getElementById('testimonialModal');
+        if (event.target === modal) {
+            closeModal();
+        }
+    });
+</script>

@@ -46,7 +46,7 @@
             </div>
             <div class="flex items-center">
                 <label class="text-gray-600 w-32 text-sm">Saldo MyPay:</label>
-                <span class="font-medium text-sm">Rp {{ user_data.saldo_mypay|floatformat:2 }}</span>
+                <span id="saldoMypay" class="font-medium text-sm"></span>
             </div>
             <div class="pt-4">
                 <button onclick="openUpdateModal()" 
@@ -96,7 +96,7 @@
             </div>
             <div class="flex items-center">
                 <label class="text-gray-600 w-40 text-sm">Saldo MyPay:</label>
-                <span class="font-medium text-sm">Rp {{ user_data.saldo_mypay|floatformat:2 }}</span>
+                <span id="saldoMypay" class="font-medium text-sm"></span>
             </div>
             <div class="flex items-center">
                 <label class="text-gray-600 w-40 text-sm">Nama Bank:</label>
@@ -273,7 +273,6 @@
         } else if ('{{ user_data.jenis_kelamin }}' === 'P') {
             document.querySelector('input[name="jenis_kelamin"][value="P"]').checked = true;
         }
-
         {% if request.session.user.role == 'PEKERJA' %}
         document.querySelector('select[name="nama_bank"]').value = '{{ user_data.nama_bank }}';
         document.querySelector('input[name="nomor_rekening"]').value = '{{ user_data.nomor_rekening }}';
@@ -287,12 +286,33 @@
             closeModal();
         }
     }
-
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Escape' && !modal.classList.contains('hidden')) {
-            closeModal();
+         
+    function formatCurrency(number) {
+        return new Intl.NumberFormat('id-ID', { 
+            style: 'currency', 
+            currency: 'IDR',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0 
+        }).format(number);
+    }
+    
+    function setSaldoMypay() {
+        const saldoElement = document.getElementById('saldoMypay');
+        if (saldoElement) {
+            saldoElement.textContent = formatCurrency({{ user_data.saldo_mypay }});
         }
-    });
+    }
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+      setSaldoMypay();
+
+      document.addEventListener('keydown', function(event) {
+          if (event.key === 'Escape' && !modal.classList.contains('hidden')) {
+              closeModal();
+          }
+      });
+  });
 
     document.querySelector('form').addEventListener('submit', function(event) {
         const requiredFields = ['nama', 'no_hp', 'tgl_lahir', 'alamat'];
