@@ -217,13 +217,13 @@ def mypay_transaction(request):
 
             cursor.execute("""
                            SELECT nama FROM SIJARTA.KATEGORI_TR_MYPAY
-                           WHERE nama NOT IN ('Menerima honor transaksi jasa', 'Transfer MyPay dari pengguna lain') 
+                           WHERE nama NOT IN ('Menerima honor transaksi jasa', 'Transfer MyPay dari pengguna lain', 'Membayar transaksi voucher') 
                            """)
             
         else:
             cursor.execute("""
                            SELECT nama FROM SIJARTA.KATEGORI_TR_MYPAY
-                           WHERE nama NOT IN ('Membayar transaksi jasa', 'Menerima honor transaksi jasa', 'Transfer MyPay dari pengguna lain')
+                           WHERE nama NOT IN ('Membayar transaksi jasa', 'Menerima honor transaksi jasa', 'Transfer MyPay dari pengguna lain', 'Membayar transaksi voucher')
                            """)
 
             tr_data = []
